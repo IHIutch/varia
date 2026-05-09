@@ -1,0 +1,43 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`boolean variants > coexists with multi-value variants on the same component 1`] = `
+[
+  [
+    "btn",
+    "inline-block",
+  ],
+  [
+    "btn-c-primary",
+    "bg-blue-600",
+  ],
+  [
+    "btn-outline",
+    "border-2",
+  ],
+]
+`;
+
+exports[`defineComponent > emits multi-value variant classes with name-key-value naming 1`] = `
+[
+  [
+    "btn",
+    "inline-block",
+  ],
+  [
+    "btn-c-primary",
+    "bg-blue-600 text-white",
+  ],
+  [
+    "btn-c-danger",
+    "bg-red-600 text-white",
+  ],
+  [
+    "btn-s-sm",
+    "px-2 py-1 text-sm",
+  ],
+  [
+    "btn-s-lg",
+    "px-6 py-3 text-lg",
+  ],
+]
+`;

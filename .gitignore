@@ -1,0 +1,10 @@
+# Node / build artifacts
+node_modules
+dist
+.varia/
+
+# OS
+.DS_Store
+
+**/.vitepress/cache
+**/.vitepress/dist

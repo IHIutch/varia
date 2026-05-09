@@ -1,0 +1,61 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`recipe: Button > emits the expected shortcut tuples 1`] = `
+[
+  [
+    "btn",
+    "inline-block font-medium rounded-md transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed",
+  ],
+  [
+    "btn-c-primary",
+    "bg-blue-600 text-white hover:bg-blue-700 active:bg-blue-800 focus-visible:ring-blue-500",
+  ],
+  [
+    "btn-c-danger",
+    "bg-red-600 text-white hover:bg-red-700 active:bg-red-800 focus-visible:ring-red-500",
+  ],
+  [
+    "btn-c-success",
+    "bg-emerald-600 text-white hover:bg-emerald-700 active:bg-emerald-800 focus-visible:ring-emerald-500",
+  ],
+  [
+    "btn-c-ghost",
+    "bg-transparent text-gray-900 hover:bg-gray-100 active:bg-gray-200 focus-visible:ring-gray-400",
+  ],
+  [
+    "btn-s-sm",
+    "px-2.5 py-1 text-sm",
+  ],
+  [
+    "btn-s-md",
+    "px-4 py-2 text-base",
+  ],
+  [
+    "btn-s-lg",
+    "px-6 py-3 text-lg",
+  ],
+  [
+    "btn-outline",
+    "bg-transparent border-2 hover:bg-current/10",
+  ],
+  [
+    "btn-block",
+    "block w-full",
+  ],
+]
+`;
+
+exports[`recipe: Button > exposes every expected class name in the manifest 1`] = `
+[
+  "btn",
+  "btn-c-primary",
+  "btn-c-danger",
+  "btn-c-success",
+  "btn-c-ghost",
+  "btn-s-sm",
+  "btn-s-md",
+  "btn-s-lg",
+  "btn-outline",
+  "btn-block",
+]
+`;
