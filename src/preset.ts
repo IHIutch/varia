@@ -2,7 +2,7 @@ import type { Preflight, Preset } from '@unocss/core'
 import type { DefinedComponent } from './internal/types.js'
 import { DEFAULT_MANIFEST_PATH, emitManifest } from './manifest.js'
 
-export type PresetVariaOptions = {
+export interface PresetVariaOptions {
   components: DefinedComponent[]
   manifest?: false | { path?: string }
 }

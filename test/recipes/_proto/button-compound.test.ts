@@ -34,7 +34,7 @@ describe('prototype: compound variants (validates ADR-0002)', () => {
     const css = await generate('cbtn cbtn-s-xs cbtn-square')
 
     // Both rules should be emitted; the cascade resolves order at render.
-    expect(css).toMatch(/\.cbtn-s-xs\s*\{[^}]*padding/)        // single-class
+    expect(css).toMatch(/\.cbtn-s-xs\s*\{[^}]*padding/) // single-class
     expect(css).toMatch(/\.cbtn-s-xs\.cbtn-square\s*\{[^}]*padding/) // compound
   })
 

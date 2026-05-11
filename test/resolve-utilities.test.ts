@@ -1,3 +1,4 @@
+import type { UnoGenerator } from '@unocss/core'
 import { createGenerator } from '@unocss/core'
 import presetWind4 from '@unocss/preset-wind4'
 import { beforeAll, describe, expect, it } from 'vitest'
@@ -5,7 +6,6 @@ import {
   emitResolvedCSS,
   resolveUtilities,
 } from '../src/internal/resolve-utilities.js'
-import type { UnoGenerator } from '@unocss/core'
 
 let uno: UnoGenerator
 
@@ -34,7 +34,7 @@ describe('resolveUtilities', () => {
     expect(result.byState).toHaveProperty('focus-visible')
     expect(result.byState).toHaveProperty('disabled')
     expect(result.byState['focus-visible']).toBeTruthy()
-    expect(result.byState['disabled']).toMatch(/opacity/)
+    expect(result.byState.disabled).toMatch(/opacity/)
   })
 
   it('handles arbitrary-value utilities including theme() lookups', async () => {
@@ -49,7 +49,7 @@ describe('resolveUtilities', () => {
   it('extracts @property declarations to topLevel', async () => {
     const result = await resolveUtilities('bg-blue-600', uno)
     expect(result.topLevel.length).toBeGreaterThan(0)
-    const hasUnBgOpacity = result.topLevel.some((rule) =>
+    const hasUnBgOpacity = result.topLevel.some(rule =>
       rule.includes('--un-bg-opacity'),
     )
     expect(hasUnBgOpacity).toBe(true)
@@ -60,7 +60,7 @@ describe('resolveUtilities', () => {
       'bg-blue-600 bg-red-600 bg-emerald-600',
       uno,
     )
-    const propertyDecls = result.topLevel.filter((r) =>
+    const propertyDecls = result.topLevel.filter(r =>
       r.includes('@property --un-bg-opacity'),
     )
     expect(propertyDecls.length).toBe(1)
@@ -71,7 +71,7 @@ describe('resolveUtilities', () => {
     // Wind4 emits an @supports block for color-mix in oklab fallbacks
     expect(result.atRuleWrapped).toBeDefined()
     const supportsKeys = Object.keys(result.atRuleWrapped ?? {})
-    expect(supportsKeys.some((k) => k.includes('@supports'))).toBe(true)
+    expect(supportsKeys.some(k => k.includes('@supports'))).toBe(true)
   })
 
   it('throws on an unresolvable utility', async () => {

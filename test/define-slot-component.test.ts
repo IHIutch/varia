@@ -19,10 +19,10 @@ describe('defineSlotComponent: basic slot declaration', () => {
   it('emits a shortcut for each slot (root uses bare name; others use BEM)', () => {
     const card = defineSlotComponent('card', {
       slots: {
-        root:   'rounded-lg overflow-hidden bg-white',
+        root: 'rounded-lg overflow-hidden bg-white',
         header: 'p-4 border-b',
-        title:  'font-semibold',
-        body:   'p-4',
+        title: 'font-semibold',
+        body: 'p-4',
       },
     })
 
@@ -105,9 +105,9 @@ describe('defineSlotComponent: slot-keyed variants emit preflights', () => {
       slots: { root: 'rounded-lg bg-white', header: 'p-4', title: 'font-semibold' },
       variants: {
         accent: {
-          root:   'ring-2 ring-blue-500',
+          root: 'ring-2 ring-blue-500',
           header: 'bg-blue-50',
-          title:  'text-blue-900',
+          title: 'text-blue-900',
         },
       },
     })
@@ -124,7 +124,7 @@ describe('defineSlotComponent: slot-keyed variants emit preflights', () => {
       slots: { root: 'rounded-lg bg-white', title: 'font-semibold' },
       variants: {
         variant: {
-          solid:   { root: 'bg-blue-600 text-white', title: 'text-white' },
+          solid: { root: 'bg-blue-600 text-white', title: 'text-white' },
           outline: { root: 'bg-transparent ring', title: 'text-gray-900' },
         },
       },
@@ -140,8 +140,8 @@ describe('defineSlotComponent: slot-keyed variants emit preflights', () => {
       slots: { root: 'rounded-lg bg-white', title: 'font-semibold' },
       variants: {
         variant: {
-          solid:   'bg-blue-600 text-white',                  // string -> shortcut for root
-          accent:  { root: 'ring-2', title: 'text-blue-900' }, // slot-keyed -> preflight
+          solid: 'bg-blue-600 text-white', // string -> shortcut for root
+          accent: { root: 'ring-2', title: 'text-blue-900' }, // slot-keyed -> preflight
         },
       },
     })
@@ -172,7 +172,7 @@ describe('defineSlotComponent: slot-keyed variants emit preflights', () => {
         slots: { root: 'block', header: 'p-4' },
         variants: {
           ambiguous: {
-            root:    'ring-2', // slot name
+            root: 'ring-2', // slot name
             primary: 'bg-blue', // not a slot name
           },
         },
@@ -185,9 +185,9 @@ describe('defineSlotComponent: end-to-end through real UnoCSS', () => {
   it('slot shortcuts resolve correctly and appear in generated CSS', async () => {
     const card = defineSlotComponent('card', {
       slots: {
-        root:   'rounded-lg bg-white shadow',
+        root: 'rounded-lg bg-white shadow',
         header: 'p-4 border-b',
-        title:  'font-semibold text-gray-900',
+        title: 'font-semibold text-gray-900',
       },
     })
 
@@ -210,15 +210,15 @@ describe('defineSlotComponent: end-to-end through real UnoCSS', () => {
   it('slot-keyed variant emits descendant-selector CSS via preflight', async () => {
     const card = defineSlotComponent('card', {
       slots: {
-        root:   'rounded-lg bg-white',
+        root: 'rounded-lg bg-white',
         header: 'p-4',
-        title:  'font-semibold',
+        title: 'font-semibold',
       },
       variants: {
         accent: {
-          root:   'ring-2 ring-blue-500',
+          root: 'ring-2 ring-blue-500',
           header: 'bg-blue-50',
-          title:  'text-blue-900',
+          title: 'text-blue-900',
         },
       },
     })
@@ -252,7 +252,7 @@ describe('defineSlotComponent: end-to-end through real UnoCSS', () => {
       slots: { root: 'rounded-lg', title: 'font-semibold' },
       variants: {
         variant: {
-          solid:   { root: 'bg-blue-600',  title: 'text-white' },
+          solid: { root: 'bg-blue-600', title: 'text-white' },
           outline: { root: 'ring ring-gray-300', title: 'text-gray-900' },
         },
       },

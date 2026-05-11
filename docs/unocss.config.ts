@@ -1,15 +1,15 @@
 import type { PreflightContext, Rule } from '@unocss/core'
-import { defineConfig } from 'unocss'
 import presetWind4 from '@unocss/preset-wind4'
-import { presetVaria } from '../src/preset.js'
+import { defineConfig } from 'unocss'
+import avatar from '../recipes/avatar.config.js'
 
 import button from '../recipes/button.config.js'
 import card from '../recipes/card.config.js'
-import formInput from '../recipes/form-input.config.js'
-import spinner from '../recipes/spinner.config.js'
-import avatar from '../recipes/avatar.config.js'
 import dropdownComponents from '../recipes/dropdown.config.js'
+import formInput from '../recipes/form-input.config.js'
 import modal from '../recipes/modal.config.js'
+import spinner from '../recipes/spinner.config.js'
+import { presetVaria } from '../src/preset.js'
 
 // --- Theming demo wiring -----------------------------------------------------
 // The Theming docs page renders live previews of two patterns:
@@ -50,7 +50,8 @@ function literalPaletteCSS(context: PreflightContext<object>): string {
 
   const decls = THEME_COLORS.flatMap((color) => {
     const c = colors[TONES[color]]
-    if (!c) return []
+    if (!c)
+      return []
     return [
       `  --varia-${color}-bg: light-dark(${c['600']}, ${c['500']});`,
       `  --varia-${color}-text: light-dark(${c['700']}, ${c['300']});`,
@@ -69,7 +70,7 @@ function literalPaletteCSS(context: PreflightContext<object>): string {
 // semantic tokens at one color's literal tokens. JIT'd by UnoCSS, so only
 // the swap classes actually referenced in markup get emitted.
 function swapClassRules(): Rule<object>[] {
-  return THEME_COLORS.map((color) => [
+  return THEME_COLORS.map(color => [
     `varia-theme-${color}`,
     {
       '--varia-theme-bg': `var(--varia-${color}-bg)`,

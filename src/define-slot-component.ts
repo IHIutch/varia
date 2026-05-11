@@ -1,10 +1,4 @@
 import type { Preflight } from '@unocss/core'
-import {
-  booleanTrueClassName,
-  multiValueClassName,
-  slotClassName,
-} from './internal/naming.js'
-import { emitResolvedCSS, resolveUtilities } from './internal/resolve-utilities.js'
 import type {
   DefinedComponent,
   Shortcut,
@@ -12,6 +6,12 @@ import type {
   SlotKeyedValue,
   SlotVariantValue,
 } from './internal/types.js'
+import {
+  booleanTrueClassName,
+  multiValueClassName,
+  slotClassName,
+} from './internal/naming.js'
+import { emitResolvedCSS, resolveUtilities } from './internal/resolve-utilities.js'
 import {
   validateAssembledClassName,
   validateComponentName,
@@ -92,16 +92,20 @@ function classifyVariant(
   variantDef: unknown,
   slotNames: Set<string>,
 ): 'boolean-string' | 'boolean-slot-keyed' | 'multi-value' | 'mixed' {
-  if (typeof variantDef === 'string') return 'boolean-string'
+  if (typeof variantDef === 'string')
+    return 'boolean-string'
   if (typeof variantDef !== 'object' || variantDef === null) {
     return 'mixed' // surfaces as an error
   }
   const keys = Object.keys(variantDef as Record<string, unknown>)
-  if (keys.length === 0) return 'mixed' // empty — caller treats as error
+  if (keys.length === 0)
+    return 'mixed' // empty — caller treats as error
 
-  const slotKeyCount = keys.filter((k) => slotNames.has(k)).length
-  if (slotKeyCount === keys.length) return 'boolean-slot-keyed'
-  if (slotKeyCount === 0) return 'multi-value'
+  const slotKeyCount = keys.filter(k => slotNames.has(k)).length
+  if (slotKeyCount === keys.length)
+    return 'boolean-slot-keyed'
+  if (slotKeyCount === 0)
+    return 'multi-value'
   return 'mixed'
 }
 
@@ -120,9 +124,9 @@ function processVariant(args: {
 
   if (kind === 'mixed') {
     throw new Error(
-      `Variant "${variantKey}" on component "${componentName}" has an invalid shape. ` +
-        `It must be either a string, an object whose keys are ALL slot names of this component, ` +
-        `or an object whose keys are ALL multi-value names (none matching a slot name).`,
+      `Variant "${variantKey}" on component "${componentName}" has an invalid shape. `
+      + `It must be either a string, an object whose keys are ALL slot names of this component, `
+      + `or an object whose keys are ALL multi-value names (none matching a slot name).`,
     )
   }
 
@@ -167,14 +171,15 @@ function processVariant(args: {
       validateExpansion(value, { className, component: componentName })
       shortcuts.push([className, value])
       classNames.push(className)
-    } else if (typeof value === 'object' && value !== null) {
+    }
+    else if (typeof value === 'object' && value !== null) {
       // Slot-keyed value — validate keys against slot names, then emit a preflight.
       const slotKeys = Object.keys(value)
       for (const k of slotKeys) {
         if (!slotNames.has(k)) {
           throw new Error(
-            `Variant "${variantKey}" value "${valueKey}" on component "${componentName}" ` +
-              `references slot "${k}", which is not declared in the component's slots.`,
+            `Variant "${variantKey}" value "${valueKey}" on component "${componentName}" `
+            + `references slot "${k}", which is not declared in the component's slots.`,
           )
         }
       }
@@ -186,10 +191,11 @@ function processVariant(args: {
           slotKeyedValue: value,
         }),
       )
-    } else {
+    }
+    else {
       throw new Error(
-        `Variant "${variantKey}" value "${valueKey}" on component "${componentName}" ` +
-          `must be a string or a slot-keyed object.`,
+        `Variant "${variantKey}" value "${valueKey}" on component "${componentName}" `
+        + `must be a string or a slot-keyed object.`,
       )
     }
   }
@@ -214,7 +220,8 @@ function slotKeyedVariantPreflight(args: {
       const out: string[] = []
 
       for (const [slotName, classes] of Object.entries(slotKeyedValue)) {
-        if (!classes || classes.trim() === '') continue
+        if (!classes || classes.trim() === '')
+          continue
 
         const resolved = await resolveUtilities(classes, uno)
         const slotClass = slotClassName(componentName, slotName)
@@ -224,8 +231,8 @@ function slotKeyedVariantPreflight(args: {
         // wrote them as siblings). Use descendant-selector for non-root, and
         // a chained class selector for root (which means the variant CSS applies
         // when the consumer puts both classes on the same element).
-        const selector =
-          slotName === 'root'
+        const selector
+          = slotName === 'root'
             ? `.${variantClass}`
             : `.${variantClass} .${slotClass}`
 

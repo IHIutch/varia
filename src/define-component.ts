@@ -1,6 +1,4 @@
 import type { Preflight } from '@unocss/core'
-import { booleanTrueClassName, multiValueClassName } from './internal/naming.js'
-import { emitResolvedCSS, resolveUtilities } from './internal/resolve-utilities.js'
 import type {
   ComponentConfig,
   CompoundVariantRule,
@@ -9,6 +7,8 @@ import type {
   Shortcut,
   VariantDefinition,
 } from './internal/types.js'
+import { booleanTrueClassName, multiValueClassName } from './internal/naming.js'
+import { emitResolvedCSS, resolveUtilities } from './internal/resolve-utilities.js'
 import {
   validateAssembledClassName,
   validateComponentName,
@@ -18,13 +18,13 @@ import {
 type Push = (
   className: string,
   expansion: string,
-  context: { variantKey?: string; variantValue?: string },
+  context: { variantKey?: string, variantValue?: string },
 ) => void
 
 /** Records the kind of each variant axis so compound validation can check it. */
-type AxisKind =
-  | { kind: 'boolean' }
-  | { kind: 'multi-value'; values: Set<string> }
+type AxisKind
+  = | { kind: 'boolean' }
+    | { kind: 'multi-value', values: Set<string> }
 
 function emitVariant(
   componentName: string,
@@ -153,7 +153,8 @@ function validateCompound(
           )}", but "${axis}" is a boolean variant — its value in a compound must be \`true\`.`,
         )
       }
-    } else {
+    }
+    else {
       // multi-value
       if (typeof value !== 'string' || !axisInfo.values.has(value)) {
         throw new Error(

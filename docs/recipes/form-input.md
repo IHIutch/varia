@@ -13,7 +13,7 @@ export default defineComponent('form-input', {
   variants: {
     state: {
       default: 'border-gray-300 focus:border-blue-500 focus:ring-blue-500',
-      error:   'border-red-500 text-red-700 placeholder:text-red-300 focus:border-red-500 focus:ring-red-500 invalid:border-red-500',
+      error: 'border-red-500 text-red-700 placeholder:text-red-300 focus:border-red-500 focus:ring-red-500 invalid:border-red-500',
       success: 'border-emerald-500 focus:border-emerald-500 focus:ring-emerald-500',
     },
     s: {

@@ -20,7 +20,7 @@ const button = defineComponent('btn', { /* config */ })
 ### `ComponentConfig`
 
 ```ts
-type ComponentConfig = {
+interface ComponentConfig {
   base?: string
   variants?: Record<string, VariantDefinition>
   compoundVariants?: CompoundVariantRule[]
@@ -28,7 +28,7 @@ type ComponentConfig = {
 
 type VariantDefinition = string | Record<string, string>
 
-type CompoundVariantRule = {
+interface CompoundVariantRule {
   when: Record<string, string | true>
   class: string
 }
@@ -103,11 +103,11 @@ Compound rules emit as UnoCSS preflights, which means they're unconditional — 
 ### Return value
 
 ```ts
-type DefinedComponent = {
+interface DefinedComponent {
   name: string
   shortcuts: Array<[className: string, expansion: string]>
-  manifest: { name: string; classNames: string[] }
-  preflights?: Preflight[]   // present iff compoundVariants or slot-keyed variants were declared
+  manifest: { name: string, classNames: string[] }
+  preflights?: Preflight[] // present iff compoundVariants or slot-keyed variants were declared
 }
 ```
 
@@ -149,16 +149,16 @@ If a component has only one element, use `defineComponent`. If a component has t
 ### `SlotComponentConfig`
 
 ```ts
-type SlotComponentConfig = {
+interface SlotComponentConfig {
   slots: Record<string, string>
   variants?: Record<string, SlotVariantDefinition>
 }
 
-type SlotVariantDefinition =
-  | string                                 // boolean → applies to root
-  | Record<string, string>                 // multi-value (string per value, applied to root)
-  | Record<string, Record<string, string>> // multi-value with slot-keyed values
-  | Record<string, string>                 // boolean slot-keyed (keys must all be slot names)
+type SlotVariantDefinition
+  = | string // boolean → applies to root
+    | Record<string, string> // multi-value (string per value, applied to root)
+    | Record<string, Record<string, string>> // multi-value with slot-keyed values
+    | Record<string, string> // boolean slot-keyed (keys must all be slot names)
 ```
 
 | Field | Type | Description |
@@ -173,9 +173,9 @@ The `root` slot maps to the bare component name; every other slot maps to `compo
 ```ts
 defineSlotComponent('modal', {
   slots: {
-    root: '…',         // → .modal
-    container: '…',    // → .modal__container
-    header: '…',       // → .modal__header
+    root: '…', // → .modal
+    container: '…', // → .modal__container
+    header: '…', // → .modal__header
   },
 })
 ```
@@ -264,7 +264,7 @@ Returns a UnoCSS preset that flattens components into shortcuts and emits a Type
 ### Options
 
 ```ts
-type PresetVariaOptions = {
+interface PresetVariaOptions {
   components: DefinedComponent[]
   manifest?: false | { path?: string }
 }
@@ -305,8 +305,8 @@ A re-export shim that surfaces the `VariaClasses` union from the manifest. Use i
 ```ts
 function cn(c: VariaClasses) { return c }
 
-cn('btn-c-primary')        // ok
-cn('not-a-real-class')     // type error
+cn('btn-c-primary') // ok
+cn('not-a-real-class') // type error
 ```
 
 ### Editor autocomplete is separate

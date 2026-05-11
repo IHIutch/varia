@@ -7,7 +7,7 @@ describe('recipe: Avatar', () => {
     expect(avatar.shortcuts).toMatchSnapshot()
   })
 
-  it('CSS custom properties with theme() fallbacks survive through real UnoCSS', async () => {
+  it('cSS custom properties with theme() fallbacks survive through real UnoCSS', async () => {
     const css = await generateRecipeCSS([avatar], 'avatar avatar-s-md avatar-ring')
 
     expect(css).toContain('--avatar-bg')

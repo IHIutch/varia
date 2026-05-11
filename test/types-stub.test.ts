@@ -1,6 +1,6 @@
-import { existsSync, readFileSync } from 'node:fs'
 import { execSync } from 'node:child_process'
-import { mkdir, mkdtemp, rm, writeFile, cp } from 'node:fs/promises'
+import { readFileSync } from 'node:fs'
+import { cp, mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
@@ -8,7 +8,7 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 describe('varia/types subpath stub', () => {
   it('built dist/types.d.mts re-exports from the manifest at the published-layout path', () => {
     const stub = readFileSync('dist/types.d.mts', 'utf-8')
-    expect(stub).toContain("export type { VariaClasses } from '../../.varia/manifest.js'")
+    expect(stub).toContain('export type { VariaClasses } from \'../../.varia/manifest.js\'')
   })
 
   it('package.json exports map has ./types entry pointing at dist/types.d.mts', () => {
@@ -39,11 +39,11 @@ describe('varia/types in a flat node_modules fixture (npm-style layout)', () => 
 
     await writeFile(
       join(fixture, 'consumer.ts'),
-      `import type { VariaClasses } from 'varia/types'\n` +
-        `const valid: VariaClasses = 'btn-c-primary'\n` +
-        `// @ts-expect-error — invalid class should fail typecheck\n` +
-        `const invalid: VariaClasses = 'not-a-real-class'\n` +
-        `export { valid, invalid }\n`,
+      `import type { VariaClasses } from 'varia/types'\n`
+      + `const valid: VariaClasses = 'btn-c-primary'\n`
+      + `// @ts-expect-error — invalid class should fail typecheck\n`
+      + `const invalid: VariaClasses = 'not-a-real-class'\n`
+      + `export { valid, invalid }\n`,
     )
 
     await writeFile(
@@ -68,7 +68,8 @@ describe('varia/types in a flat node_modules fixture (npm-style layout)', () => 
   })
 
   afterAll(async () => {
-    if (fixture) await rm(fixture, { recursive: true, force: true })
+    if (fixture)
+      await rm(fixture, { recursive: true, force: true })
   })
 
   const tscPath = join(process.cwd(), 'node_modules', '.bin', 'tsc')
@@ -88,9 +89,9 @@ describe('varia/types in a flat node_modules fixture (npm-style layout)', () => 
 
     await writeFile(
       join(fixture, 'consumer.ts'),
-      `import type { VariaClasses } from 'varia/types'\n` +
-        `const valid: VariaClasses = 'card-c-primary'\n` +
-        `export { valid }\n`,
+      `import type { VariaClasses } from 'varia/types'\n`
+      + `const valid: VariaClasses = 'card-c-primary'\n`
+      + `export { valid }\n`,
     )
 
     expect(runFixtureTypecheck).not.toThrow()

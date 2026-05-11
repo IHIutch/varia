@@ -31,10 +31,10 @@ export default defineComponent('btn', {
       // these up).
     },
     style: {
-      solid:   'bg-[var(--btn-bg)] text-white border-[var(--btn-bg)] hover:bg-[var(--btn-bg-hover)] hover:border-[var(--btn-bg-hover)]',
+      solid: 'bg-[var(--btn-bg)] text-white border-[var(--btn-bg)] hover:bg-[var(--btn-bg-hover)] hover:border-[var(--btn-bg-hover)]',
       outline: 'bg-transparent text-[var(--btn-text)] border-[var(--btn-border)] hover:bg-[var(--btn-bg-subtle)]',
-      subtle:  'bg-[var(--btn-bg-subtle)] text-[var(--btn-text)] border-transparent hover:bg-[var(--btn-bg-muted)]',
-      ghost:   'bg-transparent text-[var(--btn-text)] border-transparent hover:bg-[var(--btn-bg-subtle)]',
+      subtle: 'bg-[var(--btn-bg-subtle)] text-[var(--btn-text)] border-transparent hover:bg-[var(--btn-bg-muted)]',
+      ghost: 'bg-transparent text-[var(--btn-text)] border-transparent hover:bg-[var(--btn-bg-subtle)]',
     },
     s: {
       sm: 'px-2.5 py-1 text-sm',

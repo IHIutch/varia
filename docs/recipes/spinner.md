@@ -18,8 +18,8 @@ export default defineComponent('spinner', {
     },
     c: {
       primary: 'text-blue-600',
-      muted:   'text-gray-400',
-      danger:  'text-red-600',
+      muted: 'text-gray-400',
+      danger: 'text-red-600',
     },
   },
 })

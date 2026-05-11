@@ -112,10 +112,10 @@ The same dropdown could also be expressed with `defineSlotComponent`:
 ```ts
 defineSlotComponent('dropdown', {
   slots: {
-    root:    '...',
+    root: '...',
     trigger: '...',
-    menu:    '...',
-    item:    '...',
+    menu: '...',
+    item: '...',
     divider: '...',
   },
 })

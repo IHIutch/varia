@@ -26,13 +26,13 @@ export default defineComponent('btn', {
   variants: {
     c: {
       primary: '[--btn-bg:theme(colors.blue.600)] [--btn-bg-hover:theme(colors.blue.700)] [--btn-text:theme(colors.blue.700)] [--btn-border:theme(colors.blue.300)] [--btn-bg-subtle:theme(colors.blue.50)]',
-      danger:  '[--btn-bg:theme(colors.red.600)] [--btn-bg-hover:theme(colors.red.700)] [--btn-text:theme(colors.red.700)] [--btn-border:theme(colors.red.300)] [--btn-bg-subtle:theme(colors.red.50)]',
+      danger: '[--btn-bg:theme(colors.red.600)] [--btn-bg-hover:theme(colors.red.700)] [--btn-text:theme(colors.red.700)] [--btn-border:theme(colors.red.300)] [--btn-bg-subtle:theme(colors.red.50)]',
       success: '[--btn-bg:theme(colors.emerald.600)] [--btn-bg-hover:theme(colors.emerald.700)] [--btn-text:theme(colors.emerald.700)] [--btn-border:theme(colors.emerald.300)] [--btn-bg-subtle:theme(colors.emerald.50)]',
     },
     style: {
-      solid:   'bg-[var(--btn-bg)] text-white border-[var(--btn-bg)] hover:bg-[var(--btn-bg-hover)] hover:border-[var(--btn-bg-hover)]',
+      solid: 'bg-[var(--btn-bg)] text-white border-[var(--btn-bg)] hover:bg-[var(--btn-bg-hover)] hover:border-[var(--btn-bg-hover)]',
       outline: 'bg-transparent text-[var(--btn-text)] border-[var(--btn-border)] hover:bg-[var(--btn-bg-subtle)]',
-      ghost:   'bg-transparent text-[var(--btn-text)] border-transparent hover:bg-[var(--btn-bg-subtle)]',
+      ghost: 'bg-transparent text-[var(--btn-text)] border-transparent hover:bg-[var(--btn-bg-subtle)]',
     },
     s: {
       sm: 'px-2.5 py-1 text-sm',
@@ -50,9 +50,9 @@ This shape decouples three orthogonal concerns: **color** sets per-component var
 ## 3. Wire `presetVaria` into your UnoCSS config
 
 ```ts
+import presetWind4 from '@unocss/preset-wind4'
 // unocss.config.ts
 import { defineConfig } from 'unocss'
-import presetWind4 from '@unocss/preset-wind4'
 import { presetVaria } from 'varia/preset'
 
 import button from './styles/button.config'
@@ -94,9 +94,9 @@ import type { VariaClasses } from 'varia/types'
 
 function cn(c: VariaClasses) { /* ... */ }
 
-cn('btn-c-primary')        // ok
-cn('btn-style-solid')      // ok
-cn('not-a-real-class')     // type error
+cn('btn-c-primary') // ok
+cn('btn-style-solid') // ok
+cn('not-a-real-class') // type error
 ```
 
 ::: tip pnpm users

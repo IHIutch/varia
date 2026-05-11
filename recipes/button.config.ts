@@ -36,7 +36,7 @@ export default defineComponent('btn', {
     'disabled:opacity-50 disabled:cursor-not-allowed',
   ].join(' '),
   variants: {
-    c: Object.fromEntries(COLORS.map((c) => [c, colorVars(TONES[c])])) as Record<Color, string>,
+    c: Object.fromEntries(COLORS.map(c => [c, colorVars(TONES[c])])) as Record<Color, string>,
     style: {
       solid: [
         'bg-[var(--btn-bg)] text-white border-[var(--btn-bg)]',

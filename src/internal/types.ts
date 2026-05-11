@@ -15,14 +15,14 @@ export type VariantDefinition = string | Record<string, string>
  */
 export type CompoundVariantWhen = Record<string, string | true>
 
-export type CompoundVariantRule = {
+export interface CompoundVariantRule {
   /** Conditions: every key/value must be present on the same element. */
   when: CompoundVariantWhen
   /** Utility class string applied when the conditions match. */
   class: string
 }
 
-export type ComponentConfig = {
+export interface ComponentConfig {
   base?: string
   variants?: Record<string, VariantDefinition>
   /**
@@ -34,12 +34,12 @@ export type ComponentConfig = {
 
 export type Shortcut = [className: string, expansion: string]
 
-export type ComponentManifest = {
+export interface ComponentManifest {
   name: string
   classNames: string[]
 }
 
-export type DefinedComponent = {
+export interface DefinedComponent {
   name: string
   shortcuts: Shortcut[]
   manifest: ComponentManifest
@@ -87,11 +87,11 @@ export type SlotVariantValue = string | SlotKeyedValue
  * component's slot list. Mixed-key configs (some slot names, some not) throw
  * at validation time.
  */
-export type SlotVariantDefinition =
-  | string
-  | Record<string, SlotVariantValue>
+export type SlotVariantDefinition
+  = | string
+    | Record<string, SlotVariantValue>
 
-export type SlotComponentConfig = {
+export interface SlotComponentConfig {
   /**
    * Named parts of the component. Keys are slot names (must match the
    * assembled-class regex `/^[a-z][a-z0-9-]*$/`). The `root` slot maps to the

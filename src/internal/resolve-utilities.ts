@@ -16,7 +16,7 @@ import { expandVariantGroup } from '@unocss/core'
  * provides the underlying resolution; this module groups the output by
  * pseudo-class state and pulls @property declarations out as top-level rules.
  */
-export type ResolvedUtilities = {
+export interface ResolvedUtilities {
   /** CSS-property declarations keyed by pseudo-class state. `base` = no pseudo-class. */
   byState: Record<string, string>
   /** Top-level rules (e.g., `@property` declarations) to hoist into the stylesheet. */
@@ -29,7 +29,12 @@ export type ResolvedUtilities = {
   atRuleWrapped?: Record<string, Record<string, string>>
 }
 
-const STATE_SUFFIX_RE = /:((?:[a-z-]+|\([^)]+\))(?::?(?:[a-z-]+|\([^)]+\)))*)$/
+// Matches a single trailing pseudo-class segment: `:hover`, `:focus-visible`,
+// `:disabled`. Chained pseudo-classes (e.g., `:hover:focus`) and pseudo-elements
+// (e.g., `::before`) fall through to 'base'; the input comes from UnoCSS's
+// generated selectors where this single-trailing-state pattern covers the cases
+// we care about. The simple anchor avoids polynomial backtracking warnings.
+const STATE_SUFFIX_RE = /:([a-z][\w-]*)$/
 
 /**
  * Resolve a utility class string to grouped CSS using a UnoCSS generator's
@@ -69,7 +74,8 @@ export async function resolveUtilities(
       // Defensive — UnoCSS shouldn't emit tuples with missing core fields, but
       // noUncheckedIndexedAccess means the destructured values are typed
       // `T | undefined` and TypeScript wants us to acknowledge that.
-      if (selector === undefined || !cssBody || cssBody.trim() === '') continue
+      if (selector === undefined || !cssBody || cssBody.trim() === '')
+        continue
 
       // Top-level rules: @property declarations, @keyframes, etc.
       // These don't belong inside an element selector.
@@ -91,7 +97,8 @@ export async function resolveUtilities(
         atRuleWrapped[atRule] ??= {}
         atRuleWrapped[atRule][state] ??= []
         atRuleWrapped[atRule][state].push(cssBody)
-      } else {
+      }
+      else {
         byState[state] ??= []
         byState[state].push(cssBody)
       }
@@ -99,16 +106,16 @@ export async function resolveUtilities(
   }
 
   const result: ResolvedUtilities = {
-    byState: mapEntries(byState, (bodies) => bodies.join('')),
+    byState: mapEntries(byState, bodies => bodies.join('')),
     topLevel: dedupe(topLevel),
   }
 
   const atRuleKeys = Object.keys(atRuleWrapped)
   if (atRuleKeys.length > 0) {
     result.atRuleWrapped = Object.fromEntries(
-      atRuleKeys.map((cond) => [
+      atRuleKeys.map(cond => [
         cond,
-        mapEntries(atRuleWrapped[cond]!, (bodies) => bodies.join('')),
+        mapEntries(atRuleWrapped[cond]!, bodies => bodies.join('')),
       ]),
     )
   }

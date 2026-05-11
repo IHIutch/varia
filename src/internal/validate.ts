@@ -23,12 +23,13 @@ export function validateAssembledClassName(
   },
 ): void {
   const re = context.allowBem ? SLOT_CLASS_NAME_RE : CLASS_NAME_RE
-  if (re.test(className)) return
+  if (re.test(className))
+    return
 
   const where = context.variantKey
     ? ` (component "${context.component}", variant "${context.variantKey}"${
-        context.variantValue !== undefined ? `, value "${context.variantValue}"` : ''
-      })`
+      context.variantValue !== undefined ? `, value "${context.variantValue}"` : ''
+    })`
     : ` (component "${context.component}")`
 
   const expected = context.allowBem
@@ -42,7 +43,7 @@ export function validateAssembledClassName(
 
 export function validateExpansion(
   expansion: string,
-  context: { className: string; component: string },
+  context: { className: string, component: string },
 ): void {
   if (expansion.trim().length === 0) {
     throw new Error(

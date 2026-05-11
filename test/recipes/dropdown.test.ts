@@ -17,7 +17,7 @@ describe('recipe: Dropdown (multi-component)', () => {
 
   it('default export is the array of all four components for easy spread into presetVaria', () => {
     expect(dropdownComponents).toHaveLength(4)
-    expect(dropdownComponents.map((c) => c.name).sort()).toEqual([
+    expect(dropdownComponents.map(c => c.name).sort()).toEqual([
       'dropdown-divider',
       'dropdown-item',
       'dropdown-menu',
@@ -26,7 +26,7 @@ describe('recipe: Dropdown (multi-component)', () => {
   })
 
   it('emits the expected shortcut tuples across all four components', () => {
-    const allShortcuts = dropdownComponents.flatMap((c) => c.shortcuts)
+    const allShortcuts = dropdownComponents.flatMap(c => c.shortcuts)
     expect(allShortcuts).toMatchSnapshot()
   })
 

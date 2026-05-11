@@ -1,8 +1,8 @@
 {
   "name": "varia",
+  "type": "module",
   "version": "0.0.0",
   "description": "Build-time variants for UnoCSS",
-  "type": "module",
   "license": "MIT",
   "exports": {
     ".": {
@@ -22,11 +22,16 @@
   "files": [
     "dist"
   ],
+  "engines": {
+    "node": ">=22"
+  },
   "scripts": {
     "build": "tsdown && cp -f stub/types.d.mts dist/types.d.mts",
     "test": "vitest run",
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
     "docs:dev": "vitepress dev docs",
     "docs:build": "vitepress build docs",
     "docs:preview": "vitepress preview docs"
@@ -36,10 +41,12 @@
     "unocss": "*"
   },
   "devDependencies": {
+    "@antfu/eslint-config": "^8.2.0",
     "@types/node": "^25.6.2",
     "@unocss/core": "^66.6.8",
     "@unocss/preset-wind4": "^66.6.8",
     "@unocss/vite": "^66.6.8",
+    "eslint": "^10.3.0",
     "tsdown": "^0.22.0",
     "typescript": "^6.0.3",
     "unocss": "^66.6.8",

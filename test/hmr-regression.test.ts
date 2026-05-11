@@ -26,10 +26,11 @@ beforeEach(async () => {
 })
 
 afterEach(async () => {
-  if (dir) await rm(dir, { recursive: true, force: true })
+  if (dir)
+    await rm(dir, { recursive: true, force: true })
 })
 
-describe('HMR regression: config change flows through real UnoCSS to manifest', () => {
+describe('hMR regression: config change flows through real UnoCSS to manifest', () => {
   it('first build produces manifest with initial component shape', async () => {
     const path = join(dir, 'manifest.d.ts')
     const initial = defineComponent('btn', {
@@ -42,9 +43,9 @@ describe('HMR regression: config change flows through real UnoCSS to manifest', 
     })
 
     const m = readFileSync(path, 'utf-8')
-    expect(m).toContain("'btn'")
-    expect(m).toContain("'btn-c-primary'")
-    expect(m).not.toContain("'card'")
+    expect(m).toContain('\'btn\'')
+    expect(m).toContain('\'btn-c-primary\'')
+    expect(m).not.toContain('\'card\'')
   })
 
   it('subsequent build with changed config (simulating an HMR re-resolve) updates the manifest', async () => {
@@ -55,7 +56,7 @@ describe('HMR regression: config change flows through real UnoCSS to manifest', 
     await createGenerator({
       presets: [presetWind4(), presetVaria({ components: [before], manifest: { path } })],
     })
-    expect(readFileSync(path, 'utf-8')).not.toContain("'card'")
+    expect(readFileSync(path, 'utf-8')).not.toContain('\'card\'')
 
     // Mutated config: btn changes, card added — what UnoCSS sees after Vite picks up
     // a config-file edit and re-resolves the preset graph.
@@ -69,8 +70,8 @@ describe('HMR regression: config change flows through real UnoCSS to manifest', 
     })
 
     const m = readFileSync(path, 'utf-8')
-    expect(m).toContain("'btn'")
-    expect(m).toContain("'card'")
+    expect(m).toContain('\'btn\'')
+    expect(m).toContain('\'card\'')
   })
 
   it('shrinking the config (component removed) shrinks the manifest', async () => {
@@ -84,12 +85,12 @@ describe('HMR regression: config change flows through real UnoCSS to manifest', 
         presetVaria({ components: [btn, card], manifest: { path } }),
       ],
     })
-    expect(readFileSync(path, 'utf-8')).toContain("'card'")
+    expect(readFileSync(path, 'utf-8')).toContain('\'card\'')
 
     await createGenerator({
       presets: [presetWind4(), presetVaria({ components: [btn], manifest: { path } })],
     })
 
-    expect(readFileSync(path, 'utf-8')).not.toContain("'card'")
+    expect(readFileSync(path, 'utf-8')).not.toContain('\'card\'')
   })
 })

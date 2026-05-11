@@ -42,20 +42,20 @@ Emit the literal-token block via a UnoCSS preflight. Read values from the projec
 import { defineConfig } from 'unocss'
 
 const THEME_COLORS = [
-  'primary', 
-  'success', 
-  'danger', 
-  'warning', 
-  'info', 
+  'primary',
+  'success',
+  'danger',
+  'warning',
+  'info',
   'neutral'
 ] as const
 
 const TONES = {
   primary: 'blue',
-  success: 'emerald', 
-  danger:  'red',
-  warning: 'amber',  
-  info:    'sky',     
+  success: 'emerald',
+  danger: 'red',
+  warning: 'amber',
+  info: 'sky',
   neutral: 'gray',
 }
 
@@ -90,15 +90,15 @@ Each `.varia-theme-{name}` class points the semantic tokens at one color's liter
 
 ```ts
 // unocss.config.ts (continued)
-const swapClassRules = THEME_COLORS.map((color) => [
+const swapClassRules = THEME_COLORS.map(color => [
   `varia-theme-${color}`,
   {
-    '--varia-theme-bg':         `var(--varia-${color}-bg)`,
-    '--varia-theme-text':       `var(--varia-${color}-text)`,
-    '--varia-theme-bg-subtle':  `var(--varia-${color}-bg-subtle)`,
-    '--varia-theme-bg-muted':   `var(--varia-${color}-bg-muted)`,
-    '--varia-theme-border':     `var(--varia-${color}-border)`,
-    '--varia-theme-contrast':   `var(--varia-${color}-contrast)`,
+    '--varia-theme-bg': `var(--varia-${color}-bg)`,
+    '--varia-theme-text': `var(--varia-${color}-text)`,
+    '--varia-theme-bg-subtle': `var(--varia-${color}-bg-subtle)`,
+    '--varia-theme-bg-muted': `var(--varia-${color}-bg-muted)`,
+    '--varia-theme-border': `var(--varia-${color}-border)`,
+    '--varia-theme-contrast': `var(--varia-${color}-contrast)`,
     '--varia-theme-focus-ring': `var(--varia-${color}-focus-ring)`,
   },
 ])
@@ -120,10 +120,10 @@ export default defineComponent('themable-btn', {
   base: 'inline-flex items-center justify-center rounded-md font-medium border transition-colors',
   variants: {
     style: {
-      solid:   'bg-[var(--varia-theme-bg,theme(colors.gray.500))] text-[var(--varia-theme-contrast,white)] border-[var(--varia-theme-bg,theme(colors.gray.500))] hover:bg-[var(--varia-theme-bg-muted,theme(colors.gray.600))]',
+      solid: 'bg-[var(--varia-theme-bg,theme(colors.gray.500))] text-[var(--varia-theme-contrast,white)] border-[var(--varia-theme-bg,theme(colors.gray.500))] hover:bg-[var(--varia-theme-bg-muted,theme(colors.gray.600))]',
       outline: 'bg-transparent text-[var(--varia-theme-text,theme(colors.gray.700))] border-[var(--varia-theme-border,theme(colors.gray.300))] hover:bg-[var(--varia-theme-bg-subtle,theme(colors.gray.100))]',
-      subtle:  'bg-[var(--varia-theme-bg-subtle,theme(colors.gray.100))] text-[var(--varia-theme-text,theme(colors.gray.700))] border-transparent hover:bg-[var(--varia-theme-bg-muted,theme(colors.gray.200))]',
-      ghost:   'bg-transparent text-[var(--varia-theme-text,theme(colors.gray.700))] border-transparent hover:bg-[var(--varia-theme-bg-subtle,theme(colors.gray.100))]',
+      subtle: 'bg-[var(--varia-theme-bg-subtle,theme(colors.gray.100))] text-[var(--varia-theme-text,theme(colors.gray.700))] border-transparent hover:bg-[var(--varia-theme-bg-muted,theme(colors.gray.200))]',
+      ghost: 'bg-transparent text-[var(--varia-theme-text,theme(colors.gray.700))] border-transparent hover:bg-[var(--varia-theme-bg-subtle,theme(colors.gray.100))]',
     },
     s: { sm: 'px-2.5 py-1 text-sm', md: 'px-4 py-2 text-base', lg: 'px-6 py-3 text-lg' },
   },

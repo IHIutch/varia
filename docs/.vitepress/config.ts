@@ -1,6 +1,7 @@
+import process from 'node:process'
 import { fileURLToPath } from 'node:url'
-import { defineConfig, postcssIsolateStyles } from 'vitepress'
 import UnoCSS from '@unocss/vite'
+import { defineConfig, postcssIsolateStyles } from 'vitepress'
 
 const docsDir = fileURLToPath(new URL('..', import.meta.url))
 

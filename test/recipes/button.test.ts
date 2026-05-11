@@ -15,7 +15,7 @@ describe('recipe: Button', () => {
     const axes = new Set(
       button.shortcuts
         .map(([name]) => name.replace(/^btn-?/, '').split('-')[0])
-        .filter((s) => s !== ''),
+        .filter(s => s !== ''),
     )
     expect([...axes].sort()).toEqual(['c', 's', 'style'])
   })
