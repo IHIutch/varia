@@ -14,8 +14,8 @@ This page is a first draft. The positioning vs. Panda CSS in particular is a jud
 | Framework-agnostic consumption | yes | no (JS only) | no (JS only) | yes (any HTML) | no (React/Vue/Svelte/Solid) |
 | Readable class names | yes | yes | yes | hashed | hashed |
 | Owns the CSS pipeline | no (UnoCSS) | no | no | yes | yes |
-| Slot support | no (v2) | no | yes | no | no |
-| Compound variants | no (v2) | yes | yes | yes | yes |
+| Slot support | yes | no | yes | no | no |
+| Compound variants | yes | yes | yes | yes | yes |
 | Theming via CSS variables | yes (recommended pattern) | manual | manual | yes | yes |
 | Runtime cost | none | small | small | none | none |
 
@@ -41,10 +41,10 @@ CVA is the API-shape ancestor of `varia`; the config feels almost identical. The
 ### tailwind-variants
 
 Pick `tailwind-variants` if:
-- You like CVA's shape but need slots for multi-element components today.
-- You're React-first and don't care about non-JS consumers.
+- You're React-first and want the slots-and-compounds API as a runtime function call from JSX.
+- You don't care about consumption from non-JS template languages.
 
-`tailwind-variants` is roughly CVA plus slots. The slots story is what `varia` defers to v2.
+`tailwind-variants` is roughly CVA plus slots and compound variants. `varia` covers the same authoring surface (`defineSlotComponent`, `compoundVariants`) but emits class names you write directly in markup instead of returning a callable from JSX. The choice is mostly about consumption model: callable function vs. plain HTML.
 
 ### vanilla-extract recipes
 

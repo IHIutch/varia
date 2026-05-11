@@ -7,7 +7,8 @@ Class names in `varia` are assembled by concatenating the component name, varian
 ```text
 component-axis-value     # multi-value variant
 component-axis           # boolean variant
-component                # base
+component                # base / root slot
+component__slot          # non-root slot (defineSlotComponent only)
 ```
 
 ## By variant shape
@@ -19,6 +20,8 @@ component                # base
 | Multi-value with numeric value | `s: { 1: '…' }` | `btn-s-1` |
 | Multi-value with kebab value | `s: { '2xl': '…' }` | `btn-s-2xl` |
 | Boolean | `outline: '…'` | `btn-outline` |
+| Slot (root) | `slots: { root: '…' }` | `modal` |
+| Slot (non-root) | `slots: { container: '…' }` | `modal__container` |
 
 ## Rules
 
@@ -31,6 +34,28 @@ component                # base
 4. For boolean variants, there is no third segment. `btn-outline` reads as "outlined button" rather than `btn-outline-true`. The off state is the absence of the class. If you need explicit off styling, use a multi-value variant with named values (`state: { open, closed }`).
 
 5. Every assembled class must match `/^[a-z][a-z0-9-]*$/`: lowercase plus kebab-case, starting with a letter. Validation runs at config time, on the assembled class rather than individual segments. This is why numeric values like `1`, `2xl`, `100` work: the assembled string (`btn-s-1`, `btn-s-2xl`, `btn-bg-100`) starts with the letter from the component-name prefix and stays in the allowed character set.
+
+6. Slot classes use the BEM `__` (double-underscore) suffix. The `root` slot maps to the bare component name; every other slot is `component__slot`. The slot name itself must match `/^[a-z][a-z0-9-]*$/`. The combined `component__slot` form is the only place double underscores appear in `varia` class names.
+
+## Slots vs. variants: the two separators
+
+```text
+modal              ← root slot (bare name)
+modal__container   ← non-root slot (double underscore)
+modal-size-md      ← variant (single dashes)
+```
+
+The two never collide. Slot classes always have `__` in them; variant classes never do. This is enforced by validation — a slot name can't contain underscores, and a variant axis or value can't either, so the `__` only ever appears as the slot separator. A reader (or a regex) can tell which kind of class they're looking at without context.
+
+## Compound variants emit no class
+
+`compoundVariants` rules don't produce a consumer-facing class. They emit a CSS rule with a chained-class selector built from the conditions:
+
+```text
+.btn-s-xs.btn-square { … }     ← compound rule for `when: { s: 'xs', square: true }`
+```
+
+The consumer writes the individual variant classes (`btn-s-xs btn-square`) and the compound CSS applies automatically. There is no `btn-compound-1` or `btn-s-xs-square` class to remember.
 
 ## Why these rules
 

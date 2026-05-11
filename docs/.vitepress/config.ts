@@ -11,6 +11,10 @@ export default defineConfig({
   lastUpdated: true,
   base: process.env.DOCS_BASE ?? '/',
 
+  // Architecture decision records live alongside the docs source but aren't
+  // part of the published site — they're internal design history.
+  srcExclude: ['adr/**'],
+
   vite: {
     // @unocss/vite ships Vite 8 plugin types; VitePress 1.x ships Vite 5
     // plugin types. The two type chains don't unify in @types space even
@@ -42,6 +46,7 @@ export default defineConfig({
       { text: 'Quickstart', link: '/quickstart' },
       { text: 'API', link: '/api' },
       { text: 'Naming', link: '/naming' },
+      { text: 'Theming', link: '/theming' },
       { text: 'Recipes', link: '/recipes/button' },
       { text: 'Comparison', link: '/comparison' },
     ],
@@ -54,6 +59,7 @@ export default defineConfig({
             { text: 'Quickstart', link: '/quickstart' },
             { text: 'API reference', link: '/api' },
             { text: 'Naming convention', link: '/naming' },
+            { text: 'Theming', link: '/theming' },
             { text: 'Comparison', link: '/comparison' },
           ],
         },
@@ -66,6 +72,7 @@ export default defineConfig({
             { text: 'Spinner', link: '/recipes/spinner' },
             { text: 'Avatar', link: '/recipes/avatar' },
             { text: 'Dropdown', link: '/recipes/dropdown' },
+            { text: 'Modal', link: '/recipes/modal' },
           ],
         },
       ],

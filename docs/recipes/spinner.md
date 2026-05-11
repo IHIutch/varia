@@ -36,7 +36,7 @@ A CSS-only spinner is a circle with a transparent right border that rotates. Uno
   <span class="spinner spinner-s-lg spinner-c-primary"></span>
   <span class="spinner spinner-s-md spinner-c-muted"></span>
   <span class="spinner spinner-s-md spinner-c-danger"></span>
-  <button class="btn btn-c-primary btn-s-md" disabled>
+  <button class="btn btn-c-primary btn-style-solid btn-s-md" disabled>
     <span class="spinner spinner-s-sm" style="color: currentColor"></span>
     Saving…
   </button>
@@ -50,7 +50,7 @@ A CSS-only spinner is a circle with a transparent right border that rotates. Uno
   <span class="spinner spinner-s-md spinner-c-primary"></span>
 </div>
 
-<button class="btn btn-c-primary btn-s-md" disabled>
+<button class="btn btn-c-primary btn-style-solid btn-s-md" disabled>
   <span class="spinner spinner-s-sm spinner-c-muted"></span>
   Saving…
 </button>

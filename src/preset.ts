@@ -1,4 +1,4 @@
-import type { Preset } from 'unocss'
+import type { Preflight, Preset } from '@unocss/core'
 import type { DefinedComponent } from './internal/types.js'
 import { DEFAULT_MANIFEST_PATH, emitManifest } from './manifest.js'
 
@@ -13,6 +13,7 @@ export function presetVaria(options: PresetVariaOptions): Preset {
   const seenComponentNames = new Set<string>()
   const shortcutOwner = new Map<string, string>()
   const shortcuts: [string, string][] = []
+  const preflights: Preflight<object>[] = []
 
   for (const component of components) {
     if (seenComponentNames.has(component.name)) {
@@ -32,6 +33,12 @@ export function presetVaria(options: PresetVariaOptions): Preset {
       shortcutOwner.set(className, component.name)
       shortcuts.push([className, expansion])
     }
+
+    // Slot components contribute preflights for slot-keyed variants
+    // (descendant-selector CSS rules resolved at preset resolution time).
+    if (component.preflights) {
+      preflights.push(...component.preflights)
+    }
   }
 
   if (manifest !== false) {
@@ -42,5 +49,6 @@ export function presetVaria(options: PresetVariaOptions): Preset {
   return {
     name: 'varia',
     shortcuts,
+    preflights: preflights.length > 0 ? preflights : undefined,
   }
 }

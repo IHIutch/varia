@@ -1,0 +1,51 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`recipe: themed-button (two-tier semantic tokens) > emits the expected shortcut tuples 1`] = `
+[
+  [
+    "themed-btn",
+    "inline-flex items-center justify-center rounded-md font-medium border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[var(--varia-theme-focus-ring,theme(colors.gray.400))] disabled:opacity-50 disabled:cursor-not-allowed",
+  ],
+  [
+    "themed-btn-s-sm",
+    "px-2.5 py-1 text-sm",
+  ],
+  [
+    "themed-btn-s-md",
+    "px-4 py-2 text-base",
+  ],
+  [
+    "themed-btn-s-lg",
+    "px-6 py-3 text-lg",
+  ],
+  [
+    "themed-btn-shape-solid",
+    "bg-[var(--varia-theme-bg,theme(colors.gray.500))] text-[var(--varia-theme-contrast,theme(colors.white))] border-[var(--varia-theme-bg,theme(colors.gray.500))] hover:bg-[var(--varia-theme-bg-muted,theme(colors.gray.200))] hover:border-[var(--varia-theme-bg-muted,theme(colors.gray.200))]",
+  ],
+  [
+    "themed-btn-shape-outline",
+    "bg-transparent text-[var(--varia-theme-text,theme(colors.gray.700))] border-[var(--varia-theme-border,theme(colors.gray.300))] hover:bg-[var(--varia-theme-bg-subtle,theme(colors.gray.100))]",
+  ],
+  [
+    "themed-btn-shape-subtle",
+    "bg-[var(--varia-theme-bg-subtle,theme(colors.gray.100))] text-[var(--varia-theme-text,theme(colors.gray.700))] border-transparent hover:bg-[var(--varia-theme-bg-muted,theme(colors.gray.200))]",
+  ],
+  [
+    "themed-btn-shape-text",
+    "bg-transparent text-[var(--varia-theme-text,theme(colors.gray.700))] border-transparent hover:bg-[var(--varia-theme-bg-subtle,theme(colors.gray.100))]",
+  ],
+]
+`;
+
+exports[`recipe: themed-button (two-tier semantic tokens) > exposes every expected class name in the manifest 1`] = `
+[
+  "themed-btn",
+  "themed-btn-s-sm",
+  "themed-btn-s-md",
+  "themed-btn-s-lg",
+  "themed-btn-shape-solid",
+  "themed-btn-shape-outline",
+  "themed-btn-shape-subtle",
+  "themed-btn-shape-text",
+]
+`;

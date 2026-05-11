@@ -1,0 +1,38 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`recipe: Modal > shortcuts snapshot for visual review 1`] = `
+[
+  [
+    "modal",
+    "fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4",
+  ],
+  [
+    "modal__container",
+    "relative w-full rounded-lg bg-white shadow-xl ring-1 ring-gray-200 max-h-[90vh] overflow-hidden flex flex-col",
+  ],
+  [
+    "modal__header",
+    "flex items-start justify-between gap-4 p-4 border-b border-gray-200",
+  ],
+  [
+    "modal__title",
+    "text-lg font-semibold text-gray-900",
+  ],
+  [
+    "modal__description",
+    "mt-1 text-sm text-gray-600",
+  ],
+  [
+    "modal__body",
+    "p-4 overflow-y-auto flex-1",
+  ],
+  [
+    "modal__footer",
+    "flex items-center justify-end gap-2 p-4 border-t border-gray-200",
+  ],
+  [
+    "modal__close",
+    "absolute top-3 right-3 inline-flex items-center justify-center rounded-md p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500",
+  ],
+]
+`;

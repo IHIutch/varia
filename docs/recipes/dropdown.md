@@ -105,13 +105,14 @@ export default defineConfig({
 
 Seven classes, four components, zero slots.
 
-## Tradeoff with v2 slots
+## Sibling components vs. slots
 
-When `defineSlotComponent` lands (planned for v2), the same dropdown could be expressed as:
+The same dropdown could also be expressed with `defineSlotComponent`:
 
 ```ts
 defineSlotComponent('dropdown', {
   slots: {
+    root:    '...',
     trigger: '...',
     menu:    '...',
     item:    '...',
@@ -120,4 +121,14 @@ defineSlotComponent('dropdown', {
 })
 ```
 
-with class names like `dropdown__trigger`, `dropdown__menu`, etc. The result is functionally similar; the v1 multi-component approach trades a small amount of grouping ergonomics for a much smaller API surface.
+with class names like `dropdown__trigger`, `dropdown__menu`, etc. (See the [Modal recipe](/recipes/modal) for the slot-component shape.)
+
+Both forms are first-class. The choice between them is a judgment call:
+
+| Sibling components (this recipe) | Slot component |
+|---|---|
+| Each part has its own variant axes that compose independently. | The whole component has shared variant axes that can target specific slots. |
+| Parts are loosely coupled — `dropdown-trigger` and `dropdown-menu` don't need to be siblings in the DOM. | Parts are tightly coupled inside a single container, and slot-keyed variants need the descendant relationship to work. |
+| You don't need a wrapping element — the trigger and menu live anywhere. | A wrapping element (or at least a shared ancestor) carries the variant class. |
+
+The Dropdown stays as sibling components in `varia`'s recipes for the first reason: there's no single ancestor that "owns" both the trigger and the menu (an absolutely-positioned menu often portals out of the trigger's container), and per-part variants like `dropdown-menu-align-end` and `dropdown-item-danger` compose better when each part owns its own axes.

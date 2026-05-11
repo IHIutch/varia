@@ -1,6 +1,8 @@
 # Avatar
 
-The theming pattern. When you ship a component library, your colors should be overridable by the consumer without forking the config. The technique: write variant expansions with CSS custom properties and `theme()` fallbacks. Consumers re-theme by setting variables.
+The narrowest theming pattern: one component, one or two CSS variables, a `theme()` fallback so it works out of the box. Useful when you want consumers to be able to override a specific value without touching the rest of the component.
+
+For most components, the default [Button recipe](/recipes/button)'s pattern (color sets a fixed set of CSS variables, style consumes them) is a stronger starting point. For libraries that need wrapper-driven theming or automatic dark mode, see the [Theming deep-dive](/theming).
 
 ## Authoring
 

@@ -1,0 +1,10 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`recipe: themed-badge (two-tier semantic tokens) > emits a single base shortcut and no variant shortcuts 1`] = `
+[
+  [
+    "themed-badge",
+    "inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium border bg-[var(--varia-theme-bg-subtle,theme(colors.gray.100))] text-[var(--varia-theme-text,theme(colors.gray.700))] border-[var(--varia-theme-border,theme(colors.gray.300))]",
+  ],
+]
+`;
