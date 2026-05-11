@@ -10,6 +10,7 @@ import type {
 import { booleanTrueClassName, multiValueClassName } from './internal/naming.js'
 import { emitResolvedCSS, resolveUtilities } from './internal/resolve-utilities.js'
 import {
+  toClassString,
   validateAssembledClassName,
   validateComponentName,
   validateExpansion,
@@ -33,8 +34,8 @@ function emitVariant(
   push: Push,
   axisRegistry: Map<string, AxisKind>,
 ): void {
-  if (typeof variantDef === 'string') {
-    push(booleanTrueClassName(componentName, variantKey), variantDef, { variantKey })
+  if (typeof variantDef === 'string' || Array.isArray(variantDef)) {
+    push(booleanTrueClassName(componentName, variantKey), toClassString(variantDef), { variantKey })
     axisRegistry.set(variantKey, { kind: 'boolean' })
     return
   }
@@ -47,7 +48,7 @@ function emitVariant(
 
   const values = new Set<string>()
   for (const [valueKey, expansion] of Object.entries(variantDef)) {
-    push(multiValueClassName(componentName, variantKey, String(valueKey)), expansion, {
+    push(multiValueClassName(componentName, variantKey, String(valueKey)), toClassString(expansion), {
       variantKey,
       variantValue: String(valueKey),
     })
@@ -79,7 +80,7 @@ export function defineComponent(name: string, config: ComponentConfig): DefinedC
   }
 
   if (config.base !== undefined) {
-    push(name, config.base, {})
+    push(name, toClassString(config.base), {})
   }
 
   if (config.variants) {
@@ -127,7 +128,10 @@ function validateCompound(
     )
   }
 
-  if (typeof classes !== 'string' || classes.trim() === '') {
+  const classesIsValid
+    = (typeof classes === 'string' && classes.trim() !== '')
+      || (Array.isArray(classes) && toClassString(classes).trim() !== '')
+  if (!classesIsValid) {
     throw new Error(
       `Compound variant on component "${componentName}" with conditions ${JSON.stringify(
         when,
@@ -187,10 +191,11 @@ function compoundPreflight(
   compound: CompoundVariantRule,
 ): Preflight<object> {
   const selector = compoundSelector(componentName, compound.when)
+  const classes = toClassString(compound.class)
   return {
     getCSS: async (context) => {
       const uno = context.generator
-      const resolved = await resolveUtilities(compound.class, uno)
+      const resolved = await resolveUtilities(classes, uno)
       return emitResolvedCSS(selector, resolved)
     },
   }

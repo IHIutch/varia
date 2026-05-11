@@ -1,12 +1,19 @@
 import type { Preflight } from '@unocss/core'
 
 /**
+ * Anywhere a utility-class string is accepted, an array of strings is also
+ * accepted and joined with a single space. Lets authors break long class
+ * lists across lines without `.join(' ')` ceremony.
+ */
+export type ClassInput = string | string[]
+
+/**
  * A variant's value can be a single utility-class string (applied to the
  * default slot, or to the component itself for single-element components),
  * or — for slot components only — a record mapping slot names to utility
  * class strings.
  */
-export type VariantDefinition = string | Record<string, string>
+export type VariantDefinition = ClassInput | Record<string, ClassInput>
 
 /**
  * A compound variant's `when` clause: which variant axis values must be set
@@ -19,11 +26,11 @@ export interface CompoundVariantRule {
   /** Conditions: every key/value must be present on the same element. */
   when: CompoundVariantWhen
   /** Utility class string applied when the conditions match. */
-  class: string
+  class: ClassInput
 }
 
 export interface ComponentConfig {
-  base?: string
+  base?: ClassInput
   variants?: Record<string, VariantDefinition>
   /**
    * Cross-axis rules. Each compound emits a CSS rule with a combined-class
@@ -63,14 +70,14 @@ export interface DefinedComponent {
  * a utility class string that gets resolved and applied to that slot via
  * a descendant selector.
  */
-export type SlotKeyedValue = Record<string, string>
+export type SlotKeyedValue = Record<string, ClassInput>
 
 /**
  * For a multi-value variant on a slot component, each value can be either:
  * - a flat string (applied to the root slot only), or
  * - a slot-keyed object.
  */
-export type SlotVariantValue = string | SlotKeyedValue
+export type SlotVariantValue = ClassInput | SlotKeyedValue
 
 /**
  * A slot variant definition has four shapes:
@@ -88,7 +95,7 @@ export type SlotVariantValue = string | SlotKeyedValue
  * at validation time.
  */
 export type SlotVariantDefinition
-  = | string
+  = | ClassInput
     | Record<string, SlotVariantValue>
 
 export interface SlotComponentConfig {
@@ -98,6 +105,6 @@ export interface SlotComponentConfig {
    * bare component name (e.g., `card`); every other slot maps to BEM
    * `component__slot` (e.g., `card__title`).
    */
-  slots: Record<string, string>
+  slots: Record<string, ClassInput>
   variants?: Record<string, SlotVariantDefinition>
 }

@@ -276,3 +276,68 @@ describe('defineSlotComponent: end-to-end through real UnoCSS', () => {
     expect(css).toMatch(/\.interactive-card-hoverable:hover\s*\{[^}]*background-color/)
   })
 })
+
+describe('defineSlotComponent: array class inputs', () => {
+  it('joins slot class arrays with spaces', () => {
+    const asArray = defineSlotComponent('card', {
+      slots: {
+        root: ['rounded-lg', 'border', 'p-4'],
+        title: ['font-semibold', 'text-lg'],
+      },
+    })
+    const asString = defineSlotComponent('card', {
+      slots: {
+        root: 'rounded-lg border p-4',
+        title: 'font-semibold text-lg',
+      },
+    })
+
+    expect(asArray.shortcuts).toEqual(asString.shortcuts)
+  })
+
+  it('joins boolean-string variant arrays (applied to root)', () => {
+    const result = defineSlotComponent('card', {
+      slots: { root: 'rounded' },
+      variants: {
+        elevated: ['shadow-lg', 'hover:shadow-xl'],
+      },
+    })
+
+    expect(result.shortcuts).toContainEqual([
+      'card-elevated',
+      'shadow-lg hover:shadow-xl',
+    ])
+  })
+
+  it('joins multi-value string arrays (applied to root)', () => {
+    const result = defineSlotComponent('card', {
+      slots: { root: 'rounded' },
+      variants: {
+        size: {
+          sm: ['p-2', 'text-sm'],
+          lg: ['p-6', 'text-lg'],
+        },
+      },
+    })
+
+    expect(result.shortcuts).toContainEqual(['card-size-sm', 'p-2 text-sm'])
+    expect(result.shortcuts).toContainEqual(['card-size-lg', 'p-6 text-lg'])
+  })
+
+  it('joins arrays inside slot-keyed variant values', () => {
+    const result = defineSlotComponent('card', {
+      slots: { root: 'rounded', title: 'font-medium' },
+      variants: {
+        accent: {
+          root: ['bg-blue-50', 'border-blue-200'],
+          title: ['text-blue-900'],
+        },
+      },
+    })
+
+    // Slot-keyed boolean variant: class name is registered, CSS comes from a preflight.
+    expect(result.manifest.classNames).toContain('card-accent')
+    expect(result.preflights).toBeDefined()
+    expect(result.preflights!.length).toBeGreaterThan(0)
+  })
+})

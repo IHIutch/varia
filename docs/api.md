@@ -21,22 +21,24 @@ const button = defineComponent('btn', { /* config */ })
 
 ```ts
 interface ComponentConfig {
-  base?: string
+  base?: ClassInput
   variants?: Record<string, VariantDefinition>
   compoundVariants?: CompoundVariantRule[]
 }
 
-type VariantDefinition = string | Record<string, string>
+type ClassInput = string | string[]
+
+type VariantDefinition = ClassInput | Record<string, ClassInput>
 
 interface CompoundVariantRule {
   when: Record<string, string | true>
-  class: string
+  class: ClassInput
 }
 ```
 
 | Field | Type | Description |
 |---|---|---|
-| `base` | `string` (optional) | Utility classes applied whenever the bare component name is used. |
+| `base` | `ClassInput` (optional) | Utility classes applied whenever the bare component name is used. |
 | `variants` | `Record<string, VariantDefinition>` (optional) | The component's variant axes. Keys are the axis names (`c`, `s`, `outline`); values are the variant definitions. |
 | `compoundVariants` | `CompoundVariantRule[]` (optional) | Cross-axis rules. See [Compound variants](#compound-variants). |
 
@@ -44,7 +46,7 @@ At least one of `base` or `variants` must be present. Base-only is valid; see th
 
 ### Variant shapes
 
-`varia` supports two shapes inside a `VariantDefinition`. The shape is detected at runtime from `typeof`.
+`varia` supports two shapes inside a `VariantDefinition`. The shape is detected at config time. In either shape, the class-string value can be written as a `string` or as a `string[]` (joined with a space).
 
 #### Multi-value variant
 
@@ -62,7 +64,7 @@ pill: 'rounded-full'
 // Generates: badge-pill
 ```
 
-The detection rule: a variant is boolean iff its value is a string. The off state is the absence of the class. If you need explicit off-state styling (or three+ states from one axis), use a multi-value variant with named values like `state: { open: '...', closed: '...' }`.
+The detection rule: a variant is boolean iff its value is a string or a string array. The off state is the absence of the class. If you need explicit off-state styling (or three+ states from one axis), use a multi-value variant with named values like `state: { open: '...', closed: '...' }`.
 
 ### Compound variants
 
@@ -150,20 +152,22 @@ If a component has only one element, use `defineComponent`. If a component has t
 
 ```ts
 interface SlotComponentConfig {
-  slots: Record<string, string>
+  slots: Record<string, ClassInput>
   variants?: Record<string, SlotVariantDefinition>
 }
 
 type SlotVariantDefinition
-  = | string // boolean → applies to root
-    | Record<string, string> // multi-value (string per value, applied to root)
-    | Record<string, Record<string, string>> // multi-value with slot-keyed values
-    | Record<string, string> // boolean slot-keyed (keys must all be slot names)
+  = | ClassInput // boolean → applies to root
+    | Record<string, ClassInput> // multi-value (one value per name, applied to root)
+    | Record<string, Record<string, ClassInput>> // multi-value with slot-keyed values
+    | Record<string, ClassInput> // boolean slot-keyed (keys must all be slot names)
 ```
+
+As with single-element components, anywhere a class-string value appears (slot definitions, variant values, slot-keyed values) you can pass a `string[]` and it will be joined with a space.
 
 | Field | Type | Description |
 |---|---|---|
-| `slots` | `Record<string, string>` | Named parts. Each key is a slot name; the value is the utility class string for that slot. At least one slot is required. |
+| `slots` | `Record<string, ClassInput>` | Named parts. Each key is a slot name; the value is the utility class input for that slot. At least one slot is required. |
 | `variants` | `Record<string, SlotVariantDefinition>` (optional) | Variant axes. Each can apply to the root slot only (string-valued) or target specific slots (slot-keyed object). |
 
 ### Class-name shape

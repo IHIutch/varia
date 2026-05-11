@@ -1,5 +1,6 @@
 import type { Preflight } from '@unocss/core'
 import type {
+  ClassInput,
   DefinedComponent,
   Shortcut,
   SlotComponentConfig,
@@ -13,6 +14,7 @@ import {
 } from './internal/naming.js'
 import { emitResolvedCSS, resolveUtilities } from './internal/resolve-utilities.js'
 import {
+  toClassString,
   validateAssembledClassName,
   validateComponentName,
   validateExpansion,
@@ -46,8 +48,9 @@ export function defineSlotComponent(
       variantValue: slotName,
       allowBem: true,
     })
-    validateExpansion(classes, { className, component: name })
-    shortcuts.push([className, classes])
+    const expansion = toClassString(classes)
+    validateExpansion(expansion, { className, component: name })
+    shortcuts.push([className, expansion])
     classNames.push(className)
   }
 
@@ -92,7 +95,7 @@ function classifyVariant(
   variantDef: unknown,
   slotNames: Set<string>,
 ): 'boolean-string' | 'boolean-slot-keyed' | 'multi-value' | 'mixed' {
-  if (typeof variantDef === 'string')
+  if (typeof variantDef === 'string' || Array.isArray(variantDef))
     return 'boolean-string'
   if (typeof variantDef !== 'object' || variantDef === null) {
     return 'mixed' // surfaces as an error
@@ -131,11 +134,12 @@ function processVariant(args: {
   }
 
   if (kind === 'boolean-string') {
-    // Variant value is a string; applies to root slot only. Emit a shortcut.
+    // Variant value is a string or string[]; applies to root slot only. Emit a shortcut.
     const className = booleanTrueClassName(componentName, variantKey)
     validateAssembledClassName(className, { component: componentName, variantKey })
-    validateExpansion(variantDef as string, { className, component: componentName })
-    shortcuts.push([className, variantDef as string])
+    const expansion = toClassString(variantDef as ClassInput)
+    validateExpansion(expansion, { className, component: componentName })
+    shortcuts.push([className, expansion])
     classNames.push(className)
     return
   }
@@ -166,10 +170,11 @@ function processVariant(args: {
       variantValue: String(valueKey),
     })
 
-    if (typeof value === 'string') {
-      // String value — applies to root.
-      validateExpansion(value, { className, component: componentName })
-      shortcuts.push([className, value])
+    if (typeof value === 'string' || Array.isArray(value)) {
+      // String or string[] value — applies to root.
+      const expansion = toClassString(value)
+      validateExpansion(expansion, { className, component: componentName })
+      shortcuts.push([className, expansion])
       classNames.push(className)
     }
     else if (typeof value === 'object' && value !== null) {
@@ -219,7 +224,8 @@ function slotKeyedVariantPreflight(args: {
       const uno = context.generator
       const out: string[] = []
 
-      for (const [slotName, classes] of Object.entries(slotKeyedValue)) {
+      for (const [slotName, rawClasses] of Object.entries(slotKeyedValue)) {
+        const classes = toClassString(rawClasses)
         if (!classes || classes.trim() === '')
           continue
 

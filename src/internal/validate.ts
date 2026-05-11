@@ -1,3 +1,5 @@
+import type { ClassInput } from './types.js'
+
 const CLASS_NAME_RE = /^[a-z][a-z0-9-]*$/
 // Slot class names follow BEM: optional double-underscore segment for the slot
 // suffix (e.g., `card__title`). The component name and the slot name each
@@ -39,6 +41,10 @@ export function validateAssembledClassName(
   throw new Error(
     `Invalid class identifier "${className}"${where} — class names must match ${expected}.`,
   )
+}
+
+export function toClassString(input: ClassInput): string {
+  return Array.isArray(input) ? input.join(' ') : input
 }
 
 export function validateExpansion(

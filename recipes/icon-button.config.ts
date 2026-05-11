@@ -18,7 +18,7 @@ export default defineComponent('icon-btn', {
     'transition-colors',
     'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:ring-blue-500',
     'disabled:opacity-50 disabled:cursor-not-allowed',
-  ].join(' '),
+  ],
   variants: {
     // Size sets text/icon size AND padding for labeled buttons (wider
     // horizontal than vertical, which reads as a button shape).

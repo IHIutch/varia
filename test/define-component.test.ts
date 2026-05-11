@@ -152,3 +152,74 @@ describe('validation', () => {
     ).toThrow(/Variant "c" on component "btn" has no values/)
   })
 })
+
+describe('array class inputs', () => {
+  it('joins a base array with spaces, equivalent to the joined string', () => {
+    const asArray = defineComponent('btn', {
+      base: ['inline-block', 'font-medium', 'rounded'],
+    })
+    const asString = defineComponent('btn', {
+      base: 'inline-block font-medium rounded',
+    })
+
+    expect(asArray.shortcuts).toEqual(asString.shortcuts)
+  })
+
+  it('joins a boolean variant array', () => {
+    const result = defineComponent('btn', {
+      variants: {
+        outline: ['bg-transparent', 'border-2'],
+      },
+    })
+
+    expect(result.shortcuts).toEqual([['btn-outline', 'bg-transparent border-2']])
+  })
+
+  it('joins multi-value variant value arrays', () => {
+    const asArray = defineComponent('btn', {
+      variants: {
+        style: {
+          solid: [
+            'bg-[var(--btn-bg)] text-white border-[var(--btn-bg)]',
+            'hover:bg-[var(--btn-bg-hover)] hover:border-[var(--btn-bg-hover)]',
+          ],
+        },
+      },
+    })
+    const asString = defineComponent('btn', {
+      variants: {
+        style: {
+          solid:
+            'bg-[var(--btn-bg)] text-white border-[var(--btn-bg)] hover:bg-[var(--btn-bg-hover)] hover:border-[var(--btn-bg-hover)]',
+        },
+      },
+    })
+
+    expect(asArray.shortcuts).toEqual(asString.shortcuts)
+  })
+
+  it('treats an empty array as an empty expansion', () => {
+    expect(() => defineComponent('btn', { base: [] })).toThrow(
+      /Empty expansion for "btn"/,
+    )
+  })
+
+  it('joins compound-variant class arrays', () => {
+    const asArray = defineComponent('btn', {
+      base: 'inline-block',
+      variants: {
+        c: { primary: 'bg-blue-600', danger: 'bg-red-600' },
+        outline: 'border-2',
+      },
+      compoundVariants: [
+        {
+          when: { c: 'primary', outline: true },
+          class: ['border-blue-700', 'text-blue-700'],
+        },
+      ],
+    })
+
+    expect(asArray.preflights).toBeDefined()
+    expect(asArray.preflights).toHaveLength(1)
+  })
+})

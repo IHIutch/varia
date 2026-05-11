@@ -21,15 +21,15 @@ import { defineComponent } from 'varia'
 
 // Build the per-button CSS vars for one palette tone. The `style` variants
 // below consume these vars.
-//   colorVars('blue') → '[--btn-bg:theme(colors.blue.600)] [--btn-bg-hover:theme(colors.blue.700)] …'
-function colorVars(tone: string): string {
+//   colorVars('blue') → ['[--btn-bg:theme(colors.blue.600)]', '[--btn-bg-hover:theme(colors.blue.700)]', …]
+function colorVars(tone: string): string[] {
   return [
     '[--btn-bg:theme(colors.' + tone + '.600)]',
     '[--btn-bg-hover:theme(colors.' + tone + '.700)]',
     '[--btn-text:theme(colors.' + tone + '.700)]',
     '[--btn-border:theme(colors.' + tone + '.300)]',
     '[--btn-bg-subtle:theme(colors.' + tone + '.50)]',
-  ].join(' ')
+  ]
 }
 
 export default defineComponent('btn', {
