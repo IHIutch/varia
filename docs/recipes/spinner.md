@@ -1,6 +1,6 @@
 # Spinner
 
-The animation regression. Anything that depends on `@keyframes` is at risk in a build pipeline that doesn't understand them. This recipe verifies that UnoCSS's `animate-spin` (and the keyframes it requires) survives the shortcut layer untouched.
+A spinner using UnoCSS's `animate-spin` utility. Mostly here as a regression test — anything that depends on `@keyframes` is fragile in a build pipeline — but you can use it as a spinner.
 
 ## Authoring
 

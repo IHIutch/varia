@@ -1,6 +1,6 @@
 # Modal
 
-The first recipe built with `defineSlotComponent`. A modal is a multi-element widget where the parts are tightly coupled — a backdrop wrapping a container, with header / body / footer parts that only make sense inside the container. Expressing it as sibling `defineComponent` calls (the way Dropdown does) would force consumers to remember and combine four or five separate prefixed classes; expressing it as slots gives them a single namespace.
+A modal with backdrop, container, header, body, and footer, built with `defineSlotComponent`. The parts are tightly coupled inside a single container, so slots give them a shared namespace instead of forcing consumers to remember five separate prefixed classes (the way Dropdown's siblings do).
 
 ## Authoring
 

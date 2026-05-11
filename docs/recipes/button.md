@@ -1,6 +1,6 @@
 # Button
 
-The flagship recipe. A button is the right shape to demonstrate the library's strongest pattern: three orthogonal axes (color, style, size), per-component CSS variables driven by the project's UnoCSS palette, and no per-(color×style) cell explosion.
+A button with three independent variant axes: color, style, and size. Each color sets per-component CSS variables from the UnoCSS palette; each style consumes them. Adding a seventh color costs one map entry; styles and sizes stay untouched.
 
 ## Authoring
 
@@ -119,7 +119,7 @@ Thirteen classes. Consumers pay for what they reference.
 
 ## Customizing
 
-The recipe is a starting point. Three common customizations:
+Want a different palette, or an extra color? Three common edits:
 
 - **Remap a color to a different palette tone.** Edit `TONES`: `primary: 'green'` instead of `'blue'`. The button now uses `theme(colors.green.600)` etc.
 - **Add a new color.** Add `accent: 'purple'` to `TONES` and `accent` to `COLORS`. The button now accepts `btn-c-accent`.
@@ -171,7 +171,7 @@ The two patterns also **compose**: a button could have `c × style` handled by p
 
 ## See also
 
-- [Icon button recipe](/recipes/icon-button): the canonical compound-variants example.
+- [Icon button recipe](/recipes/icon-button): compound variants in their natural habitat.
 - [Form input recipe](/recipes/form-input): same orthogonal-axes pattern with state being the leading axis.
 - [Theming deep-dive](/theming): when you need cross-component reskinning, semantic tokens, or automatic dark mode.
 - [Naming convention](/naming): the formal rules for assembled class names.

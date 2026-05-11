@@ -1,6 +1,6 @@
 # Type safety
 
-A worked example of the `VariaClasses` union from `varia/types`. The manifest exists so type-aware tooling can refuse unknown class strings before they reach the browser.
+Use the `VariaClasses` union to type-check class names at build time. The manifest exists so tooling can refuse unknown strings before they reach the browser.
 
 ## Authoring
 

@@ -1,6 +1,6 @@
 # Dropdown
 
-A multi-element widget expressed as a family of sibling components. `varia` also supports slots ([`defineSlotComponent`](/api#defineslotcomponent-name-config), used in the [Modal recipe](/recipes/modal)); this recipe chooses siblings instead.
+A multi-element widget built as a family of sibling components. `varia` also supports slots ([`defineSlotComponent`](/api#defineslotcomponent-name-config), used in the [Modal recipe](/recipes/modal)); this recipe chooses siblings instead.
 
 ```ts
 // sibling: each part is its own component

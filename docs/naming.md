@@ -1,6 +1,6 @@
 # Naming convention
 
-Class names in `varia` are assembled by concatenating the component name, variant key, and (for multi-value variants) the variant value with single dashes. The format is fixed by design. Predictable names are easier to grep, override, and document.
+`varia` assembles each class name by concatenating the component name, variant key, and (for multi-value variants) the variant value with single dashes. The format is fixed by design. Predictable names are easier to grep, override, and document.
 
 ## The shape
 
@@ -52,7 +52,7 @@ modal__container   ← non-root slot (double underscore)
 modal-size-md      ← variant (single dashes)
 ```
 
-The two never collide. Slot classes always have `__` in them; variant classes never do. This is enforced by validation — a slot name can't contain underscores, and a variant axis or value can't either, so the `__` only ever appears as the slot separator. A reader (or a regex) can tell which kind of class they're looking at without context.
+The two never collide. Slot classes always have `__` in them; variant classes never do. Validation enforces this: a slot name can't contain underscores, and a variant axis or value can't either, so the `__` only ever appears as the slot separator. A reader (or a regex) can tell which kind of class they're looking at without context.
 
 ## Compound variants emit no class
 

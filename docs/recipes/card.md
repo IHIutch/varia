@@ -1,6 +1,6 @@
 # Card
 
-The minimum viable component. A `Card` is a base-styled container with no variants. The point of this recipe is showing that the API doesn't fight you when you have nothing to vary.
+A base-styled container with no variants. Components with nothing to vary are still valid; `base` alone is a complete config.
 
 ## Authoring
 

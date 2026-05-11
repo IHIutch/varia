@@ -1,6 +1,6 @@
 # Icon button
 
-The canonical compound-variants recipe. An icon button has two axes that interact: **size** (xs/sm/md/lg) and **square** (icon-only). A labeled button wants asymmetric padding (wider than tall) so the text has room. An icon-only button wants equal padding all round, or the icon sits in a lopsided rectangle. The right padding depends on *both* the size and whether there's a label; neither axis can decide it alone. That's what `compoundVariants` expresses.
+An icon button with two interacting axes: **size** (xs/sm/md/lg) and **square** (icon-only). A labeled button wants asymmetric padding (wider than tall) so the text has room; an icon-only button wants equal padding all round, or the icon sits in a lopsided rectangle. The right padding depends on *both* axes, so neither can decide it alone. `compoundVariants` expresses that cross-axis dependency.
 
 ## Authoring
 

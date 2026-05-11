@@ -1,8 +1,8 @@
 # Avatar
 
-The narrowest theming pattern: one component, one or two CSS variables, a `theme()` fallback so it works out of the box. Useful when you want consumers to be able to override a specific value without touching the rest of the component.
+A single component with one or two CSS variables and a `theme()` fallback. Use this shape when consumers should be able to override a specific value without touching anything else.
 
-For most components, the default [Button recipe](/recipes/button)'s pattern (color sets a fixed set of CSS variables, style consumes them) is a stronger starting point. For libraries that need wrapper-driven theming or automatic dark mode, see the [Theming deep-dive](/theming).
+For most components, the [Button recipe](/recipes/button)'s pattern (color sets a fixed set of CSS variables, style consumes them) is a stronger starting point. For libraries that need wrapper-driven theming or automatic dark mode, see the [Theming deep-dive](/theming).
 
 ## Authoring
 

@@ -13,7 +13,7 @@ pnpm add -D varia unocss
 
 ## 2. Define a component
 
-Variant values are utility class strings. Prefixes like `hover:` and `md:` pass through to UnoCSS.
+Pass your component config to `defineComponent`. Variant values are utility class strings; prefixes like `hover:` and `md:` pass through to UnoCSS.
 
 ```ts
 // styles/button.config.ts
@@ -118,6 +118,6 @@ The `varia/types` subpath may not resolve under pnpm's default layout. See [Trou
 - [Concepts](/concepts): 5-minute orientation if any of "build-time variants", "shortcuts", "JIT", or "manifest" felt unfamiliar.
 - [API reference](/api): every option for `defineComponent`, `defineSlotComponent`, `compoundVariants`, and `presetVaria`.
 - [Naming convention](/naming): formal rules for variant classes (`btn-c-primary`) and slot classes (`modal__container`).
-- [Recipes](/recipes/button): worked examples covering state handling, theming, multi-element components, and slot-keyed variants (the [Modal recipe](/recipes/modal) is the canonical slot example).
+- [Recipes](/recipes/button): worked examples covering state handling, theming, multi-element components, and slot-keyed variants (the [Modal recipe](/recipes/modal) is the slot-keyed example).
 - [Comparison](/comparison): when would you pick `varia` over CVA, tailwind-variants, vanilla-extract, or Panda CSS?
 - [Troubleshooting](/troubleshooting): known gotchas (pnpm layout, identifier conflicts).

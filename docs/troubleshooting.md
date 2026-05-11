@@ -4,9 +4,7 @@ Known gotchas and helpers not yet shipped.
 
 ## pnpm: `varia/types` subpath {#pnpm-types-subpath}
 
-Under pnpm's default symlinked layout, `import type { VariaClasses } from 'varia/types'` may fail to resolve. The stub uses a relative path that climbs through the real (non-symlinked) directory tree.
-
-Pick one:
+If `import type { VariaClasses } from 'varia/types'` fails to resolve under pnpm, pick one of the workarounds below. The stub uses a relative path that climbs through pnpm's real (non-symlinked) directory tree.
 
 ```jsonc
 // tsconfig.json

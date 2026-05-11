@@ -1,6 +1,6 @@
 # Form input
 
-The pseudo-class stress test. Form inputs live and die by their `:focus`, `:disabled`, `:invalid`, `:placeholder`, and `:read-only` styling. This recipe puts all of them inside variant expansions and verifies they pass straight through to UnoCSS.
+A form input with `:focus`, `:disabled`, `:invalid`, `:placeholder`, and `:read-only` styling embedded inside variant expansions. Use this pattern when state pseudo-classes are part of the component's vocabulary.
 
 ## Authoring
 
