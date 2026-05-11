@@ -8,11 +8,35 @@ The flagship recipe. A button is the right shape to demonstrate the library's st
 // recipes/button.config.ts
 import { defineComponent } from 'varia'
 
-// Each color sets seven per-component CSS variables from the project's
-// UnoCSS palette. `primary` uses blue; the other colors follow the same
-// shape with different palette tones (emerald, red, amber, sky, gray).
-// theme() resolves at build time, so changing the palette in your
-// UnoCSS config swaps every button's colors automatically.
+const COLORS = ['primary', 'success', 'danger', 'warning', 'info', 'neutral'] as const
+type Color = (typeof COLORS)[number]
+
+// Map each semantic color to a UnoCSS palette tone. Forking this map is
+// how a consumer remaps `primary` to a different hue.
+const TONES: Record<Color, string> = {
+  primary: 'blue',
+  success: 'emerald',
+  danger: 'red',
+  warning: 'amber',
+  info: 'sky',
+  neutral: 'gray',
+}
+
+// Each color sets seven per-component CSS variables from the palette.
+// theme() resolves at build time, so swapping TONES (or the UnoCSS theme
+// itself) updates every button automatically.
+//   colorVars('blue') → '[--btn-bg:theme(colors.blue.600)] [--btn-bg-hover:theme(colors.blue.700)] …'
+function colorVars(tone: string): string {
+  return [
+    '[--btn-bg:theme(colors.' + tone + '.600)]',
+    '[--btn-bg-hover:theme(colors.' + tone + '.700)]',
+    '[--btn-text:theme(colors.' + tone + '.700)]',
+    '[--btn-border:theme(colors.' + tone + '.300)]',
+    '[--btn-bg-subtle:theme(colors.' + tone + '.50)]',
+    '[--btn-bg-muted:theme(colors.' + tone + '.100)]',
+    '[--btn-focus-ring:theme(colors.' + tone + '.500)]',
+  ].join(' ')
+}
 
 export default defineComponent('btn', {
   base: [
@@ -23,13 +47,7 @@ export default defineComponent('btn', {
     'disabled:opacity-50 disabled:cursor-not-allowed',
   ].join(' '),
   variants: {
-    c: {
-      primary: '[--btn-bg:theme(colors.blue.600)] [--btn-bg-hover:theme(colors.blue.700)] [--btn-text:theme(colors.blue.700)] [--btn-border:theme(colors.blue.300)] [--btn-bg-subtle:theme(colors.blue.50)] [--btn-bg-muted:theme(colors.blue.100)] [--btn-focus-ring:theme(colors.blue.500)]',
-      // success, danger, warning, info, neutral all follow the same shape
-      // with their own palette tones. See recipes/button.config.ts in the
-      // varia repo for the full implementation (uses a small helper to DRY
-      // these up).
-    },
+    c: Object.fromEntries(COLORS.map(c => [c, colorVars(TONES[c])])) as Record<Color, string>,
     style: {
       solid: 'bg-[var(--btn-bg)] text-white border-[var(--btn-bg)] hover:bg-[var(--btn-bg-hover)] hover:border-[var(--btn-bg-hover)]',
       outline: 'bg-transparent text-[var(--btn-text)] border-[var(--btn-border)] hover:bg-[var(--btn-bg-subtle)]',
@@ -111,9 +129,9 @@ For wrapper-driven theming (one class on an ancestor reskins every component in 
 
 ## Alternative pattern: compound variants
 
-The recipe above handles the color × style matrix through per-component CSS variables — `color` sets vars from the palette, `style` consumes them. That keeps the variant count at `6 + 4 = 10` instead of `6 × 4 = 24`. It works because color and style are **independent**: a color knows nothing about a style, a style knows nothing about a color, they only meet at runtime via the variable indirection.
+The recipe above handles the color × style matrix through per-component CSS variables: `color` sets vars from the palette, and `style` consumes them. That keeps the variant count at `6 + 4 = 10` instead of `6 × 4 = 24`. It works because color and style are **independent**. A color knows nothing about a style, a style knows nothing about a color; they only meet at runtime via the variable indirection.
 
-The other legitimate way to express the same matrix is **compound variants** — declaring each of the 24 color × style combinations explicitly:
+The other legitimate way to express the same matrix is **compound variants**, declaring each of the 24 color × style combinations explicitly:
 
 ```ts
 defineComponent('btn', {
@@ -136,18 +154,18 @@ defineComponent('btn', {
 
 **Use per-component CSS variables (this recipe) when:**
 
-- The axes are independent — a color cell looks like a color cell regardless of which style is chosen.
+- The axes are independent: a color cell looks like a color cell regardless of which style is chosen.
 - The cells differ only in **values**, not in **CSS properties**. (Every cell sets `background-color` and `color`; the values differ.)
 - You want the matrix to scale linearly. Adding a 7th color costs one new variant, not four.
 - You want consumers to be able to swap the palette in one place (the `TONES` map or the UnoCSS theme) and have every cell update automatically.
 
 **Use compound variants when:**
 
-- The cells genuinely differ in which CSS properties they set — for example, `square × size` where the compound applies `padding` (different property) while the rest applies `padding-inline` + `padding-block`. CSS variables can't switch which property an expansion writes to.
-- The matrix is small and fixed — three or four axes with two or three values each, not "every palette color." Compound count is the product; 6×4 is 24 rules.
+- The cells genuinely differ in which CSS properties they set. For example, `square × size`: the compound applies `padding` (one property), while the rest applies `padding-inline` + `padding-block`. CSS variables can't switch which property an expansion writes to.
+- The matrix is small and fixed: three or four axes with two or three values each, not "every palette color." Compound count is the product; 6×4 is 24 rules.
 - One axis is a feature flag (`square`, `loading`, `dismissible`) that meaningfully changes layout when combined with another axis, rather than just changing values.
 
-For the Button specifically, the per-variable pattern is the better fit because all 24 cells set the same properties with different values, and the palette is exactly where you want changes to land. The [Icon button recipe](/recipes/icon-button) shows compound variants in their natural habitat — `square × size` where each cell needs a fundamentally different `padding` value that can't be parameterized.
+For the Button specifically, the per-variable pattern is the better fit because all 24 cells set the same properties with different values, and the palette is exactly where you want changes to land. The [Icon button recipe](/recipes/icon-button) shows compound variants in their natural habitat: `square × size`, where each cell needs a fundamentally different `padding` value that can't be parameterized.
 
 The two patterns also **compose**: a button could have `c × style` handled by per-variable indirection AND a `loading × size` compound rule on top, if both kinds of axes appeared on the same component.
 

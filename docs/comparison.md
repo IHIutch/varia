@@ -1,9 +1,5 @@
 # Comparison
 
-::: tip Draft
-This page is a first draft. The positioning vs. Panda CSS in particular is a judgment call. Pull requests welcome if anything reads as unfair to a peer project.
-:::
-
 `varia` lives in a small but real gap between Tailwind/UnoCSS utilities and traditional CSS components. The closest peers each occupy a slightly different point in the design space; the most useful question is "when would you pick this?"
 
 ## At a glance
@@ -30,13 +26,29 @@ This page is a first draft. The positioning vs. Panda CSS in particular is a jud
 
 ### CVA (`class-variance-authority`)
 
-Pick CVA if:
-- You're shipping a React/Vue/Svelte component library and want a callable API: `cva(...)` returns a function consumers call from JSX.
-- You need default variants at the call site (CVA computes them at runtime).
-- You don't mind the small runtime cost.
-- You don't care about consumption from non-JS template languages.
+The fundamental difference, side by side:
 
-CVA is the API-shape ancestor of `varia`; the config feels almost identical. The fundamental difference: CVA returns a function, `varia` returns class names you write in HTML.
+```jsx
+// CVA: callable from JSX, runtime concatenation
+const button = cva('inline-flex', {
+  variants: { color: { primary: 'bg-blue-600' } },
+})
+
+<button className={button({ color: 'primary' })}>Save</button>
+```
+
+```erb
+<%# varia: class names, written anywhere %>
+<button class="btn btn-c-primary">Save</button>
+```
+
+Pick CVA if:
+- You're shipping a React/Vue/Svelte component library and want the callable.
+- You need default variants computed at the call site (CVA does this at runtime).
+- You don't mind the small runtime cost.
+- You don't need consumption from non-JS template languages.
+
+CVA is the API-shape ancestor of `varia`; the config feels almost identical.
 
 ### tailwind-variants
 

@@ -1,6 +1,19 @@
 # Dropdown
 
-The multi-element example. `varia` v1 deliberately ships without slots. A multi-element widget like a dropdown is composed of multiple sibling `defineComponent` calls. This recipe exists to test whether that constraint is acceptable in practice.
+A multi-element widget expressed as a family of sibling components. `varia` also supports slots ([`defineSlotComponent`](/api#defineslotcomponent-name-config), used in the [Modal recipe](/recipes/modal)); this recipe chooses siblings instead.
+
+```ts
+// sibling: each part is its own component
+defineComponent('dropdown-trigger', { ... })
+defineComponent('dropdown-menu',    { ... })
+```
+
+```ts
+// slot: one component with named parts
+defineSlotComponent('dropdown', { slots: { trigger, menu } })
+```
+
+The dropdown's parts portal apart in the DOM (an absolutely-positioned menu often escapes its trigger's container), so there's no single ancestor that owns both. Siblings fit that shape; the "vs. slots" section at the bottom of this page walks through the trade-off in detail.
 
 ## Authoring
 

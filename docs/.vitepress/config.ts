@@ -45,6 +45,7 @@ export default defineConfig({
   themeConfig: {
     nav: [
       { text: 'Quickstart', link: '/quickstart' },
+      { text: 'Concepts', link: '/concepts' },
       { text: 'API', link: '/api' },
       { text: 'Naming', link: '/naming' },
       { text: 'Theming', link: '/theming' },
@@ -58,10 +59,12 @@ export default defineConfig({
           text: 'Getting started',
           items: [
             { text: 'Quickstart', link: '/quickstart' },
+            { text: 'Concepts', link: '/concepts' },
             { text: 'API reference', link: '/api' },
             { text: 'Naming convention', link: '/naming' },
             { text: 'Theming', link: '/theming' },
             { text: 'Comparison', link: '/comparison' },
+            { text: 'Troubleshooting', link: '/troubleshooting' },
           ],
         },
         {
@@ -75,6 +78,7 @@ export default defineConfig({
             { text: 'Dropdown', link: '/recipes/dropdown' },
             { text: 'Modal', link: '/recipes/modal' },
             { text: 'Icon button', link: '/recipes/icon-button' },
+            { text: 'Type safety', link: '/recipes/type-safety' },
           ],
         },
       ],

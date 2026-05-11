@@ -1,14 +1,6 @@
 # Icon button
 
-The canonical compound-variants recipe. An icon button has two axes that interact: **size** (xs/sm/md/lg) and **square** (icon-only). Each axis means something on its own, but the combination needs a different value than either provides — that's the cross-axis dependency `compoundVariants` is built to express.
-
-## The problem compound variants solve
-
-A button with a label wants asymmetric padding — wider horizontally than vertically — so the text has breathing room and the shape reads as a button. `s-md` gives you `px-3.5 py-2`.
-
-A button with *only* an icon wants equal padding all around — otherwise the icon sits in a rectangle that's twice as wide as it is tall and looks lopsided.
-
-The size and the square-ness can't be derived from each other. `square` alone can't know what padding to apply (it depends on the size). `s-md` alone can't know whether the consumer is rendering an icon or a label (it depends on the use). Both axes have to be set together to pick the right padding. That's a compound rule.
+The canonical compound-variants recipe. An icon button has two axes that interact: **size** (xs/sm/md/lg) and **square** (icon-only). A labeled button wants asymmetric padding (wider than tall) so the text has room. An icon-only button wants equal padding all round, or the icon sits in a lopsided rectangle. The right padding depends on *both* the size and whether there's a label; neither axis can decide it alone. That's what `compoundVariants` expresses.
 
 ## Authoring
 

@@ -32,10 +32,10 @@ export default defineSlotComponent('modal', {
 })
 ```
 
-Two things worth pointing out:
+Two notes on the config:
 
-1. The `root` slot maps to the bare component class (`modal`); every other slot maps to `modal__slotName` using BEM. The double underscore makes slot classes visually distinct from variant classes (which use single dashes).
-2. The `size` variant uses the **slot-keyed** shape — each size value targets the `container` slot only. This means `modal-size-md` doesn't change the backdrop or header; it only sets the max-width of the inner box. Slot-keyed variants emit as descendant-selector CSS rules (`.modal-size-md .modal__container { max-width: ... }`) so they apply through the markup tree without consumers having to remember to add a class to the container element.
+1. The `root` slot maps to the bare component class (`modal`); every other slot maps to `modal__slotName` using BEM. The double underscore separates slot classes from variant classes, which use single dashes.
+2. The `size` variant is **slot-keyed**: each size value targets the `container` slot. `modal-size-md` doesn't change the backdrop or header; it only sets the inner box's max-width. Slot-keyed variants emit as descendant-selector CSS rules (`.modal-size-md .modal__container { max-width: ... }`), so they apply through the tree without consumers adding a class to the container element.
 
 ## Live preview
 
@@ -207,11 +207,8 @@ The variant class lives on the root, but the styling lands on the container via 
 
 ## What's being demonstrated
 
-- **Slots replace prefix-grouped sibling components.** One `defineSlotComponent('modal', ...)` call replaces what would otherwise be five or six `defineComponent` calls (`modal-backdrop`, `modal-container`, `modal-header`, …).
-- **BEM class names.** The root slot is bare (`modal`); other slots get the double-underscore suffix (`modal__container`, `modal__header`). This format is `varia`-specific — variant classes use single dashes (`modal-size-md`), slot classes use double underscores, so the two never collide.
-- **Slot-keyed variants apply through the tree.** Writing `<div class="modal modal-size-md">` automatically scopes a max-width onto the descendant `.modal__container`. The consumer doesn't have to add `modal__container-md` or pass a size class to the container directly.
-- **No defaults.** Per ADR-0003, `varia` doesn't apply default variants. The container has no max-width unless a size class is present. Consumers always write the variant explicitly — `<div class="modal modal-size-md">`, never just `<div class="modal">` if they want a sized container.
-- **Behavior is the consumer's problem.** `varia` doesn't ship open/close logic, focus trapping, or scroll locking. Pair these classes with your framework's dialog primitive (the native `<dialog>` element, Radix Dialog, Headless UI, etc).
+- **No defaults.** Per ADR-0003, `varia` doesn't apply default variants. The container has no max-width unless a size class is present. Consumers always write the variant explicitly: `<div class="modal modal-size-md">`, never just `<div class="modal">` if they want a sized container.
+- **Behavior is the consumer's problem.** `varia` doesn't ship open/close logic, focus trapping, or scroll locking. Pair these classes with your framework's dialog primitive (native `<dialog>`, Radix Dialog, Headless UI).
 
 ## Generated class names
 

@@ -40,7 +40,7 @@ interface CompoundVariantRule {
 | `variants` | `Record<string, VariantDefinition>` (optional) | The component's variant axes. Keys are the axis names (`c`, `s`, `outline`); values are the variant definitions. |
 | `compoundVariants` | `CompoundVariantRule[]` (optional) | Cross-axis rules. See [Compound variants](#compound-variants). |
 
-At least one of `base` or `variants` must be present. A component with neither would emit nothing useful.
+At least one of `base` or `variants` must be present. Base-only is valid; see the [Card recipe](/recipes/card) for the minimum shape.
 
 ### Variant shapes
 
@@ -82,7 +82,7 @@ defineComponent('btn', {
 })
 ```
 
-Authors write `<button class="btn btn-s-xs btn-square">` — both variant classes side by side — and the compound rule's CSS applies automatically via the selector `.btn-s-xs.btn-square`.
+Authors write `<button class="btn btn-s-xs btn-square">`, with both variant classes side by side, and the compound rule's CSS applies automatically via the selector `.btn-s-xs.btn-square`.
 
 | `when` value | Meaning |
 |---|---|
@@ -98,7 +98,7 @@ Compound variants are validated against the declared axis registry:
 | `when` sets a boolean axis to a non-`true` value | `Compound variant on component "btn" sets "square" to "false", but "square" is a boolean variant — its value in a compound must be \`true\`.` |
 | Empty `when: {}` or empty `class: ''` | `Compound variant on component "btn" has an empty "when" clause` / `…has an empty "class"` |
 
-Compound rules emit as UnoCSS preflights, which means they're unconditional — the CSS for every declared compound is present in the output regardless of whether the consumer's markup happens to reference that particular combination. This is intentional: it bypasses tree-shaking concerns for cross-axis rules, where the "is this rule used" question can't be answered by scanning for a single class name.
+Compound rules emit as UnoCSS preflights, which means they're unconditional: the CSS for every declared compound is present in the output regardless of whether the consumer's markup happens to reference that particular combination. This is intentional. It bypasses tree-shaking concerns for cross-axis rules, where the "is this rule used" question can't be answered by scanning for a single class name.
 
 ### Return value
 
@@ -135,7 +135,7 @@ import { defineSlotComponent } from 'varia'
 const modal = defineSlotComponent('modal', { /* config */ })
 ```
 
-For multi-element components — a modal with backdrop / container / header / body / footer, a card with header / title / body, a dropdown menu where the parts share a namespace. Each named part is a **slot**, and variants can target slots independently.
+For multi-element components: a modal with backdrop / container / header / body / footer, a card with header / title / body, a dropdown menu where the parts share a namespace. Each named part is a **slot**, and variants can target slots independently.
 
 If a component has only one element, use `defineComponent`. If a component has tightly coupled parts that share a namespace, reach for `defineSlotComponent`.
 
@@ -233,7 +233,7 @@ Each value can independently be a string (apply to root) or a slot-keyed object 
 
 ### How slot-keyed variants emit
 
-Slot-keyed variants emit as UnoCSS preflights — CSS rules with descendant selectors like `.modal-size-md .modal__container { … }`. Because preflights aren't subject to UnoCSS's content scan, slot-keyed CSS survives even when the consumer's markup only references the variant class on the root and not the slot class on the descendant. This is the same tree-shaking-bypass mechanism that compound variants use.
+Slot-keyed variants emit as UnoCSS preflights: CSS rules with descendant selectors like `.modal-size-md .modal__container { … }`. Because preflights aren't subject to UnoCSS's content scan, slot-keyed CSS survives even when the consumer's markup only references the variant class on the root and not the slot class on the descendant. This is the same tree-shaking-bypass mechanism that compound variants use.
 
 The `root` slot is a special case: its variant rule uses a chained-class selector (`.card-accent` directly, not `.card-accent .card`) because the root class lives on the same element as the variant class.
 
@@ -317,9 +317,4 @@ The `varia/types` subpath is for explicit-import use cases: typed `cn()` helpers
 
 ### pnpm caveat
 
-Under pnpm's default symlinked layout, `varia/types` may fail to resolve because the relative path inside the stub climbs through the real (non-symlinked) directory tree. Workarounds:
-
-- Set `compilerOptions.preserveSymlinks: true` in your `tsconfig.json`.
-- Or set `node-linker=hoisted` in your `.npmrc`.
-
-Tracked as a v1.1 follow-up.
+Under pnpm's default symlinked layout, `varia/types` may fail to resolve without a small bit of configuration. See [Troubleshooting → pnpm: `varia/types` subpath](/troubleshooting#pnpm-types-subpath).
