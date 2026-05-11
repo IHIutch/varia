@@ -109,8 +109,51 @@ The recipe is a starting point. Three common customizations:
 
 For wrapper-driven theming (one class on an ancestor reskins every component in the subtree, dark mode flips automatically) see the [Theming deep-dive](/theming).
 
+## Alternative pattern: compound variants
+
+The recipe above handles the color × style matrix through per-component CSS variables — `color` sets vars from the palette, `style` consumes them. That keeps the variant count at `6 + 4 = 10` instead of `6 × 4 = 24`. It works because color and style are **independent**: a color knows nothing about a style, a style knows nothing about a color, they only meet at runtime via the variable indirection.
+
+The other legitimate way to express the same matrix is **compound variants** — declaring each of the 24 color × style combinations explicitly:
+
+```ts
+defineComponent('btn', {
+  base: '…',
+  variants: {
+    c: { primary: '', danger: '', /* ... */ },        // boolean markers, no styles
+    style: { solid: '', outline: '', /* ... */ },
+    s: { sm: 'px-2.5 py-1 text-sm', /* ... */ },
+  },
+  compoundVariants: [
+    { when: { c: 'primary', style: 'solid' },   class: 'bg-blue-600 text-white border-blue-600 hover:bg-blue-700' },
+    { when: { c: 'primary', style: 'outline' }, class: 'bg-transparent text-blue-700 border-blue-300 hover:bg-blue-50' },
+    { when: { c: 'danger',  style: 'solid' },   class: 'bg-red-600 text-white border-red-600 hover:bg-red-700' },
+    // ... 21 more rules ...
+  ],
+})
+```
+
+### When each pattern is right
+
+**Use per-component CSS variables (this recipe) when:**
+
+- The axes are independent — a color cell looks like a color cell regardless of which style is chosen.
+- The cells differ only in **values**, not in **CSS properties**. (Every cell sets `background-color` and `color`; the values differ.)
+- You want the matrix to scale linearly. Adding a 7th color costs one new variant, not four.
+- You want consumers to be able to swap the palette in one place (the `TONES` map or the UnoCSS theme) and have every cell update automatically.
+
+**Use compound variants when:**
+
+- The cells genuinely differ in which CSS properties they set — for example, `square × size` where the compound applies `padding` (different property) while the rest applies `padding-inline` + `padding-block`. CSS variables can't switch which property an expansion writes to.
+- The matrix is small and fixed — three or four axes with two or three values each, not "every palette color." Compound count is the product; 6×4 is 24 rules.
+- One axis is a feature flag (`square`, `loading`, `dismissible`) that meaningfully changes layout when combined with another axis, rather than just changing values.
+
+For the Button specifically, the per-variable pattern is the better fit because all 24 cells set the same properties with different values, and the palette is exactly where you want changes to land. The [Icon button recipe](/recipes/icon-button) shows compound variants in their natural habitat — `square × size` where each cell needs a fundamentally different `padding` value that can't be parameterized.
+
+The two patterns also **compose**: a button could have `c × style` handled by per-variable indirection AND a `loading × size` compound rule on top, if both kinds of axes appeared on the same component.
+
 ## See also
 
+- [Icon button recipe](/recipes/icon-button): the canonical compound-variants example.
 - [Form input recipe](/recipes/form-input): same orthogonal-axes pattern with state being the leading axis.
 - [Theming deep-dive](/theming): when you need cross-component reskinning, semantic tokens, or automatic dark mode.
 - [Naming convention](/naming): the formal rules for assembled class names.

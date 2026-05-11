@@ -7,6 +7,7 @@ import button from '../recipes/button.config.js'
 import card from '../recipes/card.config.js'
 import dropdownComponents from '../recipes/dropdown.config.js'
 import formInput from '../recipes/form-input.config.js'
+import iconButton from '../recipes/icon-button.config.js'
 import modal from '../recipes/modal.config.js'
 import spinner from '../recipes/spinner.config.js'
 import { presetVaria } from '../src/preset.js'
@@ -105,6 +106,7 @@ export default defineConfig({
         avatar,
         ...dropdownComponents,
         modal,
+        iconButton,
       ],
       manifest: false,
     }),

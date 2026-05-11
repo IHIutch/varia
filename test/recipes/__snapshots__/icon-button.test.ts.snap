@@ -1,0 +1,30 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`recipe: IconButton > shortcuts snapshot for visual review 1`] = `
+[
+  [
+    "icon-btn",
+    "inline-flex items-center justify-center gap-1.5 rounded-md font-medium border bg-white border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed",
+  ],
+  [
+    "icon-btn-s-xs",
+    "px-2 py-1 text-xs",
+  ],
+  [
+    "icon-btn-s-sm",
+    "px-2.5 py-1.5 text-sm",
+  ],
+  [
+    "icon-btn-s-md",
+    "px-3.5 py-2 text-sm",
+  ],
+  [
+    "icon-btn-s-lg",
+    "px-4 py-2.5 text-base",
+  ],
+  [
+    "icon-btn-square",
+    "aspect-square",
+  ],
+]
+`;

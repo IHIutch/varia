@@ -74,6 +74,7 @@ export default defineConfig({
             { text: 'Avatar', link: '/recipes/avatar' },
             { text: 'Dropdown', link: '/recipes/dropdown' },
             { text: 'Modal', link: '/recipes/modal' },
+            { text: 'Icon button', link: '/recipes/icon-button' },
           ],
         },
       ],
