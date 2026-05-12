@@ -1,4 +1,4 @@
-import { defineComponent } from '../src/index.js'
+import { defineComponent } from '../packages/varia/src/index.js'
 
 // Modal is a multi-element component with a natural root (the backdrop) and
 // tightly coupled children, so it uses the `slots` shape of defineComponent

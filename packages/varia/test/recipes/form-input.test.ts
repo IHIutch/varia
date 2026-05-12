@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import formInput from '../../recipes/form-input.config.js'
+import formInput from '../../../../recipes/form-input.config.js'
 import { generateRecipeCSS } from './_helpers.js'
 
 describe('recipe: Form input', () => {

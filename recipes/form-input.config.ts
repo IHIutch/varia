@@ -1,4 +1,4 @@
-import { defineComponent } from '../src/index.js'
+import { defineComponent } from '../packages/varia/src/index.js'
 
 export default defineComponent('form-input', {
   base: 'block w-full rounded-md border bg-white px-3 py-2 text-base shadow-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-1 disabled:bg-gray-50 disabled:text-gray-500 disabled:cursor-not-allowed',

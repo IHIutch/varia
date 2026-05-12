@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import avatar from '../../recipes/avatar.config.js'
+import avatar from '../../../../recipes/avatar.config.js'
 import { generateRecipeCSS } from './_helpers.js'
 
 describe('recipe: Avatar', () => {

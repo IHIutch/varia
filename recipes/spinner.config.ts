@@ -1,4 +1,4 @@
-import { defineComponent } from '../src/index.js'
+import { defineComponent } from '../packages/varia/src/index.js'
 
 export default defineComponent('spinner', {
   base: 'inline-block rounded-full border-current border-solid animate-spin',

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import iconButton from '../../recipes/icon-button.config.js'
+import iconButton from '../../../../recipes/icon-button.config.js'
 import { generateRecipeCSS } from './_helpers.js'
 
 describe('recipe: IconButton', () => {

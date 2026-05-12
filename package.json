@@ -1,59 +1,30 @@
 {
-  "name": "varia",
+  "name": "varia-workspace",
   "type": "module",
-  "version": "0.0.0",
-  "description": "Build-time variants for UnoCSS",
-  "license": "MIT",
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.mts",
-      "import": "./dist/index.mjs"
-    },
-    "./preset": {
-      "types": "./dist/preset.d.mts",
-      "import": "./dist/preset.mjs"
-    },
-    "./types": {
-      "types": "./dist/types.d.mts"
-    }
-  },
-  "main": "./dist/index.mjs",
-  "types": "./dist/index.d.mts",
-  "files": [
-    "dist"
-  ],
+  "private": true,
+  "description": "Workspace root for varia (library, docs, example)",
   "engines": {
     "node": ">=22"
   },
   "scripts": {
-    "build": "tsdown && cp -f stub/types.d.mts dist/types.d.mts",
-    "test": "vitest run",
-    "test:watch": "vitest",
-    "typecheck": "tsc --noEmit",
+    "build": "pnpm --filter varia build",
+    "test": "pnpm --filter varia test",
+    "test:watch": "pnpm --filter varia test:watch",
+    "typecheck": "pnpm -r typecheck",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "docs:dev": "vitepress dev docs",
-    "docs:build": "vitepress build docs",
-    "docs:preview": "vitepress preview docs",
-    "example:kitchen-sink": "vite --config examples/kitchen-sink/vite.config.ts",
-    "example:kitchen-sink:build": "vite build --config examples/kitchen-sink/vite.config.ts"
-  },
-  "peerDependencies": {
-    "@unocss/core": "*",
-    "unocss": "*"
+    "docs:dev": "pnpm --filter @varia/docs dev",
+    "docs:build": "pnpm --filter @varia/docs build",
+    "docs:preview": "pnpm --filter @varia/docs preview",
+    "example:dev": "pnpm --filter @varia/example dev",
+    "example:build": "pnpm --filter @varia/example build"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^8.2.0",
     "@types/node": "^25.6.2",
     "@unocss/core": "^66.6.8",
-    "@unocss/preset-wind4": "^66.6.8",
-    "@unocss/vite": "^66.6.8",
     "eslint": "^10.3.0",
-    "tsdown": "^0.22.0",
     "typescript": "^6.0.3",
-    "unocss": "^66.6.8",
-    "vite": "^8.0.11",
-    "vitepress": "^1.6.4",
-    "vitest": "^4.1.5"
+    "unocss": "^66.6.8"
   }
 }

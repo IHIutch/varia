@@ -1,4 +1,4 @@
-import { defineComponent } from '../src/index.js'
+import { defineComponent } from '../packages/varia/src/index.js'
 
 // IconButton: a button that can render with a label, with just an icon, or
 // with both. The `square` boolean signals "icon-only" — the consumer is

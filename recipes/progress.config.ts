@@ -1,4 +1,4 @@
-import { defineComponent } from '../src/index.js'
+import { defineComponent } from '../packages/varia/src/index.js'
 
 // Bootstrap-equivalent Progress. The value is a percentage that can't be
 // enumerated as a variant — consumer drives it with a CSS custom property:

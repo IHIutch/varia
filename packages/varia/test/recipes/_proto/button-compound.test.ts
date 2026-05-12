@@ -1,7 +1,7 @@
 import { createGenerator } from '@unocss/core'
 import presetWind4 from '@unocss/preset-wind4'
 import { describe, expect, it } from 'vitest'
-import { buttonCompoundProto } from '../../../recipes/_proto/button-compound.config.js'
+import { buttonCompoundProto } from '../../../../../recipes/_proto/button-compound.config.js'
 
 async function generate(classes: string): Promise<string> {
   const uno = await createGenerator({

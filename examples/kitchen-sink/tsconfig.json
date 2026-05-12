@@ -1,24 +1,18 @@
 {
   "compilerOptions": {
     "target": "ES2022",
-    "lib": ["ES2022"],
-    "rootDir": ".",
+    "lib": ["ES2022", "DOM"],
     "module": "ESNext",
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "strict": true,
-    "noUncheckedIndexedAccess": true,
-    "declaration": true,
-    "declarationMap": true,
     "noEmit": true,
-    "outDir": "./dist",
-    "sourceMap": true,
     "esModuleInterop": true,
     "isolatedModules": true,
     "verbatimModuleSyntax": true,
     "skipLibCheck": true,
     "ignoreDeprecations": "6.0"
   },
-  "include": ["src/**/*", "test/**/*", "*.config.ts"],
-  "exclude": ["node_modules", "dist", "docs"]
+  "include": ["**/*.ts", "uno.config.ts", "vite.config.ts"],
+  "exclude": ["node_modules", "dist"]
 }

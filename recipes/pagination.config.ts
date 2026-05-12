@@ -1,4 +1,4 @@
-import { defineComponent } from '../src/index.js'
+import { defineComponent } from '../packages/varia/src/index.js'
 
 // Bootstrap-equivalent Pagination. State (active, disabled) lives as
 // data-attrs on the link element (per the tooltip pattern), not as slot

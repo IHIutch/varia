@@ -1,4 +1,4 @@
-import { defineComponent } from '../src/index.js'
+import { defineComponent } from '../packages/varia/src/index.js'
 
 // Reveal mode driven by `data-reveal` attr on the bubble. No varia variants,
 // no slot-keyed values — utilities at the base slot run through UnoCSS

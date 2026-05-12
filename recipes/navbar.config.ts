@@ -1,4 +1,4 @@
-import { defineComponent } from '../src/index.js'
+import { defineComponent } from '../packages/varia/src/index.js'
 
 // Bootstrap-equivalent Navbar, as a single varia component. Composes with
 // existing recipes (form-input, dropdown, btn) without varia needing to know

@@ -1,4 +1,4 @@
-import { defineComponent } from '../src/index.js'
+import { defineComponent } from '../packages/varia/src/index.js'
 
 // Map each semantic color name to a UnoCSS palette tone. Five colors keep the
 // example tight; the same shape extends to as many as a real design system

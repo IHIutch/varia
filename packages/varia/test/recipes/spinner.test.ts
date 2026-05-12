@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import spinner from '../../recipes/spinner.config.js'
+import spinner from '../../../../recipes/spinner.config.js'
 import { generateRecipeCSS } from './_helpers.js'
 
 describe('recipe: Spinner', () => {

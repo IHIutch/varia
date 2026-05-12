@@ -6,15 +6,14 @@ export default antfu({
   markdown: false,
   // Ignore generated/built output and design-history docs.
   ignores: [
-    'dist/**',
-    'node_modules/**',
-    'docs/.vitepress/cache/**',
-    'docs/.vitepress/dist/**',
+    '**/dist/**',
+    '**/node_modules/**',
+    'apps/docs/.vitepress/cache/**',
+    'apps/docs/.vitepress/dist/**',
     'adr/**',
-    'stub/**',
+    'packages/varia/stub/**',
     'recipes/_proto/**',
-    'test/recipes/__snapshots__/**',
+    'packages/varia/test/recipes/__snapshots__/**',
     'coverage/**',
-    '.varia/**',
   ],
 })

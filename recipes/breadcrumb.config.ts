@@ -1,4 +1,4 @@
-import { defineComponent } from '../src/index.js'
+import { defineComponent } from '../packages/varia/src/index.js'
 
 // Separator between items via pseudo-element on every non-first item.
 // Active item is the last one (current page) — set via data-state="active".

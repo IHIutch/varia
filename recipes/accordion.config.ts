@@ -1,4 +1,4 @@
-import { defineComponent } from '../src/index.js'
+import { defineComponent } from '../packages/varia/src/index.js'
 
 // Uses native <details>/<summary> for state, so no JS toggling needed. The
 // caret rotation is driven by the `[open]` attribute on the parent <details>

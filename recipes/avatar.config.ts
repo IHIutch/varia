@@ -1,4 +1,4 @@
-import { defineComponent } from '../src/index.js'
+import { defineComponent } from '../packages/varia/src/index.js'
 
 export default defineComponent('avatar', {
   base: 'inline-flex items-center justify-center rounded-full overflow-hidden bg-[var(--avatar-bg,theme(colors.gray.200))] text-[var(--avatar-fg,theme(colors.gray.700))] font-medium select-none',

@@ -1,4 +1,4 @@
-import { defineComponent } from '../src/index.js'
+import { defineComponent } from '../packages/varia/src/index.js'
 
 export default defineComponent('badge', {
   base: 'inline-flex items-center px-2 py-0.5 text-xs font-medium rounded-md',

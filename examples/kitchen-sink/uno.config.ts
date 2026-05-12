@@ -1,5 +1,6 @@
 import presetWind4 from '@unocss/preset-wind4'
 import { defineConfig } from 'unocss'
+import { presetVaria } from '../../packages/varia/src/preset.js'
 import accordion from '../../recipes/accordion.config.js'
 import alert from '../../recipes/alert.config.js'
 import avatar from '../../recipes/avatar.config.js'
@@ -19,7 +20,6 @@ import progress from '../../recipes/progress.config.js'
 import spinner from '../../recipes/spinner.config.js'
 import table from '../../recipes/table.config.js'
 import tooltip from '../../recipes/tooltip.config.js'
-import { presetVaria } from '../../src/preset.js'
 
 export default defineConfig({
   presets: [

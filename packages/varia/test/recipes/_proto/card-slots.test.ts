@@ -5,7 +5,7 @@ import {
   cardSlotsProto,
   expectedSlotClasses,
   expectedVariantClasses,
-} from '../../../recipes/_proto/card-slots.config.js'
+} from '../../../../../recipes/_proto/card-slots.config.js'
 
 async function generate(classes: string): Promise<string> {
   const uno = await createGenerator({

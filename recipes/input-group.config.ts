@@ -1,4 +1,4 @@
-import { defineComponent } from '../src/index.js'
+import { defineComponent } from '../packages/varia/src/index.js'
 
 // Bootstrap-equivalent Input Group. Wraps a `.form-input` with optional
 // addon segments (text labels or buttons) that share a border with the input.

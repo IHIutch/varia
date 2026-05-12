@@ -4,7 +4,7 @@ import dropdownComponents, {
   dropdownItem,
   dropdownMenu,
   dropdownTrigger,
-} from '../../recipes/dropdown.config.js'
+} from '../../../../recipes/dropdown.config.js'
 import { generateRecipeCSS } from './_helpers.js'
 
 describe('recipe: Dropdown (multi-component)', () => {

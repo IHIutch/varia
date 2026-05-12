@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import card from '../../recipes/card.config.js'
+import card from '../../../../recipes/card.config.js'
 import { generateRecipeCSS } from './_helpers.js'
 
 describe('recipe: Card', () => {

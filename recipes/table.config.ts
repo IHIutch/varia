@@ -1,4 +1,4 @@
-import { defineComponent } from '../src/index.js'
+import { defineComponent } from '../packages/varia/src/index.js'
 
 // Table styling via HTML tag-based descendant arbitrary variants. No declared
 // slots for thead/tbody/tr/td/th — consumer writes standard table markup and

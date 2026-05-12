@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import modal from '../../recipes/modal.config.js'
+import modal from '../../../../recipes/modal.config.js'
 import { generateRecipeCSS } from './_helpers.js'
 
 describe('recipe: Modal', () => {

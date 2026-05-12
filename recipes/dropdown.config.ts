@@ -1,4 +1,4 @@
-import { defineComponent } from '../src/index.js'
+import { defineComponent } from '../packages/varia/src/index.js'
 
 // Single-component dropdown. Open/closed state lives in `data-state` on the
 // menu; consumer toggles via JS. Item variants (default vs danger) live as
