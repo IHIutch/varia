@@ -1,0 +1,415 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>varia · components</title>
+    <script type="module" src="/components.ts"></script>
+  </head>
+  <body class="min-h-screen bg-gray-50 antialiased font-sans">
+    <div class="mx-auto max-w-4xl px-6 py-10 space-y-12">
+      <header>
+        <h1 class="text-2xl font-semibold text-gray-900">Components</h1>
+        <p class="text-sm text-gray-500 mt-1">
+          More widgets exercising varia. See <a class="text-blue-600 hover:underline" href="/">/</a>
+          for the settings panel and <a class="text-blue-600 hover:underline" href="/nav-comparison.html">/nav-comparison.html</a> for the nav.
+        </p>
+      </header>
+
+      <!-- BADGES -->
+      <section>
+        <h2 class="text-lg font-semibold text-gray-900 mb-3">Badges</h2>
+        <div class="card p-5">
+          <div class="flex flex-wrap items-center gap-2 mb-4">
+            <span class="badge badge-c-primary">Primary</span>
+            <span class="badge badge-c-success">Success</span>
+            <span class="badge badge-c-danger">Danger</span>
+            <span class="badge badge-c-warning">Warning</span>
+            <span class="badge badge-c-neutral">Neutral</span>
+          </div>
+          <p class="text-xs text-gray-500 mb-2">With <code class="bg-gray-100 px-1 rounded">pill</code> boolean variant:</p>
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="badge badge-c-primary badge-pill">Primary</span>
+            <span class="badge badge-c-success badge-pill">Success</span>
+            <span class="badge badge-c-danger badge-pill">Danger</span>
+            <span class="badge badge-c-warning badge-pill">Warning</span>
+            <span class="badge badge-c-neutral badge-pill">Neutral</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ALERTS -->
+      <section>
+        <h2 class="text-lg font-semibold text-gray-900 mb-3">Alerts</h2>
+        <div class="space-y-3">
+          <div class="alert alert-c-primary" role="status">
+            <span class="alert__icon" aria-hidden="true">ℹ</span>
+            <div>
+              <div class="alert__title">Heads up</div>
+              <div class="alert__body">Maintenance is scheduled for Sunday at 2am UTC.</div>
+            </div>
+          </div>
+
+          <div class="alert alert-c-success" role="status">
+            <span class="alert__icon" aria-hidden="true">✓</span>
+            <div>
+              <div class="alert__title">Saved</div>
+              <div class="alert__body">Your changes have been published.</div>
+            </div>
+          </div>
+
+          <div class="alert alert-c-warning alert-dismissible" role="alert">
+            <span class="alert__icon" aria-hidden="true">⚠</span>
+            <div>
+              <div class="alert__title">Almost out of seats</div>
+              <div class="alert__body">You have 2 of 10 seats remaining. Add more before inviting.</div>
+            </div>
+            <button class="alert__close" aria-label="Dismiss">×</button>
+          </div>
+
+          <div class="alert alert-c-danger alert-dismissible" role="alert">
+            <span class="alert__icon" aria-hidden="true">✕</span>
+            <div>
+              <div class="alert__title">Payment failed</div>
+              <div class="alert__body">Your card was declined. Update your billing info to continue.</div>
+            </div>
+            <button class="alert__close" aria-label="Dismiss">×</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- TOOLTIPS (pressure test) -->
+      <section>
+        <h2 class="text-lg font-semibold text-gray-900 mb-3">Tooltips</h2>
+        <div class="card p-5 space-y-4">
+          <p class="text-sm text-gray-700">
+            Both tooltips are wrapped in <code class="bg-gray-100 px-1 rounded">.tooltip</code> (which sets
+            <code class="bg-gray-100 px-1 rounded">.group</code>). The bubble's visibility differs by the
+            <code class="bg-gray-100 px-1 rounded">reveal</code> variant.
+          </p>
+
+          <div class="flex items-center gap-12 pt-6">
+            <span class="tooltip group">
+              <span class="tooltip__trigger">Hover me (reveal=hover)</span>
+              <span class="tooltip__bubble" data-reveal="hover">Should only appear on hover.</span>
+            </span>
+
+            <span class="tooltip group">
+              <span class="tooltip__trigger">Always shown</span>
+              <span class="tooltip__bubble" data-reveal="always">reveal=always — should always be visible.</span>
+            </span>
+          </div>
+
+          <!-- Sanity check: same utility, but referenced directly in HTML so
+               UnoCSS's content scanner processes it instead of varia's
+               resolveUtilities. -->
+          <div class="group inline-block mt-6 pt-6 border-t border-gray-200 w-full">
+            <span class="cursor-help underline decoration-dotted underline-offset-4">
+              Sanity (raw HTML, no varia path)
+            </span>
+            <span
+              id="sanity-bubble"
+              class="ml-3 px-2 py-1 text-xs bg-gray-900 text-white rounded opacity-0 group-hover:opacity-100 transition-opacity"
+            >should appear on hover</span>
+          </div>
+
+          <p class="text-xs text-amber-900 bg-amber-50 border border-amber-200 rounded p-2 mt-4">
+            <strong>Pressure test:</strong> if the <em>reveal=hover</em> tooltip is visible right now
+            (without hovering), <code>STATE_SUFFIX_RE</code> in
+            <code>src/internal/resolve-utilities.ts</code> failed to peel <code>group-hover:</code> off
+            the UnoCSS selector and emitted the rule unconditionally.
+          </p>
+        </div>
+      </section>
+
+      <!-- PAGINATION -->
+      <section>
+        <h2 class="text-lg font-semibold text-gray-900 mb-3">Pagination</h2>
+        <div class="card p-5">
+          <p class="text-xs text-gray-500 mb-3">
+            State via <code class="bg-gray-100 px-1 rounded">data-state</code> on each link.
+          </p>
+          <nav aria-label="Page navigation">
+            <ul class="pagination" id="varia-pagination">
+              <li class="pagination__item">
+                <a class="pagination__link" data-state="disabled" href="#" aria-disabled="true">‹ Prev</a>
+              </li>
+              <li class="pagination__item"><a class="pagination__link" data-page="1" href="#">1</a></li>
+              <li class="pagination__item">
+                <a class="pagination__link" data-page="2" data-state="active" href="#" aria-current="page">2</a>
+              </li>
+              <li class="pagination__item"><a class="pagination__link" data-page="3" href="#">3</a></li>
+              <li class="pagination__item"><a class="pagination__link" data-page="4" href="#">4</a></li>
+              <li class="pagination__item"><a class="pagination__link" data-page="5" href="#">5</a></li>
+              <li class="pagination__item"><a class="pagination__link" href="#">Next ›</a></li>
+            </ul>
+          </nav>
+        </div>
+      </section>
+
+      <!-- INPUT GROUP -->
+      <section>
+        <h2 class="text-lg font-semibold text-gray-900 mb-3">Input group</h2>
+        <div class="card p-5 space-y-4">
+          <p class="text-xs text-gray-500">
+            Wraps a <code class="bg-gray-100 px-1 rounded">.form-input</code> with addon segments. The
+            wrapper uses <code class="bg-gray-100 px-1 rounded">[&amp;&gt;*]</code> arbitrary variants to
+            coordinate borders with whatever child it contains, including foreign components.
+          </p>
+
+          <div class="input-group max-w-md">
+            <span class="input-group__addon">https://</span>
+            <input class="form-input form-input-s-md form-input-state-default flex-1" placeholder="example.com" />
+          </div>
+
+          <div class="input-group max-w-md">
+            <span class="input-group__addon">$</span>
+            <input class="form-input form-input-s-md form-input-state-default flex-1" placeholder="0.00" />
+            <span class="input-group__addon">USD</span>
+          </div>
+
+          <div class="input-group max-w-md">
+            <input class="form-input form-input-s-md form-input-state-default flex-1" placeholder="Search…" />
+            <button class="btn btn-style-solid btn-c-primary btn-s-md">Go</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- PROGRESS -->
+      <section>
+        <h2 class="text-lg font-semibold text-gray-900 mb-3">Progress</h2>
+        <div class="card p-5 space-y-4">
+          <p class="text-xs text-gray-500">
+            Width driven by a CSS custom property (<code class="bg-gray-100 px-1 rounded">--progress</code>),
+            not enumerable as a variant. Colour and stripe are still varia variants on the
+            <code class="bg-gray-100 px-1 rounded">bar</code> slot.
+          </p>
+
+          <div>
+            <div class="text-xs text-gray-500 mb-1">25% — primary</div>
+            <div class="progress progress-c-primary" style="--progress: 25%">
+              <div class="progress__bar"></div>
+            </div>
+          </div>
+
+          <div>
+            <div class="text-xs text-gray-500 mb-1">65% — success</div>
+            <div class="progress progress-c-success" style="--progress: 65%">
+              <div class="progress__bar"></div>
+            </div>
+          </div>
+
+          <div>
+            <div class="text-xs text-gray-500 mb-1">90% — warning, striped</div>
+            <div class="progress progress-c-warning progress-striped" style="--progress: 90%">
+              <div class="progress__bar"></div>
+            </div>
+          </div>
+
+          <div>
+            <div class="text-xs text-gray-500 mb-1">100% — danger</div>
+            <div class="progress progress-c-danger" style="--progress: 100%">
+              <div class="progress__bar"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- BREADCRUMB -->
+      <section>
+        <h2 class="text-lg font-semibold text-gray-900 mb-3">Breadcrumb</h2>
+        <div class="card p-5">
+          <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+              <li class="breadcrumb__item"><a href="#">Home</a></li>
+              <li class="breadcrumb__item"><a href="#">Library</a></li>
+              <li class="breadcrumb__item"><a href="#">Data</a></li>
+              <li class="breadcrumb__item" data-state="active" aria-current="page">Current page</li>
+            </ol>
+          </nav>
+        </div>
+      </section>
+
+      <!-- ACCORDION -->
+      <section>
+        <h2 class="text-lg font-semibold text-gray-900 mb-3">Accordion</h2>
+        <p class="text-xs text-gray-500 mb-3">
+          Uses native <code class="bg-gray-100 px-1 rounded">&lt;details&gt;</code> for state — no JS.
+          Caret rotates via <code class="bg-gray-100 px-1 rounded">[details[open]_&amp;]</code> arbitrary variant.
+        </p>
+        <div class="accordion max-w-xl">
+          <details class="accordion__item" open>
+            <summary class="accordion__trigger">
+              <span>What is varia?</span>
+              <span class="accordion__caret" aria-hidden="true">▾</span>
+            </summary>
+            <div class="accordion__panel">
+              A build-time variant system on top of UnoCSS. Trades raw utility classes
+              for compressed component classes via shortcuts.
+            </div>
+          </details>
+          <details class="accordion__item">
+            <summary class="accordion__trigger">
+              <span>How does it differ from CVA?</span>
+              <span class="accordion__caret" aria-hidden="true">▾</span>
+            </summary>
+            <div class="accordion__panel">
+              CVA is framework-side and generates class names at runtime. varia compiles
+              recipes into UnoCSS shortcuts at build time — emits real CSS, no runtime
+              function calls.
+            </div>
+          </details>
+          <details class="accordion__item">
+            <summary class="accordion__trigger">
+              <span>Does it work with React?</span>
+              <span class="accordion__caret" aria-hidden="true">▾</span>
+            </summary>
+            <div class="accordion__panel">
+              Yes — varia outputs CSS, so any framework that renders class strings is fine.
+              The class compression is most valuable in framework-agnostic templates
+              (raw HTML, Vue/Svelte templates).
+            </div>
+          </details>
+        </div>
+      </section>
+
+      <!-- DROPDOWN -->
+      <section>
+        <h2 class="text-lg font-semibold text-gray-900 mb-3">Dropdown</h2>
+        <p class="text-xs text-gray-500 mb-3">
+          Single component with slots for trigger / menu / item / divider. State on the
+          menu via <code class="bg-gray-100 px-1 rounded">data-state</code>. Per-item variant
+          via <code class="bg-gray-100 px-1 rounded">data-variant</code>.
+        </p>
+        <div class="card p-5">
+          <div class="flex flex-wrap items-start gap-6">
+            <div class="dropdown dropdown-align-start">
+              <button
+                class="dropdown__trigger"
+                id="dropdown-1-trigger"
+                aria-haspopup="menu"
+                aria-expanded="false"
+              >
+                Open menu <span aria-hidden="true">▾</span>
+              </button>
+              <div
+                class="dropdown__menu"
+                id="dropdown-1-menu"
+                data-state="closed"
+                role="menu"
+              >
+                <button class="dropdown__item" role="menuitem">Profile</button>
+                <button class="dropdown__item" role="menuitem">Settings</button>
+                <button class="dropdown__item" role="menuitem">Billing</button>
+                <div class="dropdown__divider"></div>
+                <button class="dropdown__item" data-variant="danger" role="menuitem">
+                  Sign out
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- NAVBAR -->
+      <section>
+        <h2 class="text-lg font-semibold text-gray-900 mb-3">Navbar</h2>
+        <p class="text-xs text-gray-500 mb-3">
+          Composes navbar slots + form-input + btn + dropdown — none of which know about
+          each other. State on links uses <code class="bg-gray-100 px-1 rounded">data-state</code>.
+        </p>
+        <div class="card">
+          <nav class="navbar" aria-label="Main">
+            <a class="navbar__brand" href="#">Acme</a>
+            <ul class="navbar__nav">
+              <li><a class="navbar__nav-link" data-state="active" href="#">Dashboard</a></li>
+              <li><a class="navbar__nav-link" href="#">Projects</a></li>
+              <li><a class="navbar__nav-link" href="#">Team</a></li>
+              <li><a class="navbar__nav-link" href="#">Reports</a></li>
+            </ul>
+            <div class="navbar__spacer"></div>
+            <div class="navbar__actions">
+              <input
+                class="form-input form-input-s-sm form-input-state-default"
+                type="search"
+                placeholder="Search…"
+              />
+              <button class="btn btn-style-outline btn-c-neutral btn-s-sm">Help</button>
+              <div class="dropdown dropdown-align-end">
+                <button
+                  class="dropdown__trigger"
+                  id="navbar-user-trigger"
+                  aria-haspopup="menu"
+                  aria-expanded="false"
+                >
+                  Jamie <span aria-hidden="true">▾</span>
+                </button>
+                <div
+                  class="dropdown__menu"
+                  id="navbar-user-menu"
+                  data-state="closed"
+                  role="menu"
+                >
+                  <button class="dropdown__item" role="menuitem">Profile</button>
+                  <button class="dropdown__item" role="menuitem">Settings</button>
+                  <div class="dropdown__divider"></div>
+                  <button class="dropdown__item" data-variant="danger" role="menuitem">
+                    Sign out
+                  </button>
+                </div>
+              </div>
+            </div>
+          </nav>
+        </div>
+      </section>
+
+      <!-- TABLE -->
+      <section>
+        <h2 class="text-lg font-semibold text-gray-900 mb-3">Table</h2>
+        <p class="text-xs text-gray-500 mb-3">
+          Styling targets HTML elements directly via arbitrary descendant variants
+          (<code class="bg-gray-100 px-1 rounded">[&amp;_th]:</code>, <code class="bg-gray-100 px-1 rounded">[&amp;_tbody_tr:hover]:</code>),
+          so consumer markup is standard HTML with no per-row varia classes.
+        </p>
+        <div class="card">
+          <table class="table table-striped table-hover">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Role</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Alice Chen</td>
+                <td>Admin</td>
+                <td><span class="badge badge-c-success badge-pill">Active</span></td>
+              </tr>
+              <tr>
+                <td>Bilal Khan</td>
+                <td>Editor</td>
+                <td><span class="badge badge-c-success badge-pill">Active</span></td>
+              </tr>
+              <tr>
+                <td>Cora Diaz</td>
+                <td>Viewer</td>
+                <td><span class="badge badge-c-neutral badge-pill">Invited</span></td>
+              </tr>
+              <tr>
+                <td>Dmitri Volkov</td>
+                <td>Editor</td>
+                <td><span class="badge badge-c-warning badge-pill">Pending</span></td>
+              </tr>
+              <tr>
+                <td>Esha Patel</td>
+                <td>Viewer</td>
+                <td><span class="badge badge-c-danger badge-pill">Suspended</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </body>
+</html>

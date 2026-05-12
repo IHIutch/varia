@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>varia · Nav</title>
+    <script type="module" src="/nav-comparison.ts"></script>
+  </head>
+  <body class="min-h-screen bg-gray-50 antialiased font-sans">
+    <div class="mx-auto max-w-3xl px-6 py-10">
+      <header class="mb-8">
+        <h1 class="text-2xl font-semibold text-gray-900">Nav · varia</h1>
+        <p class="text-sm text-gray-500 mt-1">
+          Open <a class="text-blue-600 hover:underline" href="/nav-bootstrap.html">/nav-bootstrap.html</a>
+          in another tab for the same widget rendered with Bootstrap 5.
+        </p>
+      </header>
+
+      <div class="card p-4 mb-4">
+        <p class="text-xs text-gray-500 mb-2">Tabs</p>
+        <ul class="nav nav-style-tabs" id="varia-tabs" role="tablist">
+          <li class="nav__item" role="presentation">
+            <a class="nav__link nav__link-active" data-tab="overview" href="#" role="tab">Overview</a>
+          </li>
+          <li class="nav__item" role="presentation">
+            <a class="nav__link" data-tab="reviews" href="#" role="tab">Reviews</a>
+          </li>
+          <li class="nav__item" role="presentation">
+            <a class="nav__link" data-tab="specs" href="#" role="tab">Specs</a>
+          </li>
+          <li class="nav__item" role="presentation">
+            <a class="nav__link nav__link-disabled" data-tab="archived" href="#" role="tab" aria-disabled="true">Archived</a>
+          </li>
+        </ul>
+      </div>
+
+      <div class="card p-4 mb-8">
+        <p class="text-xs text-gray-500 mb-2">Pills</p>
+        <ul class="nav nav-style-pills" id="varia-pills">
+          <li class="nav__item">
+            <a class="nav__link nav__link-active" href="#">Day</a>
+          </li>
+          <li class="nav__item"><a class="nav__link" href="#">Week</a></li>
+          <li class="nav__item"><a class="nav__link" href="#">Month</a></li>
+          <li class="nav__item">
+            <a class="nav__link nav__link-disabled" href="#" aria-disabled="true">Year</a>
+          </li>
+        </ul>
+      </div>
+
+      <details class="text-sm text-gray-700" open>
+        <summary class="cursor-pointer font-medium">Call-site class strings</summary>
+        <pre class="mt-3 bg-gray-100 p-3 rounded text-xs overflow-x-auto"><code>&lt;ul class="nav nav-style-pills"&gt;
+  &lt;li class="nav__item"&gt;
+    &lt;a class="nav__link nav__link-active"&gt;Day&lt;/a&gt;
+  &lt;/li&gt;
+  &lt;li class="nav__item"&gt;&lt;a class="nav__link"&gt;Week&lt;/a&gt;&lt;/li&gt;
+  &lt;li class="nav__item"&gt;&lt;a class="nav__link"&gt;Month&lt;/a&gt;&lt;/li&gt;
+  &lt;li class="nav__item"&gt;
+    &lt;a class="nav__link nav__link-disabled"&gt;Year&lt;/a&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;</code></pre>
+      </details>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>varia · kitchen sink</title>
+    <script type="module" src="/main.ts"></script>
+  </head>
+  <body class="min-h-screen bg-gray-50 text-gray-900 antialiased font-sans">
+    <div class="mx-auto max-w-5xl px-6 py-10">
+      <!-- Top bar: avatar + identity + account-actions dropdown -->
+      <header class="flex items-center justify-between mb-8">
+        <div class="flex items-center gap-4">
+          <span class="avatar avatar-s-lg avatar-ring" aria-hidden="true">JC</span>
+          <div>
+            <h1 class="text-2xl font-semibold">Jamie Chen</h1>
+            <p class="text-sm text-gray-500">Account settings</p>
+          </div>
+        </div>
+
+        <div class="dropdown dropdown-align-end">
+          <button
+            id="acct-trigger"
+            class="dropdown__trigger"
+            aria-haspopup="menu"
+            aria-expanded="false"
+          >
+            Actions
+            <span aria-hidden="true">▾</span>
+          </button>
+          <div
+            id="acct-menu"
+            class="dropdown__menu"
+            data-state="closed"
+            role="menu"
+          >
+            <button class="dropdown__item" role="menuitem">Export data</button>
+            <button class="dropdown__item" role="menuitem">Transfer ownership</button>
+            <div class="dropdown__divider"></div>
+            <button
+              id="open-delete"
+              class="dropdown__item"
+              data-variant="danger"
+              role="menuitem"
+            >
+              Delete account…
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <!-- Two side-by-side cards -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Profile -->
+        <section class="card">
+          <div class="px-5 py-4 border-b border-gray-200">
+            <h2 class="font-semibold">Profile</h2>
+            <p class="text-sm text-gray-500">How you appear to others.</p>
+          </div>
+          <div class="p-5 grid gap-4">
+            <label class="grid gap-1.5">
+              <span class="text-sm font-medium">Display name</span>
+              <input
+                class="form-input form-input-s-md form-input-state-default"
+                value="Jamie Chen"
+              />
+            </label>
+            <label class="grid gap-1.5">
+              <span class="text-sm font-medium">Email</span>
+              <input
+                class="form-input form-input-s-md form-input-state-error"
+                value="not-an-email"
+                aria-invalid="true"
+              />
+              <span class="text-xs text-red-600">Enter a valid email address.</span>
+            </label>
+            <label class="grid gap-1.5">
+              <span class="text-sm font-medium">Role</span>
+              <input
+                class="form-input form-input-s-md form-input-state-default form-input-readonly"
+                value="Owner"
+                readonly
+              />
+            </label>
+          </div>
+        </section>
+
+        <!-- Security -->
+        <section class="card">
+          <div class="px-5 py-4 border-b border-gray-200">
+            <h2 class="font-semibold">Security</h2>
+            <p class="text-sm text-gray-500">Authentication & sessions.</p>
+          </div>
+          <div class="p-5 grid gap-4">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="font-medium">Two-factor authentication</p>
+                <p class="text-sm text-gray-500">Off — recommended for owners.</p>
+              </div>
+              <button class="btn btn-style-outline btn-c-primary btn-s-sm">
+                Set up
+              </button>
+            </div>
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="font-medium">Password</p>
+                <p class="text-sm text-gray-500">Last changed 4 months ago.</p>
+              </div>
+              <button class="btn btn-style-subtle btn-c-neutral btn-s-sm">
+                Change
+              </button>
+            </div>
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="font-medium">Active sessions</p>
+                <p class="text-sm text-gray-500 flex items-center gap-2">
+                  <span class="spinner spinner-s-sm spinner-c-muted"></span>
+                  Loading…
+                </p>
+              </div>
+              <button
+                class="icon-btn icon-btn-s-sm icon-btn-square"
+                aria-label="Refresh"
+                title="Refresh"
+              >
+                ↻
+              </button>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <!-- Bottom action row -->
+      <div class="mt-8 flex items-center justify-end gap-3">
+        <button class="btn btn-style-ghost btn-c-neutral btn-s-md">Cancel</button>
+        <button class="btn btn-style-solid btn-c-primary btn-s-md">
+          Save changes
+        </button>
+      </div>
+    </div>
+
+    <!-- Delete account modal (hidden by default) -->
+    <div
+      id="delete-modal"
+      class="modal modal-size-md hidden"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="delete-title"
+    >
+      <div class="modal__container">
+        <div class="modal__header">
+          <div>
+            <h2 id="delete-title" class="modal__title">Delete account</h2>
+            <p class="modal__description">
+              This permanently removes your account and all associated data.
+            </p>
+          </div>
+          <button
+            id="close-delete"
+            class="modal__close"
+            aria-label="Close"
+          >
+            ×
+          </button>
+        </div>
+        <div class="modal__body">
+          <p class="text-sm">
+            Type your email to confirm. This action cannot be undone.
+          </p>
+          <input
+            class="form-input form-input-s-md form-input-state-default mt-3"
+            placeholder="jamie@example.com"
+          />
+        </div>
+        <div class="modal__footer">
+          <button id="cancel-delete" class="btn btn-style-ghost btn-c-neutral btn-s-md">
+            Cancel
+          </button>
+          <button class="btn btn-style-solid btn-c-danger btn-s-md">
+            Delete forever
+          </button>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
