@@ -56,7 +56,7 @@ Pick `tailwind-variants` if:
 - You're React-first and want the slots-and-compounds API as a runtime function call from JSX.
 - You don't care about consumption from non-JS template languages.
 
-`tailwind-variants` is roughly CVA plus slots and compound variants. `varia` covers the same authoring surface (`defineSlotComponent`, `compoundVariants`) but emits class names you write directly in markup instead of returning a callable from JSX. The choice is mostly about consumption model: callable function vs. plain HTML.
+`tailwind-variants` is roughly CVA plus slots and compound variants. `varia` covers the same authoring surface (slots and `compoundVariants` are both first-class on `defineComponent`) but emits class names you write directly in markup instead of returning a callable from JSX. The choice is mostly about consumption model: callable function vs. plain HTML.
 
 ### vanilla-extract recipes
 

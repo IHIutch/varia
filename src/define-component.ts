@@ -1,13 +1,20 @@
 import type { Preflight } from '@unocss/core'
 import type {
+  ClassInput,
   ComponentConfig,
   CompoundVariantRule,
   CompoundVariantWhen,
   DefinedComponent,
   Shortcut,
+  SlotKeyedValue,
   VariantDefinition,
+  VariantValue,
 } from './internal/types.js'
-import { booleanTrueClassName, multiValueClassName } from './internal/naming.js'
+import {
+  booleanTrueClassName,
+  multiValueClassName,
+  slotClassName,
+} from './internal/naming.js'
 import { emitResolvedCSS, resolveUtilities } from './internal/resolve-utilities.js'
 import {
   toClassString,
@@ -16,54 +23,40 @@ import {
   validateExpansion,
 } from './internal/validate.js'
 
-type Push = (
-  className: string,
-  expansion: string,
-  context: { variantKey?: string, variantValue?: string },
-) => void
-
 /** Records the kind of each variant axis so compound validation can check it. */
 type AxisKind
   = | { kind: 'boolean' }
     | { kind: 'multi-value', values: Set<string> }
 
-function emitVariant(
-  componentName: string,
-  variantKey: string,
-  variantDef: VariantDefinition,
-  push: Push,
-  axisRegistry: Map<string, AxisKind>,
-): void {
-  if (typeof variantDef === 'string' || Array.isArray(variantDef)) {
-    push(booleanTrueClassName(componentName, variantKey), toClassString(variantDef), { variantKey })
-    axisRegistry.set(variantKey, { kind: 'boolean' })
-    return
-  }
-
-  if (Object.keys(variantDef).length === 0) {
-    throw new Error(
-      `Variant "${variantKey}" on component "${componentName}" has no values — every variant must define at least one value.`,
-    )
-  }
-
-  const values = new Set<string>()
-  for (const [valueKey, expansion] of Object.entries(variantDef)) {
-    push(multiValueClassName(componentName, variantKey, String(valueKey)), toClassString(expansion), {
-      variantKey,
-      variantValue: String(valueKey),
-    })
-    values.add(String(valueKey))
-  }
-  axisRegistry.set(variantKey, { kind: 'multi-value', values })
-}
-
 export function defineComponent(name: string, config: ComponentConfig): DefinedComponent {
   validateComponentName(name)
 
-  const hasVariants = config.variants && Object.keys(config.variants).length > 0
-  if (config.base === undefined && !hasVariants) {
+  if (config.base !== undefined && config.slots !== undefined) {
     throw new Error(
-      `Component "${name}" has no \`base\` and no \`variants\` — at least one is required.`,
+      `Component "${name}" sets both \`base\` and \`slots\` — \`base\` is sugar for \`slots: { root: base }\`. Use one or the other.`,
+    )
+  }
+
+  // Normalize: `base: '...'` desugars to `slots: { root: '...' }`. After this
+  // step, the rest of the pipeline operates on a uniform slots map.
+  const slots: Record<string, ClassInput> | undefined
+    = config.base !== undefined
+      ? { root: config.base }
+      : config.slots
+
+  // An explicitly-provided `slots: {}` is its own error — the author asked for
+  // a slot component and gave it nothing to work with.
+  if (config.slots !== undefined && Object.keys(config.slots).length === 0) {
+    throw new Error(
+      `Component "${name}" has no slots — \`slots\` must declare at least one named part.`,
+    )
+  }
+
+  const hasSlots = slots && Object.keys(slots).length > 0
+  const hasVariants = config.variants && Object.keys(config.variants).length > 0
+  if (!hasSlots && !hasVariants) {
+    throw new Error(
+      `Component "${name}" has no \`base\`/\`slots\` and no \`variants\` — at least one is required.`,
     )
   }
 
@@ -71,27 +64,45 @@ export function defineComponent(name: string, config: ComponentConfig): DefinedC
   const classNames: string[] = []
   const preflights: Preflight<object>[] = []
   const axisRegistry = new Map<string, AxisKind>()
+  const slotNameSet = new Set<string>(slots ? Object.keys(slots) : [])
 
-  const push: Push = (className, expansion, context) => {
-    validateAssembledClassName(className, { component: name, ...context })
-    validateExpansion(expansion, { className, component: name })
-    shortcuts.push([className, expansion])
-    classNames.push(className)
-  }
-
-  if (config.base !== undefined) {
-    push(name, toClassString(config.base), {})
-  }
-
-  if (config.variants) {
-    for (const [variantKey, variantDef] of Object.entries(config.variants)) {
-      emitVariant(name, variantKey, variantDef, push, axisRegistry)
+  // 1. Emit a shortcut per slot. Root uses bare name; others use BEM.
+  if (slots) {
+    for (const [slotName, classes] of Object.entries(slots)) {
+      validateSlotName(slotName, name)
+      const className = slotClassName(name, slotName)
+      validateAssembledClassName(className, {
+        component: name,
+        variantKey: 'slot',
+        variantValue: slotName,
+        allowBem: slotName !== 'root',
+      })
+      const expansion = toClassString(classes)
+      validateExpansion(expansion, { className, component: name })
+      shortcuts.push([className, expansion])
+      classNames.push(className)
     }
   }
 
-  // Compound variants: cross-axis rules that emit combined-selector CSS via
-  // preflights. Validation runs against the axis registry built above; the
-  // preflight's getCSS uses the utility resolver at preset resolution time.
+  // 2. Process variants. Classifier disambiguates by inspecting keys against
+  //    declared slot names.
+  if (config.variants) {
+    for (const [variantKey, variantDef] of Object.entries(config.variants)) {
+      processVariant({
+        componentName: name,
+        slotNames: slotNameSet,
+        variantKey,
+        variantDef,
+        shortcuts,
+        classNames,
+        preflights,
+        axisRegistry,
+      })
+    }
+  }
+
+  // 3. Compound variants: cross-axis rules emitted as preflights. Validation
+  //    runs against the axis registry built above.
   if (config.compoundVariants) {
     for (const compound of config.compoundVariants) {
       validateCompound(name, compound, axisRegistry)
@@ -107,7 +118,192 @@ export function defineComponent(name: string, config: ComponentConfig): DefinedC
   }
 }
 
-// --- compound internals ---
+// --- slot + variant internals -----------------------------------------------
+
+function validateSlotName(slotName: string, componentName: string): void {
+  if (!/^[a-z][a-z0-9-]*$/.test(slotName)) {
+    throw new Error(
+      `Invalid slot name "${slotName}" on component "${componentName}" — slot names must match /^[a-z][a-z0-9-]*$/.`,
+    )
+  }
+}
+
+function classifyVariant(
+  variantDef: unknown,
+  slotNames: Set<string>,
+): 'boolean-string' | 'boolean-slot-keyed' | 'multi-value' | 'mixed' {
+  if (typeof variantDef === 'string' || Array.isArray(variantDef))
+    return 'boolean-string'
+  if (typeof variantDef !== 'object' || variantDef === null)
+    return 'mixed'
+
+  const keys = Object.keys(variantDef as Record<string, unknown>)
+  if (keys.length === 0)
+    return 'mixed'
+
+  const slotKeyCount = keys.filter(k => slotNames.has(k)).length
+  if (slotKeyCount === keys.length)
+    return 'boolean-slot-keyed'
+  if (slotKeyCount === 0)
+    return 'multi-value'
+  return 'mixed'
+}
+
+function processVariant(args: {
+  componentName: string
+  slotNames: Set<string>
+  variantKey: string
+  variantDef: VariantDefinition
+  shortcuts: Shortcut[]
+  classNames: string[]
+  preflights: Preflight<object>[]
+  axisRegistry: Map<string, AxisKind>
+}): void {
+  const {
+    componentName,
+    slotNames,
+    variantKey,
+    variantDef,
+    shortcuts,
+    classNames,
+    preflights,
+    axisRegistry,
+  } = args
+
+  const kind = classifyVariant(variantDef, slotNames)
+
+  if (kind === 'mixed') {
+    if (
+      typeof variantDef === 'object'
+      && variantDef !== null
+      && !Array.isArray(variantDef)
+      && Object.keys(variantDef).length === 0
+    ) {
+      throw new Error(
+        `Variant "${variantKey}" on component "${componentName}" has no values — every variant must define at least one value.`,
+      )
+    }
+    throw new Error(
+      `Variant "${variantKey}" on component "${componentName}" has an invalid shape. `
+      + `It must be either a string/array, an object whose keys are ALL slot names of this component, `
+      + `or an object whose keys are ALL multi-value names (none matching a slot name).`,
+    )
+  }
+
+  if (kind === 'boolean-string') {
+    const className = booleanTrueClassName(componentName, variantKey)
+    validateAssembledClassName(className, { component: componentName, variantKey })
+    const expansion = toClassString(variantDef as ClassInput)
+    validateExpansion(expansion, { className, component: componentName })
+    shortcuts.push([className, expansion])
+    classNames.push(className)
+    axisRegistry.set(variantKey, { kind: 'boolean' })
+    return
+  }
+
+  if (kind === 'boolean-slot-keyed') {
+    const className = booleanTrueClassName(componentName, variantKey)
+    validateAssembledClassName(className, { component: componentName, variantKey })
+    classNames.push(className)
+    preflights.push(
+      slotKeyedVariantPreflight({
+        componentName,
+        variantClass: className,
+        slotKeyedValue: variantDef as SlotKeyedValue,
+      }),
+    )
+    axisRegistry.set(variantKey, { kind: 'boolean' })
+    return
+  }
+
+  // kind === 'multi-value'
+  const values = variantDef as Record<string, VariantValue>
+  const valueSet = new Set<string>()
+  for (const [valueKey, value] of Object.entries(values)) {
+    const className = multiValueClassName(componentName, variantKey, String(valueKey))
+    validateAssembledClassName(className, {
+      component: componentName,
+      variantKey,
+      variantValue: String(valueKey),
+    })
+
+    if (typeof value === 'string' || Array.isArray(value)) {
+      const expansion = toClassString(value)
+      validateExpansion(expansion, { className, component: componentName })
+      shortcuts.push([className, expansion])
+      classNames.push(className)
+    }
+    else if (typeof value === 'object' && value !== null) {
+      const slotKeys = Object.keys(value)
+      for (const k of slotKeys) {
+        if (!slotNames.has(k)) {
+          throw new Error(
+            `Variant "${variantKey}" value "${valueKey}" on component "${componentName}" `
+            + `references slot "${k}", which is not declared in the component's slots.`,
+          )
+        }
+      }
+      classNames.push(className)
+      preflights.push(
+        slotKeyedVariantPreflight({
+          componentName,
+          variantClass: className,
+          slotKeyedValue: value,
+        }),
+      )
+    }
+    else {
+      throw new Error(
+        `Variant "${variantKey}" value "${valueKey}" on component "${componentName}" `
+        + `must be a string, an array of strings, or a slot-keyed object.`,
+      )
+    }
+    valueSet.add(String(valueKey))
+  }
+  axisRegistry.set(variantKey, { kind: 'multi-value', values: valueSet })
+}
+
+/**
+ * Build a preflight that resolves the utility strings for each slot and emits
+ * descendant-selector CSS rules. The preflight runs at preset resolution time
+ * and has access to the generator via context.
+ */
+function slotKeyedVariantPreflight(args: {
+  componentName: string
+  variantClass: string
+  slotKeyedValue: SlotKeyedValue
+}): Preflight<object> {
+  const { componentName, variantClass, slotKeyedValue } = args
+
+  return {
+    getCSS: async (context) => {
+      const uno = context.generator
+      const out: string[] = []
+
+      for (const [slotName, rawClasses] of Object.entries(slotKeyedValue)) {
+        const classes = toClassString(rawClasses)
+        if (!classes || classes.trim() === '')
+          continue
+
+        const resolved = await resolveUtilities(classes, uno)
+        const slotClass = slotClassName(componentName, slotName)
+        // The root slot's class IS the component name, so a chained selector
+        // (variant+root on the same element) is the correct shape; non-root
+        // slots are descendants.
+        const selector
+          = slotName === 'root'
+            ? `.${variantClass}`
+            : `.${variantClass} .${slotClass}`
+
+        out.push(emitResolvedCSS(selector, resolved))
+      }
+
+      return out.join('\n')
+    },
+  }
+}
+
+// --- compound internals -----------------------------------------------------
 
 function validateCompound(
   componentName: string,

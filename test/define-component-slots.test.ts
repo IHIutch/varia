@@ -1,10 +1,10 @@
 import { createGenerator } from '@unocss/core'
 import presetWind4 from '@unocss/preset-wind4'
 import { describe, expect, it } from 'vitest'
-import { defineSlotComponent } from '../src/index.js'
+import { defineComponent } from '../src/index.js'
 import { presetVaria } from '../src/preset.js'
 
-async function generate(component: ReturnType<typeof defineSlotComponent>, classes: string): Promise<string> {
+async function generate(component: ReturnType<typeof defineComponent>, classes: string): Promise<string> {
   const uno = await createGenerator({
     presets: [
       presetWind4(),
@@ -15,9 +15,9 @@ async function generate(component: ReturnType<typeof defineSlotComponent>, class
   return css
 }
 
-describe('defineSlotComponent: basic slot declaration', () => {
+describe('defineComponent: basic slot declaration', () => {
   it('emits a shortcut for each slot (root uses bare name; others use BEM)', () => {
-    const card = defineSlotComponent('card', {
+    const card = defineComponent('card', {
       slots: {
         root: 'rounded-lg overflow-hidden bg-white',
         header: 'p-4 border-b',
@@ -35,7 +35,7 @@ describe('defineSlotComponent: basic slot declaration', () => {
   })
 
   it('manifest includes every slot class name', () => {
-    const card = defineSlotComponent('card', {
+    const card = defineComponent('card', {
       slots: { root: 'block', header: 'p-4' },
     })
     expect(card.manifest.classNames).toContain('card')
@@ -44,13 +44,13 @@ describe('defineSlotComponent: basic slot declaration', () => {
 
   it('throws if no slots are declared', () => {
     expect(() =>
-      defineSlotComponent('card', { slots: {} }),
+      defineComponent('card', { slots: {} }),
     ).toThrow(/has no slots/)
   })
 
   it('throws on invalid slot name', () => {
     expect(() =>
-      defineSlotComponent('card', {
+      defineComponent('card', {
         slots: { Header: 'p-4' },
       }),
     ).toThrow(/Invalid slot name "Header"/)
@@ -58,16 +58,16 @@ describe('defineSlotComponent: basic slot declaration', () => {
 
   it('throws on empty slot expansion', () => {
     expect(() =>
-      defineSlotComponent('card', {
+      defineComponent('card', {
         slots: { root: 'block', header: '   ' },
       }),
     ).toThrow(/Empty expansion/)
   })
 })
 
-describe('defineSlotComponent: string-returning variants apply to root', () => {
+describe('defineComponent: string-returning variants apply to root', () => {
   it('emits a boolean variant as a shortcut applied to root', () => {
-    const card = defineSlotComponent('card', {
+    const card = defineComponent('card', {
       slots: { root: 'rounded-lg bg-white' },
       variants: {
         elevated: 'shadow-xl',
@@ -81,7 +81,7 @@ describe('defineSlotComponent: string-returning variants apply to root', () => {
   })
 
   it('emits multi-value variants with string values as per-value shortcuts', () => {
-    const card = defineSlotComponent('card', {
+    const card = defineComponent('card', {
       slots: { root: 'rounded-lg bg-white' },
       variants: {
         size: {
@@ -99,9 +99,9 @@ describe('defineSlotComponent: string-returning variants apply to root', () => {
   })
 })
 
-describe('defineSlotComponent: slot-keyed variants emit preflights', () => {
+describe('defineComponent: slot-keyed variants emit preflights', () => {
   it('boolean slot-keyed variant produces a preflight (not a shortcut)', () => {
-    const card = defineSlotComponent('card', {
+    const card = defineComponent('card', {
       slots: { root: 'rounded-lg bg-white', header: 'p-4', title: 'font-semibold' },
       variants: {
         accent: {
@@ -120,7 +120,7 @@ describe('defineSlotComponent: slot-keyed variants emit preflights', () => {
   })
 
   it('multi-value variant with slot-keyed values produces a preflight per value', () => {
-    const card = defineSlotComponent('card', {
+    const card = defineComponent('card', {
       slots: { root: 'rounded-lg bg-white', title: 'font-semibold' },
       variants: {
         variant: {
@@ -136,7 +136,7 @@ describe('defineSlotComponent: slot-keyed variants emit preflights', () => {
   })
 
   it('multi-value variant with mixed string and slot-keyed values', () => {
-    const card = defineSlotComponent('card', {
+    const card = defineComponent('card', {
       slots: { root: 'rounded-lg bg-white', title: 'font-semibold' },
       variants: {
         variant: {
@@ -155,7 +155,7 @@ describe('defineSlotComponent: slot-keyed variants emit preflights', () => {
 
   it('throws if slot-keyed value references a non-existent slot', () => {
     expect(() =>
-      defineSlotComponent('card', {
+      defineComponent('card', {
         slots: { root: 'block', body: 'p-4' },
         variants: {
           variant: {
@@ -168,7 +168,7 @@ describe('defineSlotComponent: slot-keyed variants emit preflights', () => {
 
   it('throws on mixed-key variants (some slot names, some not)', () => {
     expect(() =>
-      defineSlotComponent('card', {
+      defineComponent('card', {
         slots: { root: 'block', header: 'p-4' },
         variants: {
           ambiguous: {
@@ -181,9 +181,9 @@ describe('defineSlotComponent: slot-keyed variants emit preflights', () => {
   })
 })
 
-describe('defineSlotComponent: end-to-end through real UnoCSS', () => {
+describe('defineComponent: end-to-end through real UnoCSS', () => {
   it('slot shortcuts resolve correctly and appear in generated CSS', async () => {
-    const card = defineSlotComponent('card', {
+    const card = defineComponent('card', {
       slots: {
         root: 'rounded-lg bg-white shadow',
         header: 'p-4 border-b',
@@ -198,7 +198,7 @@ describe('defineSlotComponent: end-to-end through real UnoCSS', () => {
   })
 
   it('string-returning variant on root produces working CSS', async () => {
-    const card = defineSlotComponent('card', {
+    const card = defineComponent('card', {
       slots: { root: 'rounded-lg bg-white' },
       variants: { elevated: 'shadow-xl ring-1 ring-gray-300' },
     })
@@ -208,7 +208,7 @@ describe('defineSlotComponent: end-to-end through real UnoCSS', () => {
   })
 
   it('slot-keyed variant emits descendant-selector CSS via preflight', async () => {
-    const card = defineSlotComponent('card', {
+    const card = defineComponent('card', {
       slots: {
         root: 'rounded-lg bg-white',
         header: 'p-4',
@@ -234,7 +234,7 @@ describe('defineSlotComponent: end-to-end through real UnoCSS', () => {
   })
 
   it('slot-keyed variant rules are present even when descendants are not referenced (preflight bypasses tree-shaking)', async () => {
-    const card = defineSlotComponent('card', {
+    const card = defineComponent('card', {
       slots: { root: 'rounded-lg', title: 'font-semibold' },
       variants: {
         accent: { root: 'ring-2', title: 'text-blue-900' },
@@ -248,7 +248,7 @@ describe('defineSlotComponent: end-to-end through real UnoCSS', () => {
   })
 
   it('multiple slot-keyed variants emit independent rules', async () => {
-    const card = defineSlotComponent('card', {
+    const card = defineComponent('card', {
       slots: { root: 'rounded-lg', title: 'font-semibold' },
       variants: {
         variant: {
@@ -265,7 +265,7 @@ describe('defineSlotComponent: end-to-end through real UnoCSS', () => {
   })
 
   it('slot-keyed variant integrates with state pseudo-classes', async () => {
-    const card = defineSlotComponent('interactive-card', {
+    const card = defineComponent('interactive-card', {
       slots: { root: 'rounded-lg bg-white cursor-pointer' },
       variants: {
         hoverable: { root: 'hover:bg-blue-50 hover:shadow-md' },
@@ -277,15 +277,15 @@ describe('defineSlotComponent: end-to-end through real UnoCSS', () => {
   })
 })
 
-describe('defineSlotComponent: array class inputs', () => {
+describe('defineComponent: array class inputs', () => {
   it('joins slot class arrays with spaces', () => {
-    const asArray = defineSlotComponent('card', {
+    const asArray = defineComponent('card', {
       slots: {
         root: ['rounded-lg', 'border', 'p-4'],
         title: ['font-semibold', 'text-lg'],
       },
     })
-    const asString = defineSlotComponent('card', {
+    const asString = defineComponent('card', {
       slots: {
         root: 'rounded-lg border p-4',
         title: 'font-semibold text-lg',
@@ -296,7 +296,7 @@ describe('defineSlotComponent: array class inputs', () => {
   })
 
   it('joins boolean-string variant arrays (applied to root)', () => {
-    const result = defineSlotComponent('card', {
+    const result = defineComponent('card', {
       slots: { root: 'rounded' },
       variants: {
         elevated: ['shadow-lg', 'hover:shadow-xl'],
@@ -310,7 +310,7 @@ describe('defineSlotComponent: array class inputs', () => {
   })
 
   it('joins multi-value string arrays (applied to root)', () => {
-    const result = defineSlotComponent('card', {
+    const result = defineComponent('card', {
       slots: { root: 'rounded' },
       variants: {
         size: {
@@ -325,7 +325,7 @@ describe('defineSlotComponent: array class inputs', () => {
   })
 
   it('joins arrays inside slot-keyed variant values', () => {
-    const result = defineSlotComponent('card', {
+    const result = defineComponent('card', {
       slots: { root: 'rounded', title: 'font-medium' },
       variants: {
         accent: {
@@ -339,5 +339,40 @@ describe('defineSlotComponent: array class inputs', () => {
     expect(result.manifest.classNames).toContain('card-accent')
     expect(result.preflights).toBeDefined()
     expect(result.preflights!.length).toBeGreaterThan(0)
+  })
+})
+
+describe('defineComponent: compound variants on slot components', () => {
+  it('accepts compoundVariants on a slot config and emits a preflight', () => {
+    const card = defineComponent('card', {
+      slots: { root: 'rounded-lg bg-white', title: 'font-semibold' },
+      variants: {
+        size: { sm: 'p-2', md: 'p-4', lg: 'p-6' },
+        elevated: 'shadow-lg',
+      },
+      compoundVariants: [
+        { when: { size: 'lg', elevated: true }, class: 'shadow-2xl' },
+      ],
+    })
+
+    expect(card.preflights).toBeDefined()
+    // One preflight per compound rule (no slot-keyed variants here).
+    expect(card.preflights!.length).toBe(1)
+  })
+
+  it('compound CSS chains the variant classes in the selector', async () => {
+    const card = defineComponent('card', {
+      slots: { root: 'rounded-lg bg-white' },
+      variants: {
+        size: { sm: 'p-2', lg: 'p-6' },
+        elevated: 'shadow-lg',
+      },
+      compoundVariants: [
+        { when: { size: 'lg', elevated: true }, class: 'p-8' },
+      ],
+    })
+
+    const css = await generate(card, 'card card-size-lg card-elevated')
+    expect(css).toMatch(/\.card-size-lg\.card-elevated\s*\{/)
   })
 })

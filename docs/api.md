@@ -1,6 +1,6 @@
 # API reference
 
-`varia` exposes four things: `defineComponent` and `defineSlotComponent` (authoring), `presetVaria` (UnoCSS integration), and `varia/types` (consumer-side type access).
+`varia` exposes three things: `defineComponent` (authoring), `presetVaria` (UnoCSS integration), and `varia/types` (consumer-side type access).
 
 ## `defineComponent(name, config)`
 
@@ -22,13 +22,16 @@ const button = defineComponent('btn', { /* config */ })
 ```ts
 interface ComponentConfig {
   base?: ClassInput
+  slots?: Record<string, ClassInput>
   variants?: Record<string, VariantDefinition>
   compoundVariants?: CompoundVariantRule[]
 }
 
 type ClassInput = string | string[]
 
-type VariantDefinition = ClassInput | Record<string, ClassInput>
+type SlotKeyedValue = Record<string, ClassInput>
+type VariantValue  = ClassInput | SlotKeyedValue
+type VariantDefinition = ClassInput | Record<string, VariantValue>
 
 interface CompoundVariantRule {
   when: Record<string, string | true>
@@ -38,17 +41,54 @@ interface CompoundVariantRule {
 
 | Field | Type | Description |
 |---|---|---|
-| `base` | `ClassInput` (optional) | Utility classes applied whenever the bare component name is used. |
+| `base` | `ClassInput` (optional) | Sugar for `slots: { root: base }`. Use this for single-element components. Mutually exclusive with `slots`. |
+| `slots` | `Record<string, ClassInput>` (optional) | Named parts of a multi-element component. The `root` slot maps to the bare component name; every other slot maps to BEM `component__slot`. Slot names must match `/^[a-z][a-z0-9-]*$/`. |
 | `variants` | `Record<string, VariantDefinition>` (optional) | The component's variant axes. Keys are the axis names (`c`, `s`, `outline`); values are the variant definitions. |
 | `compoundVariants` | `CompoundVariantRule[]` (optional) | Cross-axis rules. See [Compound variants](#compound-variants). |
 
-At least one of `base` or `variants` must be present. Base-only is valid; see the [Card recipe](/recipes/card) for the minimum shape.
+At least one of `base`/`slots` or `variants` must be present. A `base`-only component is the simplest valid shape; see the [Card recipe](/recipes/card) for that minimum form. `slots`-with-no-variants is also valid: a multi-element component with no variant axes.
+
+### Single-element vs. multi-element
+
+For a component that maps to one HTML element, use `base`:
+
+```ts
+defineComponent('btn', {
+  base: 'inline-flex items-center …',
+  variants: { c: { primary: '…' } },
+})
+// Generates: btn, btn-c-primary
+```
+
+For a component with several tightly coupled parts (modal, card with header / title / body, dropdown menu), declare `slots`:
+
+```ts
+defineComponent('modal', {
+  slots: {
+    root:      '…', // → .modal
+    container: '…', // → .modal__container
+    header:    '…', // → .modal__header
+  },
+  variants: { /* see slot-keyed variant shapes below */ },
+})
+```
+
+The `root` slot maps to the bare component name (`.modal`); every other slot maps to `component__slot` (BEM). See [Naming convention](/naming#slots-vs-variants-the-two-separators) for why the BEM separator was chosen and how it interacts with variant naming.
 
 ### Variant shapes
 
-`varia` supports two shapes inside a `VariantDefinition`. The shape is detected at config time. In either shape, the class-string value can be written as a `string` or as a `string[]` (joined with a space).
+A `VariantDefinition` has up to four valid shapes. The shape is detected at config time by inspecting the value's type and (for object values) by checking whether the keys match the component's declared slot names. Anywhere a class string appears, you can pass `string[]` and it will be joined with a space.
 
-#### Multi-value variant
+#### Boolean variant (applied to root)
+
+```ts
+pill: 'rounded-full'
+// Generates: badge-pill
+```
+
+A string or string-array value is a boolean variant — the class is either present or absent. The off state is the absence of the class. For explicit off-state styling (or three+ states), use a multi-value variant.
+
+#### Multi-value variant (applied to root)
 
 ```ts
 c: { primary: 'bg-blue-600', danger: 'bg-red-600' }
@@ -57,14 +97,42 @@ c: { primary: 'bg-blue-600', danger: 'bg-red-600' }
 
 Use named values that describe what's varying: `primary`, `sm`, `open`, `closed`.
 
-#### Boolean variant
+#### Boolean slot-keyed variant (slot components only)
 
 ```ts
-pill: 'rounded-full'
-// Generates: badge-pill
+variants: {
+  accent: {
+    header: 'bg-blue-600 text-white',
+    title:  'text-white',
+  },
+}
+// Generates: card-accent
+// Emits: .card-accent .card__header { … }, .card-accent .card__title { … }
 ```
 
-The detection rule: a variant is boolean iff its value is a string or a string array. The off state is the absence of the class. If you need explicit off-state styling (or three+ states from one axis), use a multi-value variant with named values like `state: { open: '...', closed: '...' }`.
+When all keys of the object are declared slot names, the variant targets specific slots. Each slot's CSS is emitted as a preflight with a descendant selector. Mixing slot-name keys and value-name keys throws.
+
+#### Multi-value slot-keyed variant (slot components only)
+
+```ts
+variants: {
+  size: {
+    sm: { container: 'max-w-sm' },
+    md: { container: 'max-w-md' },
+    lg: { container: 'max-w-lg' },
+  },
+}
+// Generates: modal-size-sm, modal-size-md, modal-size-lg
+// Emits: .modal-size-sm .modal__container { max-width: … }, etc.
+```
+
+Each value can independently be a `ClassInput` (apply to root) or a slot-keyed object (apply to specific slots).
+
+### How slot-keyed variants emit
+
+Slot-keyed variants emit as UnoCSS preflights: CSS rules with descendant selectors like `.modal-size-md .modal__container { … }`. Because preflights aren't subject to UnoCSS's content scan, slot-keyed CSS survives even when the consumer's markup only references the variant class on the root and not the slot class on the descendant. This is the same tree-shaking-bypass mechanism that compound variants use.
+
+The `root` slot is a special case: its variant rule uses a chained-class selector (`.card-accent` directly, not `.card-accent .card`) because the root class lives on the same element as the variant class.
 
 ### Compound variants
 
@@ -122,140 +190,17 @@ You typically don't read these fields directly. Pass the value to `presetVaria`.
 | Condition | Example | Error message starts with |
 |---|---|---|
 | Invalid component name | `defineComponent('Btn', …)` | `Invalid component name "Btn" — must match…` |
-| Empty `base` AND no `variants` | `defineComponent('btn', {})` | `Component "btn" has no \`base\` and no \`variants\`…` |
+| Both `base` and `slots` set | `defineComponent('btn', { base, slots })` | `Component "btn" sets both \`base\` and \`slots\`…` |
+| `slots: {}` (declared but empty) | `defineComponent('card', { slots: {} })` | `Component "card" has no slots — \`slots\` must declare at least one named part.` |
+| Nothing to emit | `defineComponent('btn', {})` | `Component "btn" has no \`base\`/\`slots\` and no \`variants\`…` |
+| Invalid slot name | `slots: { Header: '…' }` | `Invalid slot name "Header" on component "card" — slot names must match…` |
 | Empty / whitespace expansion | `c: { primary: '   ' }` | `Empty expansion for "btn-c-primary"…` |
 | Variant with zero values | `c: {}` | `Variant "c" on component "btn" has no values…` |
+| Mixed-key variant (some slot names, some not) | `variants: { v: { root: '…', primary: '…' } }` | `Variant "v" on component "card" has an invalid shape. It must be either a string/array, an object whose keys are ALL slot names of this component, or…` |
+| Slot-keyed value references a non-existent slot | `variants: { v: { solid: { root: '…', missing: '…' } } }` | `Variant "v" value "solid" on component "card" references slot "missing", which is not declared in the component's slots.` |
 | Assembled class fails regex | `c: { Primary: 'x' }` (uppercase) | `Invalid class identifier "btn-c-Primary"…` |
 
 The regex `/^[a-z][a-z0-9-]*$/` is applied to the assembled class name, not to individual segments. Numeric values (`s: { 1: 'x' }` produces `btn-s-1`) and arbitrary kebab values (`s: { '2xl': 'x' }` produces `btn-s-2xl`) work naturally.
-
-## `defineSlotComponent(name, config)`
-
-```ts
-import { defineSlotComponent } from 'varia'
-
-const modal = defineSlotComponent('modal', { /* config */ })
-```
-
-For multi-element components: a modal with backdrop / container / header / body / footer, a card with header / title / body, a dropdown menu where the parts share a namespace. Each named part is a **slot**, and variants can target slots independently.
-
-If a component has only one element, use `defineComponent`. If a component has tightly coupled parts that share a namespace, reach for `defineSlotComponent`.
-
-### Arguments
-
-| Name | Type | Required | Description |
-|---|---|---|---|
-| `name` | `string` | yes | Component name. Same validation rules as `defineComponent`. |
-| `config` | `SlotComponentConfig` | yes | Slots and (optionally) variants. |
-
-### `SlotComponentConfig`
-
-```ts
-interface SlotComponentConfig {
-  slots: Record<string, ClassInput>
-  variants?: Record<string, SlotVariantDefinition>
-}
-
-type SlotVariantDefinition
-  = | ClassInput // boolean → applies to root
-    | Record<string, ClassInput> // multi-value (one value per name, applied to root)
-    | Record<string, Record<string, ClassInput>> // multi-value with slot-keyed values
-    | Record<string, ClassInput> // boolean slot-keyed (keys must all be slot names)
-```
-
-As with single-element components, anywhere a class-string value appears (slot definitions, variant values, slot-keyed values) you can pass a `string[]` and it will be joined with a space.
-
-| Field | Type | Description |
-|---|---|---|
-| `slots` | `Record<string, ClassInput>` | Named parts. Each key is a slot name; the value is the utility class input for that slot. At least one slot is required. |
-| `variants` | `Record<string, SlotVariantDefinition>` (optional) | Variant axes. Each can apply to the root slot only (string-valued) or target specific slots (slot-keyed object). |
-
-### Class-name shape
-
-The `root` slot maps to the bare component name; every other slot maps to `component__slot` (BEM double-underscore). A slot name must match `/^[a-z][a-z0-9-]*$/`.
-
-```ts
-defineSlotComponent('modal', {
-  slots: {
-    root: '…', // → .modal
-    container: '…', // → .modal__container
-    header: '…', // → .modal__header
-  },
-})
-```
-
-See [Naming convention](/naming#slots-vs-variants-the-two-separators) for why the BEM separator was chosen and how it interacts with variant naming.
-
-### Variant shapes (slot components)
-
-A slot component's variants have four valid shapes. The library disambiguates by inspecting keys against the component's declared slot names.
-
-#### Boolean variant applied to root
-
-```ts
-variants: { elevated: 'shadow-lg' }
-// Generates: card-elevated, applied to the root slot
-```
-
-#### Multi-value variant applied to root
-
-```ts
-variants: { tone: { brand: 'bg-blue-50', warning: 'bg-amber-50' } }
-// Generates: card-tone-brand, card-tone-warning, both applied to root
-```
-
-#### Boolean slot-keyed variant
-
-```ts
-variants: {
-  accent: {
-    header: 'bg-blue-600 text-white',
-    title:  'text-white',
-  },
-}
-// Generates: card-accent
-// Emits: .card-accent .card__header { … }, .card-accent .card__title { … }
-```
-
-All keys must be slot names of this component. Mixing slot keys and value keys throws.
-
-#### Multi-value slot-keyed variant
-
-```ts
-variants: {
-  size: {
-    sm: { container: 'max-w-sm' },
-    md: { container: 'max-w-md' },
-    lg: { container: 'max-w-lg' },
-  },
-}
-// Generates: modal-size-sm, modal-size-md, modal-size-lg
-// Emits: .modal-size-sm .modal__container { max-width: … }, etc.
-```
-
-Each value can independently be a string (apply to root) or a slot-keyed object (apply to specific slots).
-
-### How slot-keyed variants emit
-
-Slot-keyed variants emit as UnoCSS preflights: CSS rules with descendant selectors like `.modal-size-md .modal__container { … }`. Because preflights aren't subject to UnoCSS's content scan, slot-keyed CSS survives even when the consumer's markup only references the variant class on the root and not the slot class on the descendant. This is the same tree-shaking-bypass mechanism that compound variants use.
-
-The `root` slot is a special case: its variant rule uses a chained-class selector (`.card-accent` directly, not `.card-accent .card`) because the root class lives on the same element as the variant class.
-
-### Validation errors (slot components)
-
-`defineSlotComponent` throws synchronously on:
-
-| Condition | Error message starts with |
-|---|---|
-| No slots declared | `Component "modal" has no slots — defineSlotComponent requires at least one slot.` |
-| Slot name fails regex | `Invalid slot name "Container" on component "modal" — slot names must match …` |
-| A variant object mixes slot-name keys with non-slot keys | `Variant "accent" on component "card" has an invalid shape. It must be either a string, an object whose keys are ALL slot names of this component, or…` |
-| A slot-keyed value references a slot that doesn't exist | `Variant "size" value "sm" on component "modal" references slot "containr", which is not declared in the component's slots.` |
-| Component name invalid, empty expansion, etc. | Same rules as `defineComponent`. |
-
-### Return value
-
-Same `DefinedComponent` shape as `defineComponent`. The `preflights` field is always populated when any slot-keyed variant is declared.
 
 ## `presetVaria(options)`
 

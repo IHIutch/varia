@@ -132,7 +132,16 @@ describe('validation', () => {
   })
 
   it('throws when component has no base and no variants', () => {
-    expect(() => defineComponent('btn', {})).toThrow(/no `base` and no `variants`/)
+    expect(() => defineComponent('btn', {})).toThrow(/no `base`\/`slots` and no `variants`/)
+  })
+
+  it('throws when both `base` and `slots` are set', () => {
+    expect(() =>
+      defineComponent('btn', {
+        base: 'inline-block',
+        slots: { root: 'inline-block' },
+      } as never),
+    ).toThrow(/sets both `base` and `slots`/)
   })
 
   it('throws on uppercase variant value (assembled class fails regex)', () => {

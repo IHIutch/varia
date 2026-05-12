@@ -8,7 +8,7 @@
 component-axis-value     # multi-value variant
 component-axis           # boolean variant
 component                # base / root slot
-component__slot          # non-root slot (defineSlotComponent only)
+component__slot          # non-root slot (slot components only)
 ```
 
 ## By variant shape

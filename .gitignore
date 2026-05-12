@@ -8,3 +8,9 @@ dist
 
 **/.vitepress/cache
 **/.vitepress/dist
+
+# Local screenshots from the kitchen-sink example
+examples/**/.screenshot-*.png
+
+# Kitchen-sink build output
+examples/kitchen-sink/dist

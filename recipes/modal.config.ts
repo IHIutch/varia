@@ -1,11 +1,11 @@
-import { defineSlotComponent } from '../src/index.js'
+import { defineComponent } from '../src/index.js'
 
-// First production user of defineSlotComponent. Modal is a multi-element
-// component with a natural root (the backdrop) and tightly coupled children.
-// The size variant uses the slot-keyed shape to target the container only —
-// background, header padding, etc. don't change with size.
+// Modal is a multi-element component with a natural root (the backdrop) and
+// tightly coupled children, so it uses the `slots` shape of defineComponent
+// instead of `base`. The size variant uses the slot-keyed shape to target
+// the container only — background, header padding, etc. don't change with size.
 
-export default defineSlotComponent('modal', {
+export default defineComponent('modal', {
   slots: {
     // Full-viewport overlay; centers the container.
     root: 'fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4',

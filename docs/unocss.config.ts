@@ -1,11 +1,12 @@
-import type { PreflightContext, Rule } from '@unocss/core'
+import type { Extractor, PreflightContext, Rule } from '@unocss/core'
+import { extractorSplit } from '@unocss/core'
 import presetWind4 from '@unocss/preset-wind4'
 import { defineConfig } from 'unocss'
 import avatar from '../recipes/avatar.config.js'
 
 import button from '../recipes/button.config.js'
 import card from '../recipes/card.config.js'
-import dropdownComponents from '../recipes/dropdown.config.js'
+import dropdown from '../recipes/dropdown.config.js'
 import formInput from '../recipes/form-input.config.js'
 import iconButton from '../recipes/icon-button.config.js'
 import modal from '../recipes/modal.config.js'
@@ -85,6 +86,23 @@ function swapClassRules(): Rule<object>[] {
   ])
 }
 
+// Docs markdown files quote recipe source code that uses template-literal
+// helpers like `[--btn-bg:theme(colors.${tone}.600)]`. UnoCSS's default
+// extractor pulls those substrings out as candidate classes and chokes when
+// it tries to resolve `${tone}` as a theme path. Wrap the default extractor
+// to drop any candidate containing template-literal interpolation syntax —
+// real classes never contain `${`.
+const extractorIgnoringInterpolation: Extractor = {
+  name: 'filter-template-interpolation',
+  order: extractorSplit.order,
+  async extract(ctx) {
+    const candidates = await extractorSplit.extract!(ctx)
+    if (!candidates)
+      return candidates
+    return new Set([...candidates].filter(c => !c.includes('${')))
+  },
+}
+
 export default defineConfig({
   content: {
     // Recipe source files build classes via template-literal helpers; scanning
@@ -95,6 +113,7 @@ export default defineConfig({
       exclude: [/[\\/]recipes[\\/].*\.config\.ts$/],
     },
   },
+  extractorDefault: extractorIgnoringInterpolation,
   presets: [
     presetWind4(),
     presetVaria({
@@ -104,7 +123,7 @@ export default defineConfig({
         formInput,
         spinner,
         avatar,
-        ...dropdownComponents,
+        dropdown,
         modal,
         iconButton,
       ],

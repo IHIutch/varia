@@ -1,19 +1,6 @@
 # Dropdown
 
-A multi-element widget built as a family of sibling components. `varia` also supports slots ([`defineSlotComponent`](/api#defineslotcomponent-name-config), used in the [Modal recipe](/recipes/modal)); this recipe chooses siblings instead.
-
-```ts
-// sibling: each part is its own component
-defineComponent('dropdown-trigger', { ... })
-defineComponent('dropdown-menu',    { ... })
-```
-
-```ts
-// slot: one component with named parts
-defineSlotComponent('dropdown', { slots: { trigger, menu } })
-```
-
-The dropdown's parts portal apart in the DOM (an absolutely-positioned menu often escapes its trigger's container), so there's no single ancestor that owns both. Siblings fit that shape; the "vs. slots" section at the bottom of this page walks through the trade-off in detail.
+A trigger + popup menu, built as a single component with slots for each part (root, trigger, menu, item, divider). Open/closed state lives on the menu as a `data-state` attribute; per-item variants (e.g. a destructive "Delete") live on items as `data-variant` attributes. No varia variant axes are needed for run-time state — they're all expressed via data attrs that pair naturally with the JavaScript that toggles them.
 
 ## Authoring
 
@@ -21,60 +8,63 @@ The dropdown's parts portal apart in the DOM (an absolutely-positioned menu ofte
 // recipes/dropdown.config.ts
 import { defineComponent } from 'varia'
 
-export const dropdownTrigger = defineComponent('dropdown-trigger', {
-  base: 'inline-flex items-center justify-between gap-2 rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500',
-})
-
-export const dropdownMenu = defineComponent('dropdown-menu', {
-  base: 'absolute z-10 mt-2 min-w-40 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black/5',
+export default defineComponent('dropdown', {
+  slots: {
+    root: 'relative inline-block',
+    trigger: [
+      'inline-flex items-center justify-between gap-2 px-3 py-2',
+      'rounded-md border border-gray-300 bg-white text-sm font-medium text-gray-700',
+      'shadow-sm hover:bg-gray-50',
+      'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500',
+    ],
+    menu: [
+      'absolute z-10 mt-2 min-w-40 origin-top-right',
+      'rounded-md bg-white py-1 shadow-lg ring-1 ring-black/5',
+      // Hidden by default; data-state=open reveals it (higher specificity wins).
+      'hidden data-[state=open]:block',
+    ],
+    item: [
+      'block w-full px-4 py-2 text-left text-sm text-gray-700',
+      'hover:bg-gray-100 focus:bg-gray-100 focus:outline-none',
+      'disabled:text-gray-400 disabled:cursor-not-allowed',
+      // Per-item destructive variant via data-variant.
+      'data-[variant=danger]:text-red-700 data-[variant=danger]:hover:bg-red-50',
+      'data-[variant=danger]:focus:bg-red-50',
+    ],
+    divider: 'my-1 border-t border-gray-200',
+  },
   variants: {
-    align: { start: 'left-0', end: 'right-0' },
+    align: {
+      start: { menu: 'left-0' },
+      end: { menu: 'right-0' },
+    },
   },
 })
-
-export const dropdownItem = defineComponent('dropdown-item', {
-  base: 'block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none disabled:text-gray-400 disabled:cursor-not-allowed',
-  variants: {
-    danger: 'text-red-700 hover:bg-red-50 focus:bg-red-50',
-  },
-})
-
-export const dropdownDivider = defineComponent('dropdown-divider', {
-  base: 'my-1 border-t-px border-gray-200',
-})
-
-export default [dropdownTrigger, dropdownMenu, dropdownItem, dropdownDivider]
 ```
 
-The default export is the array. Consumers spread the whole family into `presetVaria` in one go:
+Three things to call out:
 
-```ts
-// unocss.config.ts
-import dropdown from './recipes/dropdown.config'
+1. **`align` is a varia variant**, not a data-attr — it's a build-time configuration choice (which side of the trigger the menu opens from), not a runtime state. The variant class goes on the **root** (`<div class="dropdown dropdown-align-end">`) because it's slot-keyed: it emits `.dropdown-align-end .dropdown__menu { right: 0 }`, a descendant rule that needs the alignment class on an ancestor.
 
-export default defineConfig({
-  presets: [
-    presetWind4(),
-    presetVaria({ components: [...dropdown, button, alert] }),
-  ],
-})
-```
+2. **Open/closed is a `data-state` attribute** on the menu. The base expansion includes `hidden data-[state=open]:block` — hidden by default, revealed when `data-state="open"` is present. JS just sets or clears that attribute. No varia variant exists for "open" because it's runtime state, not configuration.
+
+3. **Per-item destructive styling is a `data-variant` attribute**, not a separate slot or boolean variant. Adding more item modes later means more `data-[variant=…]:` rules in the `item` slot expansion, not new slots — the slot list stays small.
 
 ## Live preview
 
 :::raw
 <div class="my-6 p-6 border border-gray-200 rounded-md bg-gray-50">
-  <p class="mb-3 text-sm text-gray-700">A dropdown rendered statically (open) so you can see all four components at once:</p>
-  <div class="relative inline-block">
-    <button class="dropdown-trigger" type="button">
+  <p class="mb-3 text-sm text-gray-700">A dropdown rendered statically with <code>data-state="open"</code> so you can see all the slots at once:</p>
+  <div class="dropdown dropdown-align-start" style="position: static;">
+    <button class="dropdown__trigger" type="button">
       Options
       <span aria-hidden="true">▾</span>
     </button>
-    <div class="dropdown-menu dropdown-menu-align-start" style="position: static; margin-top: 0.5rem;" role="menu">
-      <button class="dropdown-item" role="menuitem" type="button">Edit</button>
-      <button class="dropdown-item" role="menuitem" type="button">Duplicate</button>
-      <hr class="dropdown-divider" />
-      <button class="dropdown-item dropdown-item-danger" role="menuitem" type="button">Delete</button>
+    <div class="dropdown__menu" data-state="open" style="position: static; margin-top: 0.5rem;" role="menu">
+      <button class="dropdown__item" role="menuitem" type="button">Edit</button>
+      <button class="dropdown__item" role="menuitem" type="button">Duplicate</button>
+      <hr class="dropdown__divider" />
+      <button class="dropdown__item" data-variant="danger" role="menuitem" type="button">Delete</button>
     </div>
   </div>
 </div>
@@ -83,65 +73,57 @@ export default defineConfig({
 ## Consumption
 
 ```html
-<div class="relative inline-block">
-  <button class="dropdown-trigger" aria-expanded="false">
+<div class="dropdown dropdown-align-end">
+  <button class="dropdown__trigger" aria-haspopup="menu" aria-expanded="false">
     Options
     <svg>…chevron…</svg>
   </button>
 
-  <div class="dropdown-menu dropdown-menu-align-end" role="menu">
-    <button class="dropdown-item" role="menuitem">Edit</button>
-    <button class="dropdown-item" role="menuitem">Duplicate</button>
-    <hr class="dropdown-divider" />
-    <button class="dropdown-item dropdown-item-danger" role="menuitem">Delete</button>
+  <div class="dropdown__menu" data-state="closed" role="menu">
+    <button class="dropdown__item" role="menuitem">Edit</button>
+    <button class="dropdown__item" role="menuitem">Duplicate</button>
+    <hr class="dropdown__divider" />
+    <button class="dropdown__item" data-variant="danger" role="menuitem">Delete</button>
   </div>
 </div>
 ```
 
+A minimal JS toggle that pairs with this markup:
+
+```ts
+const trigger = document.querySelector('.dropdown__trigger')
+const menu = document.querySelector('.dropdown__menu')
+
+const setOpen = (open: boolean) => {
+  menu.setAttribute('data-state', open ? 'open' : 'closed')
+  trigger.setAttribute('aria-expanded', String(open))
+}
+
+trigger.addEventListener('click', () => {
+  setOpen(menu.getAttribute('data-state') !== 'open')
+})
+document.addEventListener('click', (e) => {
+  if (!menu.contains(e.target) && !trigger.contains(e.target))
+    setOpen(false)
+})
+```
+
 ## What's being demonstrated
 
-- No slots required. Each part is a standalone component with its own variants. The tree is implicit in the markup, not in the config.
-- Shared namespace via the `dropdown-` prefix keeps related classes grep-able and visually grouped: `dropdown-trigger`, `dropdown-menu`, `dropdown-item`, `dropdown-divider`.
-- Per-element variants compose independently. `dropdown-menu-align-end` is a property of the menu; `dropdown-item-danger` is a property of an item. No cross-element coupling.
-- Behavior (open/close, keyboard navigation, focus management) is the consumer's responsibility; `varia` doesn't ship a runtime. Pair these classes with your framework's dropdown logic of choice (Radix, Headless UI, Reka UI, hand-rolled).
+- **State as attributes, not classes.** Toggling `data-state="open"` is one DOM mutation, surfaces in DevTools, and pairs with `aria-expanded` for accessibility without duplicate plumbing.
+- **Per-item variation via attributes too.** Adding `data-variant="danger"` to a single item is local to that item; no extra varia slot or boolean variant axis needed, no markup proliferation.
+- **Configuration (`align`) and state (`data-state`) are different concerns.** Configuration is fixed at author time and uses a varia variant. State changes at runtime and uses an attribute on the element that owns it.
+- **Behavior is the consumer's problem.** varia emits classes; open/close logic, keyboard navigation, and focus management come from your framework or hand-rolled JS.
 
 ## Generated class names
 
 | Class | Element |
 |---|---|
-| `dropdown-trigger` | The button that opens the menu |
-| `dropdown-menu` | The popup container |
-| `dropdown-menu-align-start` / `-align-end` | Horizontal anchor |
-| `dropdown-item` | A clickable menu row |
-| `dropdown-item-danger` | Destructive variant of an item |
-| `dropdown-divider` | A horizontal separator |
+| `dropdown` | The root wrapper (`position: relative`) |
+| `dropdown__trigger` | The button that opens the menu |
+| `dropdown__menu` | The popup container (hidden until `data-state="open"`) |
+| `dropdown__item` | A clickable menu row |
+| `dropdown__divider` | A horizontal separator |
+| `dropdown-align-start` / `dropdown-align-end` | Variant on the root that anchors the menu's left or right edge |
 
-Seven classes, four components, zero slots.
-
-## Sibling components vs. slots
-
-The same dropdown could also be expressed with `defineSlotComponent`:
-
-```ts
-defineSlotComponent('dropdown', {
-  slots: {
-    root: '...',
-    trigger: '...',
-    menu: '...',
-    item: '...',
-    divider: '...',
-  },
-})
-```
-
-with class names like `dropdown__trigger`, `dropdown__menu`, etc. (See the [Modal recipe](/recipes/modal) for the slot-component shape.)
-
-Both forms are first-class. The choice between them is a judgment call:
-
-| Sibling components (this recipe) | Slot component |
-|---|---|
-| Each part has its own variant axes that compose independently. | The whole component has shared variant axes that can target specific slots. |
-| Parts are loosely coupled — `dropdown-trigger` and `dropdown-menu` don't need to be siblings in the DOM. | Parts are tightly coupled inside a single container, and slot-keyed variants need the descendant relationship to work. |
-| You don't need a wrapping element — the trigger and menu live anywhere. | A wrapping element (or at least a shared ancestor) carries the variant class. |
-
-The Dropdown stays as sibling components in `varia`'s recipes for the first reason: there's no single ancestor that "owns" both the trigger and the menu (an absolutely-positioned menu often portals out of the trigger's container), and per-part variants like `dropdown-menu-align-end` and `dropdown-item-danger` compose better when each part owns its own axes.
+Six classes (plus the two data-attrs you set in markup) for trigger, menu, items, divider, and alignment.

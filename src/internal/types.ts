@@ -8,12 +8,42 @@ import type { Preflight } from '@unocss/core'
 export type ClassInput = string | string[]
 
 /**
- * A variant's value can be a single utility-class string (applied to the
- * default slot, or to the component itself for single-element components),
- * or — for slot components only — a record mapping slot names to utility
- * class strings.
+ * A variant value targeting one or more slots:
+ *
+ *   accent: { root: 'ring-2', title: 'text-blue-900' }
+ *
+ * Keys must all be declared slot names of the component. Values get resolved
+ * and applied to each slot via a descendant selector.
  */
-export type VariantDefinition = ClassInput | Record<string, ClassInput>
+export type SlotKeyedValue = Record<string, ClassInput>
+
+/**
+ * For a multi-value variant, each value can be either:
+ * - a flat ClassInput (applied to the root slot), or
+ * - a slot-keyed object (applied to specific slots).
+ */
+export type VariantValue = ClassInput | SlotKeyedValue
+
+/**
+ * A variant definition has four shapes:
+ *
+ * 1. `'string' | string[]` — boolean variant, applied to root.
+ * 2. `{ slot: '...', slot2: '...' }` — boolean slot-keyed; ALL keys must be
+ *    declared slot names of the component.
+ * 3. `{ valueName: '...', valueName2: '...' }` — multi-value; each value
+ *    applies to root.
+ * 4. `{ valueName: { slot: '...', ... }, ... }` — multi-value with slot-keyed
+ *    values.
+ *
+ * Shapes 2 and 3 are disambiguated by inspecting the keys against the
+ * component's slots. Mixed-key configs (some slot names, some not) throw at
+ * validation time. For single-slot components (the `base`-only shape), no
+ * slot collisions are possible unless a variant value object literally uses
+ * a key named `root`.
+ */
+export type VariantDefinition
+  = | ClassInput
+    | Record<string, VariantValue>
 
 /**
  * A compound variant's `when` clause: which variant axis values must be set
@@ -30,7 +60,17 @@ export interface CompoundVariantRule {
 }
 
 export interface ComponentConfig {
+  /**
+   * Utility classes for the bare component. Sugar for `slots: { root: base }`.
+   * Mutually exclusive with `slots`.
+   */
   base?: ClassInput
+  /**
+   * Named parts of a multi-element component. The `root` slot maps to the
+   * bare component name; every other slot maps to BEM `component__slot`.
+   * Slot names must match `/^[a-z][a-z0-9-]*$/`.
+   */
+  slots?: Record<string, ClassInput>
   variants?: Record<string, VariantDefinition>
   /**
    * Cross-axis rules. Each compound emits a CSS rule with a combined-class
@@ -51,60 +91,9 @@ export interface DefinedComponent {
   shortcuts: Shortcut[]
   manifest: ComponentManifest
   /**
-   * UnoCSS preflights contributed by this component. Used by `defineSlotComponent`
-   * to emit descendant-selector CSS rules for slot-keyed variants, where the
-   * variant CSS resolves utility strings at preset construction time.
-   * Single-element `defineComponent` doesn't populate this.
+   * UnoCSS preflights contributed by this component. Populated when the
+   * component declares slot-keyed variants or compound variants — both emit
+   * CSS via preflights rather than shortcuts.
    */
   preflights?: Preflight<object>[]
-}
-
-// --- Slot component types ----------------------------------------------------
-
-/**
- * A slot variant value targets specific slots:
- *
- *   variant: { primary: { root: 'bg-blue-600', title: 'text-white' } }
- *
- * Each key is a slot name from the component's `slots` config; each value is
- * a utility class string that gets resolved and applied to that slot via
- * a descendant selector.
- */
-export type SlotKeyedValue = Record<string, ClassInput>
-
-/**
- * For a multi-value variant on a slot component, each value can be either:
- * - a flat string (applied to the root slot only), or
- * - a slot-keyed object.
- */
-export type SlotVariantValue = ClassInput | SlotKeyedValue
-
-/**
- * A slot variant definition has four shapes:
- *
- * 1. `'string'` — boolean variant; applies to root.
- * 2. `{ slot: 'string', slot2: 'string', ... }` — boolean slot-keyed (all keys
- *    are slot names of the component).
- * 3. `{ valueName: 'string', valueName2: 'string', ... }` — multi-value with
- *    string values (each applies to root).
- * 4. `{ valueName: { slot: 'string', ... }, ... }` — multi-value with
- *    slot-keyed values.
- *
- * Shapes 2 and 3 are disambiguated by inspecting the keys against the
- * component's slot list. Mixed-key configs (some slot names, some not) throw
- * at validation time.
- */
-export type SlotVariantDefinition
-  = | ClassInput
-    | Record<string, SlotVariantValue>
-
-export interface SlotComponentConfig {
-  /**
-   * Named parts of the component. Keys are slot names (must match the
-   * assembled-class regex `/^[a-z][a-z0-9-]*$/`). The `root` slot maps to the
-   * bare component name (e.g., `card`); every other slot maps to BEM
-   * `component__slot` (e.g., `card__title`).
-   */
-  slots: Record<string, ClassInput>
-  variants?: Record<string, SlotVariantDefinition>
 }

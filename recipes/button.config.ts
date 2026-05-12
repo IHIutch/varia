@@ -1,29 +1,28 @@
 import { defineComponent } from '../src/index.js'
 
-const COLORS = ['primary', 'success', 'danger', 'warning', 'info', 'neutral'] as const
-type Color = (typeof COLORS)[number]
-
-const TONES: Record<Color, string> = {
+// Map each semantic color name to a UnoCSS palette tone. Five colors keep the
+// example tight; the same shape extends to as many as a real design system
+// needs.
+const COLORS = {
   primary: 'blue',
   success: 'emerald',
   danger: 'red',
   warning: 'amber',
-  info: 'sky',
   neutral: 'gray',
-}
+} as const
 
-// Each color sets per-component CSS vars from the project's UnoCSS palette.
-// theme() resolves at build time; if a consumer swaps their palette, these
-// expansions follow automatically.
-function colorVars(tone: string): string[] {
+type Color = keyof typeof COLORS
+
+// For each color, produce one compound rule per style. The compound sets the
+// concrete colours (bg, border, text, hover-bg) — the `c` and `style` variant
+// shortcuts just carry properties that are constant across the matrix.
+function compoundsFor(c: Color) {
+  const t = COLORS[c]
   return [
-    `[--btn-bg:theme(colors.${tone}.600)]`,
-    `[--btn-bg-hover:theme(colors.${tone}.700)]`,
-    `[--btn-text:theme(colors.${tone}.700)]`,
-    `[--btn-border:theme(colors.${tone}.300)]`,
-    `[--btn-bg-subtle:theme(colors.${tone}.50)]`,
-    `[--btn-bg-muted:theme(colors.${tone}.100)]`,
-    `[--btn-focus-ring:theme(colors.${tone}.500)]`,
+    { when: { c, style: 'solid' }, class: `bg-${t}-600 border-${t}-600 hover:bg-${t}-700` },
+    { when: { c, style: 'outline' }, class: `text-${t}-700 border-${t}-300 hover:bg-${t}-50` },
+    { when: { c, style: 'subtle' }, class: `bg-${t}-50 text-${t}-700 hover:bg-${t}-100` },
+    { when: { c, style: 'ghost' }, class: `text-${t}-700 hover:bg-${t}-50` },
   ]
 }
 
@@ -32,28 +31,21 @@ export default defineComponent('btn', {
     'inline-flex items-center justify-center rounded-md font-medium border',
     'transition-colors',
     'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2',
-    'focus-visible:ring-[var(--btn-focus-ring,theme(colors.gray.500))]',
     'disabled:opacity-50 disabled:cursor-not-allowed',
   ],
   variants: {
-    c: Object.fromEntries(COLORS.map(c => [c, colorVars(TONES[c])])) as Record<Color, string[]>,
+    c: {
+      primary: 'focus-visible:ring-blue-500',
+      success: 'focus-visible:ring-emerald-500',
+      danger: 'focus-visible:ring-red-500',
+      warning: 'focus-visible:ring-amber-500',
+      neutral: 'focus-visible:ring-gray-500',
+    },
     style: {
-      solid: [
-        'bg-[var(--btn-bg)] text-white border-[var(--btn-bg)]',
-        'hover:bg-[var(--btn-bg-hover)] hover:border-[var(--btn-bg-hover)]',
-      ],
-      outline: [
-        'bg-transparent text-[var(--btn-text)] border-[var(--btn-border)]',
-        'hover:bg-[var(--btn-bg-subtle)]',
-      ],
-      subtle: [
-        'bg-[var(--btn-bg-subtle)] text-[var(--btn-text)] border-transparent',
-        'hover:bg-[var(--btn-bg-muted)]',
-      ],
-      ghost: [
-        'bg-transparent text-[var(--btn-text)] border-transparent',
-        'hover:bg-[var(--btn-bg-subtle)]',
-      ],
+      solid: 'text-white',
+      outline: 'bg-transparent',
+      subtle: 'border-transparent',
+      ghost: 'bg-transparent border-transparent',
     },
     s: {
       sm: 'px-2.5 py-1 text-sm',
@@ -61,4 +53,5 @@ export default defineComponent('btn', {
       lg: 'px-6 py-3 text-lg',
     },
   },
+  compoundVariants: (Object.keys(COLORS) as Color[]).flatMap(compoundsFor),
 })

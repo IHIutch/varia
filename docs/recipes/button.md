@@ -1,6 +1,6 @@
 # Button
 
-A button with three independent variant axes: color, style, and size. Each color sets per-component CSS variables from the UnoCSS palette; each style consumes them. Adding a seventh color costs one map entry; styles and sizes stay untouched.
+A button with three independent variant axes: color, style, and size. The color × style matrix is expressed via `compoundVariants` — one explicit rule per (color, style) cell — keeping the recipe direct and the call sites readable.
 
 ## Authoring
 
@@ -8,33 +8,29 @@ A button with three independent variant axes: color, style, and size. Each color
 // recipes/button.config.ts
 import { defineComponent } from 'varia'
 
-const COLORS = ['primary', 'success', 'danger', 'warning', 'info', 'neutral'] as const
-type Color = (typeof COLORS)[number]
-
-// Map each semantic color to a UnoCSS palette tone. Forking this map is
-// how a consumer remaps `primary` to a different hue.
-const TONES: Record<Color, string> = {
+// Map each semantic color to a UnoCSS palette tone. Five colors keep the
+// example tight; the same shape extends to as many as a real design system
+// needs.
+const COLORS = {
   primary: 'blue',
   success: 'emerald',
   danger: 'red',
   warning: 'amber',
-  info: 'sky',
   neutral: 'gray',
-}
+} as const
 
-// Each color sets seven per-component CSS variables from the palette.
-// theme() resolves at build time, so swapping TONES (or the UnoCSS theme
-// itself) updates every button automatically.
-//   colorVars('blue') → ['[--btn-bg:theme(colors.blue.600)]', '[--btn-bg-hover:theme(colors.blue.700)]', …]
-function colorVars(tone: string): string[] {
+type Color = keyof typeof COLORS
+
+// For each color, produce one compound rule per style. The compound sets the
+// concrete colours (bg, border, text, hover-bg); the `c` and `style` shortcuts
+// just carry properties that stay constant across the matrix.
+function compoundsFor(c: Color) {
+  const t = COLORS[c]
   return [
-    '[--btn-bg:theme(colors.' + tone + '.600)]',
-    '[--btn-bg-hover:theme(colors.' + tone + '.700)]',
-    '[--btn-text:theme(colors.' + tone + '.700)]',
-    '[--btn-border:theme(colors.' + tone + '.300)]',
-    '[--btn-bg-subtle:theme(colors.' + tone + '.50)]',
-    '[--btn-bg-muted:theme(colors.' + tone + '.100)]',
-    '[--btn-focus-ring:theme(colors.' + tone + '.500)]',
+    { when: { c, style: 'solid' },   class: `bg-${t}-600 border-${t}-600 hover:bg-${t}-700` },
+    { when: { c, style: 'outline' }, class: `text-${t}-700 border-${t}-300 hover:bg-${t}-50` },
+    { when: { c, style: 'subtle' },  class: `bg-${t}-50 text-${t}-700 hover:bg-${t}-100` },
+    { when: { c, style: 'ghost' },   class: `text-${t}-700 hover:bg-${t}-50` },
   ]
 }
 
@@ -43,16 +39,21 @@ export default defineComponent('btn', {
     'inline-flex items-center justify-center rounded-md font-medium border',
     'transition-colors',
     'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2',
-    'focus-visible:ring-[var(--btn-focus-ring,theme(colors.gray.500))]',
     'disabled:opacity-50 disabled:cursor-not-allowed',
   ],
   variants: {
-    c: Object.fromEntries(COLORS.map(c => [c, colorVars(TONES[c])])) as Record<Color, string[]>,
+    c: {
+      primary: 'focus-visible:ring-blue-500',
+      success: 'focus-visible:ring-emerald-500',
+      danger:  'focus-visible:ring-red-500',
+      warning: 'focus-visible:ring-amber-500',
+      neutral: 'focus-visible:ring-gray-500',
+    },
     style: {
-      solid: 'bg-[var(--btn-bg)] text-white border-[var(--btn-bg)] hover:bg-[var(--btn-bg-hover)] hover:border-[var(--btn-bg-hover)]',
-      outline: 'bg-transparent text-[var(--btn-text)] border-[var(--btn-border)] hover:bg-[var(--btn-bg-subtle)]',
-      subtle: 'bg-[var(--btn-bg-subtle)] text-[var(--btn-text)] border-transparent hover:bg-[var(--btn-bg-muted)]',
-      ghost: 'bg-transparent text-[var(--btn-text)] border-transparent hover:bg-[var(--btn-bg-subtle)]',
+      solid:   'text-white',
+      outline: 'bg-transparent',
+      subtle:  'border-transparent',
+      ghost:   'bg-transparent border-transparent',
     },
     s: {
       sm: 'px-2.5 py-1 text-sm',
@@ -60,8 +61,15 @@ export default defineComponent('btn', {
       lg: 'px-6 py-3 text-lg',
     },
   },
+  compoundVariants: (Object.keys(COLORS) as Color[]).flatMap(compoundsFor),
 })
 ```
+
+Two things to call out:
+
+1. **`c` and `style` carry only the constant properties.** `c.primary` sets `focus-visible:ring-blue-500` — same regardless of style. `style.solid` sets `text-white` — same regardless of color. Everything that depends on *both* axes (background, border, hover background, the colored text in outline/subtle/ghost) lives in the compound rules.
+
+2. **Compounds are generated programmatically.** The `compoundsFor` helper produces the four rules for each color. Adding a sixth color is one entry in `COLORS`; the helper handles the rest. The `${t}` template-literal interpolation runs at recipe-load time, so UnoCSS sees fully-resolved utility strings (`bg-blue-600`, never `bg-${t}-600`).
 
 ## Live preview
 
@@ -97,81 +105,44 @@ export default defineComponent('btn', {
 <button class="btn btn-c-primary btn-style-solid btn-s-md" disabled>Loading…</button>
 ```
 
-Three classes per button: color, style, size. The base class (`btn`) carries the state styling (`hover:`, `focus-visible:`, `disabled:`) once for all combinations.
+Three classes per button: color, style, size. The base class (`btn`) carries state styling (`hover:`, `focus-visible:`, `disabled:`) once for all combinations.
 
 ## What's being demonstrated
 
-- **Three orthogonal axes.** Six colors × four styles × three sizes is `6 + 4 + 3 = 13` named variants, not `6 × 4 × 3 = 72`. The combinatorics stay linear because color and style compose at the call site through per-component CSS vars.
-- **Palette-driven colors.** `theme(colors.blue.600)` resolves at build time. Swapping a consumer's UnoCSS palette swaps every button color without touching the recipe. Forking the `TONES` map to remap `primary -> green` is a one-line change.
-- **Color stays explicit in markup.** `btn-c-primary` reads as "primary button." No ancestor context to track.
-- **State pseudo-classes belong on `base`.** Hover/focus-visible/disabled live on the base class once. Color and style don't need to repeat them.
+- **Three orthogonal axes at the call site.** Consumer writes `btn-c-primary btn-style-solid btn-s-md` — readable, grep-able, no synthetic identifiers like `btn-primary-solid-md`.
+- **Constant properties on the shortcut, color-specific properties in compounds.** `style.solid` carrying just `text-white` (constant for all colors) and `c.primary` carrying just `focus-visible:ring-blue-500` (constant across styles) means the compounds stay focused on only what genuinely depends on both axes.
+- **State pseudo-classes live on `base`.** Hover, focus-visible, and disabled apply across the entire matrix once.
+- **Compounds are generated, not hand-written.** A 5×4 matrix is 20 rules. The `compoundsFor` helper makes adding a sixth color a one-line change.
 
 ## Generated class names
 
 | Class | Purpose |
 |---|---|
-| `btn` | Base styling (state, transitions, focus ring) |
-| `btn-c-primary` / `-success` / `-danger` / `-warning` / `-info` / `-neutral` | Color (sets per-component CSS vars from the palette) |
-| `btn-style-solid` / `-outline` / `-subtle` / `-ghost` | Shape (consumes the CSS vars) |
+| `btn` | Base styling (state, transitions, focus ring scaffolding) |
+| `btn-c-primary` / `-success` / `-danger` / `-warning` / `-neutral` | Color (carries focus-ring tint, used as a compound-match key) |
+| `btn-style-solid` / `-outline` / `-subtle` / `-ghost` | Style (carries the cross-color constant for that style) |
 | `btn-s-sm` / `-md` / `-lg` | Size |
 
-Thirteen classes. Consumers pay for what they reference.
+The compound rules don't get their own consumer-facing class names; they fire automatically when both `btn-c-*` and `btn-style-*` are present on the same element.
 
 ## Customizing
 
-Want a different palette, or an extra color? Three common edits:
+Three common edits:
 
-- **Remap a color to a different palette tone.** Edit `TONES`: `primary: 'green'` instead of `'blue'`. The button now uses `theme(colors.green.600)` etc.
-- **Add a new color.** Add `accent: 'purple'` to `TONES` and `accent` to `COLORS`. The button now accepts `btn-c-accent`.
-- **Add a new style.** Add `link: 'bg-transparent text-[var(--btn-text)] underline decoration-2 underline-offset-2 border-transparent hover:no-underline'` to the `style` variant. The button now accepts `btn-style-link`.
+- **Remap a color to a different palette tone.** Change one entry in `COLORS`: `primary: 'green'` instead of `'blue'`. The helper rebuilds all four primary compounds with `bg-green-600`, `text-green-700`, etc.
+- **Add a new color.** Add `accent: 'purple'` to `COLORS` and a `c.accent: 'focus-visible:ring-purple-500'` shortcut. The helper produces the four new compounds automatically.
+- **Add a new style.** Add a `style.link: …` shortcut and extend `compoundsFor` with a fifth entry per color.
 
-For wrapper-driven theming (one class on an ancestor reskins every component in the subtree, dark mode flips automatically) see the [Theming deep-dive](/theming).
+## When compound variants are the right shape
 
-## Alternative pattern: compound variants
+The button uses `compoundVariants` because the color × style matrix has a genuine cross-axis dependency: the background color of a "solid primary" button is `blue-600`, but a "solid danger" button is `red-600` and an "outline primary" button has no background at all. There's no way to compute that from `c` alone or `style` alone — the cell value needs both axes.
 
-The recipe above handles the color × style matrix through per-component CSS variables: `color` sets vars from the palette, and `style` consumes them. That keeps the variant count at `6 + 4 = 10` instead of `6 × 4 = 24`. It works because color and style are **independent**. A color knows nothing about a style, a style knows nothing about a color; they only meet at runtime via the variable indirection.
+The trade-off: compound rules emit unconditionally (they're preflight CSS, not JIT shortcuts), so all 20 ship in your bundle even if your page only uses two of them. At this matrix size, that's a few hundred bytes; at much larger matrices (every Tailwind palette color, say) it would be worth reconsidering.
 
-The other legitimate way to express the same matrix is **compound variants**, declaring each of the 24 color × style combinations explicitly:
-
-```ts
-defineComponent('btn', {
-  base: '…',
-  variants: {
-    c: { primary: '', danger: '', /* ... */ },        // boolean markers, no styles
-    style: { solid: '', outline: '', /* ... */ },
-    s: { sm: 'px-2.5 py-1 text-sm', /* ... */ },
-  },
-  compoundVariants: [
-    { when: { c: 'primary', style: 'solid' },   class: 'bg-blue-600 text-white border-blue-600 hover:bg-blue-700' },
-    { when: { c: 'primary', style: 'outline' }, class: 'bg-transparent text-blue-700 border-blue-300 hover:bg-blue-50' },
-    { when: { c: 'danger',  style: 'solid' },   class: 'bg-red-600 text-white border-red-600 hover:bg-red-700' },
-    // ... 21 more rules ...
-  ],
-})
-```
-
-### When each pattern is right
-
-**Use per-component CSS variables (this recipe) when:**
-
-- The axes are independent: a color cell looks like a color cell regardless of which style is chosen.
-- The cells differ only in **values**, not in **CSS properties**. (Every cell sets `background-color` and `color`; the values differ.)
-- You want the matrix to scale linearly. Adding a 7th color costs one new variant, not four.
-- You want consumers to be able to swap the palette in one place (the `TONES` map or the UnoCSS theme) and have every cell update automatically.
-
-**Use compound variants when:**
-
-- The cells genuinely differ in which CSS properties they set. For example, `square × size`: the compound applies `padding` (one property), while the rest applies `padding-inline` + `padding-block`. CSS variables can't switch which property an expansion writes to.
-- The matrix is small and fixed: three or four axes with two or three values each, not "every palette color." Compound count is the product; 6×4 is 24 rules.
-- One axis is a feature flag (`square`, `loading`, `dismissible`) that meaningfully changes layout when combined with another axis, rather than just changing values.
-
-For the Button specifically, the per-variable pattern is the better fit because all 24 cells set the same properties with different values, and the palette is exactly where you want changes to land. The [Icon button recipe](/recipes/icon-button) shows compound variants in their natural habitat: `square × size`, where each cell needs a fundamentally different `padding` value that can't be parameterized.
-
-The two patterns also **compose**: a button could have `c × style` handled by per-variable indirection AND a `loading × size` compound rule on top, if both kinds of axes appeared on the same component.
+The [Icon button recipe](/recipes/icon-button) shows compound variants with a different shape: `square × size`, where the compound is essential because each cell sets a different CSS property (`padding`, not just a different padding value).
 
 ## See also
 
-- [Icon button recipe](/recipes/icon-button): compound variants in their natural habitat.
-- [Form input recipe](/recipes/form-input): same orthogonal-axes pattern with state being the leading axis.
-- [Theming deep-dive](/theming): when you need cross-component reskinning, semantic tokens, or automatic dark mode.
-- [Naming convention](/naming): the formal rules for assembled class names.
+- [Icon button recipe](/recipes/icon-button) — compound variants where each cell sets fundamentally different properties.
+- [Form input recipe](/recipes/form-input) — orthogonal axes with state as a variant.
+- [Naming convention](/naming) — the formal rules for assembled class names.

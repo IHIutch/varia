@@ -63,7 +63,7 @@ UnoCSS only emits CSS for classes it finds in your source files. A `btn-c-purple
 
 *Compound variant*: a rule that fires when two axes are set together. Emits CSS but no new class. See [API reference](/api#compound-variants).
 
-*Slot*: a named part of a multi-element component. `defineSlotComponent('modal', { slots: { header, body, footer } })` produces `modal__header`, `modal__body`, `modal__footer`. See [Modal recipe](/recipes/modal).
+*Slot*: a named part of a multi-element component. `defineComponent('modal', { slots: { header, body, footer } })` produces `modal__header`, `modal__body`, `modal__footer`. See [Modal recipe](/recipes/modal).
 
 *Slot-keyed variant*: a variant axis whose values target specific slots. `size: { md: { container: 'max-w-md' } }` emits `.modal-size-md .modal__container { max-width: ... }`. See [API reference](/api#multi-value-slot-keyed-variant).
 
@@ -72,5 +72,5 @@ UnoCSS only emits CSS for classes it finds in your source files. A `btn-c-purple
 ## Next
 
 - [Quickstart](/quickstart): install and define your first component.
-- [API reference](/api): every option for `defineComponent`, `defineSlotComponent`, `compoundVariants`, and `presetVaria`.
+- [API reference](/api): every option for `defineComponent`, `compoundVariants`, and `presetVaria`.
 - [Recipes](/recipes/button): worked examples.

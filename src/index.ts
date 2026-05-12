@@ -1,15 +1,13 @@
 export { defineComponent } from './define-component.js'
-export { defineSlotComponent } from './define-slot-component.js'
 export type {
+  ClassInput,
   ComponentConfig,
   ComponentManifest,
   CompoundVariantRule,
   CompoundVariantWhen,
   DefinedComponent,
   Shortcut,
-  SlotComponentConfig,
   SlotKeyedValue,
-  SlotVariantDefinition,
-  SlotVariantValue,
   VariantDefinition,
+  VariantValue,
 } from './internal/types.js'

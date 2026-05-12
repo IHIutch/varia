@@ -1,14 +1,14 @@
 # Modal
 
-A modal with backdrop, container, header, body, and footer, built with `defineSlotComponent`. The parts are tightly coupled inside a single container, so slots give them a shared namespace instead of forcing consumers to remember five separate prefixed classes (the way Dropdown's siblings do).
+A modal with backdrop, container, header, body, and footer, built with the `slots` shape of `defineComponent`. The parts are tightly coupled inside a single container, so slots give them a shared namespace instead of forcing consumers to remember five separate prefixed classes (the way Dropdown's siblings do).
 
 ## Authoring
 
 ```ts
 // recipes/modal.config.ts
-import { defineSlotComponent } from 'varia'
+import { defineComponent } from 'varia'
 
-export default defineSlotComponent('modal', {
+export default defineComponent('modal', {
   slots: {
     root: 'fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4',
     container:

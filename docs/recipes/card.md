@@ -9,7 +9,7 @@ A base-styled container with no variants. Components with nothing to vary are st
 import { defineComponent } from 'varia'
 
 export default defineComponent('card', {
-  base: 'block rounded-lg border border-gray-200 bg-white shadow-sm overflow-hidden',
+  base: 'block rounded-lg border border-gray-200 bg-white shadow-sm',
 })
 ```
 
@@ -44,7 +44,7 @@ No `variants` block. `defineComponent` accepts this; `base` alone is a valid com
 </article>
 ```
 
-The header and body styling are plain utilities, not part of the `card` component's vocabulary. If you find yourself using the same header pattern across many cards, that's the moment to introduce a sibling component (`card-header`) using the multi-component pattern from the [Dropdown recipe](/recipes/dropdown).
+The header and body styling are plain utilities, not part of the `card` component's vocabulary. If you find yourself using the same header pattern across many cards, that's the moment to graduate `card` into a slot component with `header`, `body`, and `footer` slots — see the [Modal recipe](/recipes/modal) for the shape.
 
 ## What's being demonstrated
 
