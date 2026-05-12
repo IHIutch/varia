@@ -44,18 +44,12 @@ No `variants` block. `defineComponent` accepts this; `base` alone is a valid com
 </article>
 ```
 
-The header and body styling are plain utilities, not part of the `card` component's vocabulary. If you find yourself using the same header pattern across many cards, that's the moment to graduate `card` into a slot component with `header`, `body`, and `footer` slots — see the [Modal recipe](/recipes/modal) for the shape.
-
-## What's being demonstrated
-
-- A `defineComponent` call with only a `base` field is valid.
-- No variants means no extra class names; the manifest stays minimal.
-- The library doesn't push you toward synthetic complexity. If a component is a single CSS string, treat it as one.
+The header and body styling are plain utilities, not part of the `card` component's vocabulary. If you find yourself using the same header pattern across many cards, that's the moment to graduate `card` into a slot component with `header`, `body`, and `footer` slots. See the [Modal recipe](/recipes/modal) for the shape.
 
 ## When to add variants
 
 You don't need them yet, but watch for:
 
-- Two or more callers manually overriding the same property (`bg-blue-50`, `bg-amber-50`); that's a candidate for `c: { … }`.
-- A pattern emerging where you compose `card` with `border-2 border-blue-500` for an accent; that's an `accent: '…'` boolean variant waiting to happen.
+- Two or more callers manually overriding the same property (`bg-blue-50`, `bg-amber-50`); that's a candidate for `c: { ... }`.
+- A pattern emerging where you compose `card` with `border-2 border-blue-500` for an accent; that's an `accent: '...'` boolean variant waiting to happen.
 - More than three of these and you're growing into the [Button recipe's](/recipes/button) shape.

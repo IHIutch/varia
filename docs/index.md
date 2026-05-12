@@ -24,8 +24,10 @@ features:
     details: Class strings work in HTML, ERB, Liquid, HEEx, JSX, or any other template language. No JS required at consumption sites.
   - title: Readable class names
     details: Generated names follow <code>btn-c-primary</code> / <code>btn-outline</code> / <code>modal__container</code> patterns the consumer can grep for and override.
-  - title: Editor-friendly
-    details: The UnoCSS VS Code extension gives autocomplete out of the box. A generated <code>VariaClasses</code> union enables linting in TS projects.
-  - title: JIT for design systems
-    details: Consumers compile only the components they actually use. The same JIT story Tailwind brought to utilities, applied to design-system components.
+  - title: Editor autocomplete out of the box
+    details: The UnoCSS VS Code extension reads your config and offers completion in HTML, JSX, ERB, Liquid, HEEx, and anywhere else classes live.
+  - title: Optional TypeScript checking
+    details: A generated <code>VariaClasses</code> union lets you type-check class strings in TS projects, or build custom lint rules.
+  - title: Ship only what's used
+    details: Consumers compile only the components they actually reference. A class in the manifest that no template uses doesn't make it into the CSS.
 ---

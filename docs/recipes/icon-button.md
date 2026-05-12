@@ -35,7 +35,7 @@ export default defineComponent('icon-btn', {
 })
 ```
 
-Each compound rule says: "when these axes are set together on the same element, apply this class." The compound emits a CSS rule with a chained-class selector (`.icon-btn-s-md.icon-btn-square`), not a new consumer-facing class — the consumer keeps writing the same individual variant classes side by side.
+Each compound rule says: "when these axes are set together on the same element, apply this class." The compound emits a CSS rule with a chained-class selector (`.icon-btn-s-md.icon-btn-square`), not a new consumer-facing class. The consumer keeps writing the same individual variant classes side by side.
 
 ## Live preview
 
@@ -66,13 +66,13 @@ Each compound rule says: "when these axes are set together on the same element, 
 ```html
 <!-- Labeled button: size variant alone -->
 <button class="icon-btn icon-btn-s-md" type="button">
-  <svg>…icon…</svg>
+  <svg>...icon...</svg>
   Add
 </button>
 
 <!-- Icon-only button: size + square together -->
 <button class="icon-btn icon-btn-s-md icon-btn-square" type="button" aria-label="Add">
-  <svg>…icon…</svg>
+  <svg>...icon...</svg>
 </button>
 ```
 
@@ -90,12 +90,12 @@ For the rule above, the generated output includes:
 
 Three rules in increasing specificity. The browser's cascade does the rest. There's no `icon-btn-s-md-square` class to remember.
 
-## Why not just write a `square-md` value?
+## Why this isn't a multi-value `square` variant
 
 You could collapse the matrix by making `square` a multi-value variant: `square: { xs, sm, md, lg }`. That would replace the four compounds with four direct shortcuts. Two reasons not to:
 
-1. **`square` and `size` mean different things.** The size variant controls font size and (for labeled buttons) padding. The square flag controls aspect ratio. Squishing them into one axis loses that meaning at the consumer site.
-2. **Consumers would have to write *both* the size and the square value redundantly.** `<button class="icon-btn icon-btn-s-md icon-btn-square-md">` reads worse than `<button class="icon-btn icon-btn-s-md icon-btn-square">`. The compound shape pushes the matrix into the config where it belongs and keeps the markup short.
+1. `square` and `size` mean different things. The size variant controls font size and (for labeled buttons) padding. The square flag controls aspect ratio. Squishing them into one axis loses that meaning at the consumer site.
+2. Consumers would have to write *both* the size and the square value redundantly. `<button class="icon-btn icon-btn-s-md icon-btn-square-md">` reads worse than `<button class="icon-btn icon-btn-s-md icon-btn-square">`. The compound shape pushes the matrix into the config where it belongs and keeps the markup short.
 
 The general rule of thumb: use a compound when two axes are conceptually independent but have CSS that needs them combined. Use a single multi-value variant when the axes are really one concept.
 
@@ -116,4 +116,4 @@ Six consumer-facing classes, four compound CSS rules (no extra class for each).
 - A tag's `dismissible` variant needs different right-padding to leave room for the close button.
 - Any "feature flag" boolean that interacts with a sizing axis.
 
-When the axes don't interact (color × size for a Button, where color picks the palette and size picks the dimensions independently), you don't need compounds — see the [Button recipe](/recipes/button) for the per-component-vars pattern that handles independent axes cleanly.
+When the axes don't interact (color × size for a Button, where color picks the palette and size picks the dimensions independently), you don't need compounds. See the [Button recipe](/recipes/button) for the per-component-vars pattern that handles independent axes.

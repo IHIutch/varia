@@ -26,29 +26,13 @@
 
 ### CVA (`class-variance-authority`)
 
-The fundamental difference, side by side:
-
-```jsx
-// CVA: callable from JSX, runtime concatenation
-const button = cva('inline-flex', {
-  variants: { color: { primary: 'bg-blue-600' } },
-})
-
-<button className={button({ color: 'primary' })}>Save</button>
-```
-
-```erb
-<%# varia: class names, written anywhere %>
-<button class="btn btn-c-primary">Save</button>
-```
+CVA is the API-shape ancestor of `varia` — the config feels almost identical. The difference is what it returns: CVA returns a JS function you call from JSX (`button({ color: 'primary' })`); `varia` returns class names you write directly in markup.
 
 Pick CVA if:
 - You're shipping a React/Vue/Svelte component library and want the callable.
 - You need default variants computed at the call site (CVA does this at runtime).
 - You don't mind the small runtime cost.
 - You don't need consumption from non-JS template languages.
-
-CVA is the API-shape ancestor of `varia`; the config feels almost identical.
 
 ### tailwind-variants
 
@@ -69,12 +53,14 @@ vanilla-extract owns its own extractor and CSS engine. `varia` deliberately does
 
 ### Panda CSS
 
+Panda is the closest peer to `varia` in concept: recipes are similar to variants, both are build-time, both are JIT. Panda differs on three axes: it's framework-coupled, it owns its own CSS engine, and it emits hashed class names.
+
 Pick Panda if:
 - You want a complete framework-coupled styling solution (recipes, patterns, conditions, semantic tokens, layout primitives) all in one tool.
 - You're committed to React, Vue, Svelte, or Solid.
 - Hashed atomic class names are acceptable.
 
-Panda is the closest peer to `varia` in concept: recipes are similar to variants, both are build-time, both are JIT. Panda differs on three axes: it's framework-coupled, it owns its own CSS engine, and it emits hashed class names. If you need Panda's depth, take it. `varia` is intentionally a smaller surface.
+Panda is excellent at what it does. The reason `varia` exists isn't a complaint about Panda; the JS-framework coupling and hashed class names make Panda a non-option for the Rails / Phoenix / Astro / Hugo audience that ships server-rendered HTML. If you're React-first and the framework coupling is fine, try Panda first.
 
 ## Why `varia` vs. just writing UnoCSS shortcuts manually
 
@@ -99,7 +85,3 @@ shortcuts: [
 4. Boolean shorthand. `outline: '...'` produces `btn-outline` (no value suffix). Hand-rolled shortcuts can't represent this without ad-hoc naming conventions.
 
 If your component library has fewer than ~5 variants total, manual shortcuts are fine. Past that, the structure starts to pay off.
-
-## A note on Panda specifically
-
-Panda CSS is excellent at what it does. The reason `varia` exists isn't a complaint about Panda; the JS-framework coupling and hashed class names make Panda a non-option for the Rails / Phoenix / Astro / Hugo audience that ships server-rendered HTML. If you're React-first and the framework coupling is fine, try Panda first.

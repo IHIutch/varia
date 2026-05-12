@@ -69,12 +69,10 @@ Two notes on the config:
 
 ## Size variants in action
 
-The interesting property of `size` being a **slot-keyed** variant is that swapping it changes *only* the container's max-width. The backdrop, header, body padding, and footer don't react at all. Here are the same modal contents rendered at four sizes so you can see what changes (container width) and what doesn't (everything else):
+The interesting property of `size` being a **slot-keyed** variant is that swapping it changes *only* the container's max-width. The backdrop, header padding, and close-button position don't react. Here are the same modal contents at the smallest and largest sizes; `md` and `lg` sit between them:
 
 :::raw
 <div class="my-6 space-y-4">
-  <p class="text-sm text-gray-700">Each preview below renders the same DOM with a different <code>modal-size-*</code> class on the root. The container slot resizes; the backdrop, the header padding, and the close-button position all stay identical.</p>
-
   <div class="text-xs font-mono text-gray-500 pl-1"><code>modal-size-sm</code></div>
   <div class="relative border border-gray-200 rounded-md overflow-hidden" style="height: 240px; background: linear-gradient(135deg, #f1f5f9, #e2e8f0);">
     <div class="modal modal-size-sm" style="position: absolute;" role="dialog" aria-modal="true" aria-labelledby="demo-sm-title">
@@ -82,52 +80,6 @@ The interesting property of `size` being a **slot-keyed** variant is that swappi
         <div class="modal__header">
           <div>
             <h2 class="modal__title" id="demo-sm-title">Save changes?</h2>
-          </div>
-          <button class="modal__close" type="button" aria-label="Close">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
-          </button>
-        </div>
-        <div class="modal__body">
-          <p class="text-sm text-gray-700">You have unsaved edits.</p>
-        </div>
-        <div class="modal__footer">
-          <button class="btn btn-c-neutral btn-style-outline btn-s-sm" type="button">Discard</button>
-          <button class="btn btn-c-primary btn-style-solid btn-s-sm" type="button">Save</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="text-xs font-mono text-gray-500 pl-1"><code>modal-size-md</code></div>
-  <div class="relative border border-gray-200 rounded-md overflow-hidden" style="height: 240px; background: linear-gradient(135deg, #f1f5f9, #e2e8f0);">
-    <div class="modal modal-size-md" style="position: absolute;" role="dialog" aria-modal="true" aria-labelledby="demo-md-title">
-      <div class="modal__container">
-        <div class="modal__header">
-          <div>
-            <h2 class="modal__title" id="demo-md-title">Save changes?</h2>
-          </div>
-          <button class="modal__close" type="button" aria-label="Close">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
-          </button>
-        </div>
-        <div class="modal__body">
-          <p class="text-sm text-gray-700">You have unsaved edits.</p>
-        </div>
-        <div class="modal__footer">
-          <button class="btn btn-c-neutral btn-style-outline btn-s-sm" type="button">Discard</button>
-          <button class="btn btn-c-primary btn-style-solid btn-s-sm" type="button">Save</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="text-xs font-mono text-gray-500 pl-1"><code>modal-size-lg</code></div>
-  <div class="relative border border-gray-200 rounded-md overflow-hidden" style="height: 240px; background: linear-gradient(135deg, #f1f5f9, #e2e8f0);">
-    <div class="modal modal-size-lg" style="position: absolute;" role="dialog" aria-modal="true" aria-labelledby="demo-lg-title">
-      <div class="modal__container">
-        <div class="modal__header">
-          <div>
-            <h2 class="modal__title" id="demo-lg-title">Save changes?</h2>
           </div>
           <button class="modal__close" type="button" aria-label="Close">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
@@ -178,7 +130,7 @@ The CSS rule each variant emits, for reference:
 .modal-size-xl .modal__container { max-width: var(--container-2xl); }
 ```
 
-The variant class lives on the root, but the styling lands on the container via the descendant-selector. No class change is needed on `modal__container` itself — `varia` writes the descendant rule into a preflight at preset construction.
+The variant class lives on the root, but the styling lands on the container via the descendant selector. No class change is needed on `modal__container` itself; `varia` writes the descendant rule into a preflight at preset construction.
 
 ## Consumption
 
@@ -194,7 +146,7 @@ The variant class lives on the root, but the styling lands on the container via 
     </div>
 
     <div class="modal__body">
-      …body content…
+      ...body content...
     </div>
 
     <div class="modal__footer">
@@ -205,10 +157,7 @@ The variant class lives on the root, but the styling lands on the container via 
 </div>
 ```
 
-## What's being demonstrated
-
-- **No defaults.** Per ADR-0003, `varia` doesn't apply default variants. The container has no max-width unless a size class is present. Consumers always write the variant explicitly: `<div class="modal modal-size-md">`, never just `<div class="modal">` if they want a sized container.
-- **Behavior is the consumer's problem.** `varia` doesn't ship open/close logic, focus trapping, or scroll locking. Pair these classes with your framework's dialog primitive (native `<dialog>`, Radix Dialog, Headless UI).
+Behavior is the consumer's problem: `varia` doesn't ship open/close logic, focus trapping, or scroll locking. Pair these classes with your framework's dialog primitive (native `<dialog>`, Radix Dialog, Headless UI). `varia` doesn't apply default variants, so the container has no max-width unless a size class is present.
 
 ## Generated class names
 
@@ -232,7 +181,7 @@ Nine consumer-facing classes, one component, slot-keyed sizing.
 
 ```html
 <dialog class="modal modal-size-md" role="dialog">
-  <div class="modal__container">…</div>
+  <div class="modal__container">...</div>
 </dialog>
 ```
 

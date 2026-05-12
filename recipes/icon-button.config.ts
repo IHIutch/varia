@@ -3,7 +3,7 @@ import { defineComponent } from '../src/index.js'
 // IconButton: a button that can render with a label, with just an icon, or
 // with both. The `square` boolean signals "icon-only" — the consumer is
 // rendering no text. When square, the regular size-variant's horizontal
-// padding (px-3, px-4, …) is too wide; we want EQUAL padding all around so
+// padding (px-3, px-4, ...) is too wide; we want EQUAL padding all around so
 // the icon sits centered in a square box.
 //
 // This is the canonical case for `compoundVariants`: the padding for the

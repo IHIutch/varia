@@ -60,12 +60,6 @@ Every state-driven style lives next to the value it modifies:
 <input class="form-input form-input-state-default form-input-s-md" disabled />
 ```
 
-## What's being demonstrated
-
-- Pseudo-classes inside variant expansions survive the shortcut layer untouched. UnoCSS sees `placeholder:text-gray-400` in the resolved expansion and produces `::placeholder { color: ... }`; `varia` doesn't need to understand any of it.
-- Layered states: `:focus` (intentional), `:disabled` (declarative), `:invalid` (validation-driven), `:read-only` (data-driven), `::placeholder` (typographic). Each lives in the variant where it makes sense.
-- State as a multi-value variant is a useful pattern for mutually-exclusive visual modes. Using `state-default` / `state-error` / `state-success` keeps the markup explicit and grep-able. Reach for it whenever a component has three or more ways of looking the same.
-
 ## Generated class names
 
 | Class | Purpose |
@@ -75,7 +69,3 @@ Every state-driven style lives next to the value it modifies:
 | `form-input-s-sm` / `-md` / `-lg` | Size |
 | `form-input-readonly` | Toggles `:read-only` styling |
 
-## See also
-
-- [Button recipe](/recipes/button): same state philosophy applied to a different surface.
-- [Naming convention](/naming): formal rules for assembled class names.

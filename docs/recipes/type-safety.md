@@ -32,19 +32,13 @@ export function cn(...classes: VariaClasses[]): string {
 import { cn } from './lib/cn'
 
 cn('btn', 'btn-c-primary', 'btn-style-solid', 'btn-s-md')
-// → 'btn btn-c-primary btn-style-solid btn-s-md'
+// returns 'btn btn-c-primary btn-style-solid btn-s-md'
 
 cn('btn', 'btn-c-purple')
 // ✗ type error: 'btn-c-purple' is not assignable to type VariaClasses
 ```
 
 The check is structural. TypeScript catches the typo on save, before any test or build runs.
-
-## What's being demonstrated
-
-- **Closed set of class names.** Every shortcut `varia` knows about appears in the union. Anything else is an authoring mistake.
-- **No runtime cost.** `cn()` is a five-line join; TypeScript does the checking.
-- **Escape hatch for arbitrary strings.** Widen the type to `VariaClasses | string` at call sites that need to pass a one-off utility or a third-party class name. Keep the strict type everywhere else.
 
 ## Going further
 
@@ -71,9 +65,5 @@ A custom rule that walks `class="..."` attributes and rejects any token not pres
 
 ## pnpm caveat
 
-The `varia/types` subpath may need configuration under pnpm. See [Troubleshooting → pnpm: `varia/types` subpath](/troubleshooting#pnpm-types-subpath).
+The `varia/types` subpath may need configuration under pnpm. See the [pnpm note in Troubleshooting](/troubleshooting#pnpm-types-subpath).
 
-## See also
-
-- [API reference: `varia/types` subpath](/api#varia-types-subpath) — the type's full surface.
-- [API reference: `presetVaria` manifest emission](/api#manifest-emission) — controlling where the manifest is written.

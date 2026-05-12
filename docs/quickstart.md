@@ -72,33 +72,15 @@ export default defineConfig({
 </button>
 ```
 
-That's it. UnoCSS expands the shortcuts into atomic CSS at build time. Only the classes you actually reference end up in the output.
+UnoCSS expands the shortcuts into atomic CSS at build time. Only the classes you actually reference end up in the output.
 
 ## 5. Editor autocomplete (recommended)
 
 Install the UnoCSS VS Code extension ([antfu.unocss](https://marketplace.visualstudio.com/items?itemName=antfu.unocss)). It reads shortcuts from `unocss.config.ts` and offers completion in HTML, JSX, ERB, Liquid, HEEx, and any glob you configure.
 
-For TypeScript codebases that want to validate class strings against the known set, `varia` also generates a `node_modules/.varia/manifest.d.ts` with a union of every valid class name. Import it via:
-
-```ts
-import type { VariaClasses } from 'varia/types'
-
-function cn(c: VariaClasses) { /* ... */ }
-
-cn('btn-c-primary') // ok
-cn('btn-style-solid') // ok
-cn('not-a-real-class') // type error
-```
-
-::: tip pnpm users
-The `varia/types` subpath may not resolve under pnpm's default layout. See [Troubleshooting → pnpm: `varia/types` subpath](/troubleshooting#pnpm-types-subpath). The UnoCSS VS Code extension works without any tsconfig changes.
-:::
+For TypeScript projects that also want to type-check class strings against the manifest, see the [Type safety recipe](/recipes/type-safety).
 
 ## Next
 
-- [Concepts](/concepts): 5-minute orientation if any of "build-time variants", "shortcuts", "JIT", or "manifest" felt unfamiliar.
-- [API reference](/api): every option for `defineComponent`, `compoundVariants`, and `presetVaria`.
-- [Naming convention](/naming): formal rules for variant classes (`btn-c-primary`) and slot classes (`modal__container`).
-- [Recipes](/recipes/button): worked examples covering state handling, multi-element components, and slot-keyed variants (the [Modal recipe](/recipes/modal) is the slot-keyed example).
-- [Comparison](/comparison): when would you pick `varia` over CVA, tailwind-variants, vanilla-extract, or Panda CSS?
-- [Troubleshooting](/troubleshooting): known gotchas (pnpm layout, identifier conflicts).
+- [Concepts](/concepts) — a 5-minute orientation if "build-time variants", "shortcuts", or "manifest" felt unfamiliar.
+- [Recipes](/recipes/button) — worked examples for state handling, multi-element slot components, and slot-keyed variants.

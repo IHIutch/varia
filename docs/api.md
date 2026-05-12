@@ -54,8 +54,8 @@ For a component that maps to one HTML element, use `base`:
 
 ```ts
 defineComponent('btn', {
-  base: 'inline-flex items-center …',
-  variants: { c: { primary: '…' } },
+  base: 'inline-flex items-center ...',
+  variants: { c: { primary: '...' } },
 })
 // Generates: btn, btn-c-primary
 ```
@@ -65,9 +65,9 @@ For a component with several tightly coupled parts (modal, card with header / ti
 ```ts
 defineComponent('modal', {
   slots: {
-    root: '…', // → .modal
-    container: '…', // → .modal__container
-    header: '…', // → .modal__header
+    root: '...', // emits .modal
+    container: '...', // emits .modal__container
+    header: '...', // emits .modal__header
   },
   variants: { /* see slot-keyed variant shapes below */ },
 })
@@ -77,7 +77,7 @@ The `root` slot maps to the bare component name (`.modal`); every other slot map
 
 ### Variant shapes
 
-A `VariantDefinition` has up to four valid shapes. The shape is detected at config time by inspecting the value's type and (for object values) by checking whether the keys match the component's declared slot names. Anywhere a class string appears, you can pass `string[]` and it will be joined with a space.
+A `VariantDefinition` has four valid shapes, distinguished by value type and (for slot components) whether object keys match the declared slot names. Anywhere a class string appears, you can pass `string[]` and it will be joined with a space.
 
 #### Boolean variant (applied to root)
 
@@ -107,7 +107,7 @@ variants: {
   },
 }
 // Generates: card-accent
-// Emits: .card-accent .card__header { … }, .card-accent .card__title { … }
+// Emits: .card-accent .card__header { ... }, .card-accent .card__title { ... }
 ```
 
 When all keys of the object are declared slot names, the variant targets specific slots. Each slot's CSS is emitted as a preflight with a descendant selector. Mixing slot-name keys and value-name keys throws.
@@ -123,16 +123,10 @@ variants: {
   },
 }
 // Generates: modal-size-sm, modal-size-md, modal-size-lg
-// Emits: .modal-size-sm .modal__container { max-width: … }, etc.
+// Emits: .modal-size-sm .modal__container { max-width: ... }, etc.
 ```
 
 Each value can independently be a `ClassInput` (apply to root) or a slot-keyed object (apply to specific slots).
-
-### How slot-keyed variants emit
-
-Slot-keyed variants emit as UnoCSS preflights: CSS rules with descendant selectors like `.modal-size-md .modal__container { … }`. Because preflights aren't subject to UnoCSS's content scan, slot-keyed CSS survives even when the consumer's markup only references the variant class on the root and not the slot class on the descendant. This is the same tree-shaking-bypass mechanism that compound variants use.
-
-The `root` slot is a special case: its variant rule uses a chained-class selector (`.card-accent` directly, not `.card-accent .card`) because the root class lives on the same element as the variant class.
 
 ### Compound variants
 
@@ -158,47 +152,6 @@ Authors write `<button class="btn btn-s-xs btn-square">`, with both variant clas
 |---|---|
 | `'value'` | The matching multi-value axis is set to this value. The value must be declared in the variant. |
 | `true` | The matching boolean axis is present. Boolean axes can only take `true` in a compound; the absence-of-class is the off state. |
-
-Compound variants are validated against the declared axis registry:
-
-| Condition | Error |
-|---|---|
-| `when` references an undeclared axis | `Compound variant on component "btn" references variant axis "xyz", which is not declared.` |
-| `when` sets a multi-value axis to an undeclared value | `Compound variant on component "btn" sets "s" to "xl", which is not a declared value.` |
-| `when` sets a boolean axis to a non-`true` value | `Compound variant on component "btn" sets "square" to "false", but "square" is a boolean variant — its value in a compound must be \`true\`.` |
-| Empty `when: {}` or empty `class: ''` | `Compound variant on component "btn" has an empty "when" clause` / `…has an empty "class"` |
-
-Compound rules emit as UnoCSS preflights, which means they're unconditional: the CSS for every declared compound is present in the output regardless of whether the consumer's markup happens to reference that particular combination. This is intentional. It bypasses tree-shaking concerns for cross-axis rules, where the "is this rule used" question can't be answered by scanning for a single class name.
-
-### Return value
-
-```ts
-interface DefinedComponent {
-  name: string
-  shortcuts: Array<[className: string, expansion: string]>
-  manifest: { name: string, classNames: string[] }
-  preflights?: Preflight[] // present iff compoundVariants or slot-keyed variants were declared
-}
-```
-
-You typically don't read these fields directly. Pass the value to `presetVaria`. They're documented because the manifest is also useful for tooling: every generated class name appears in `manifest.classNames`.
-
-### Validation errors
-
-`defineComponent` throws synchronously on:
-
-| Condition | Example | Error message starts with |
-|---|---|---|
-| Invalid component name | `defineComponent('Btn', …)` | `Invalid component name "Btn" — must match…` |
-| Both `base` and `slots` set | `defineComponent('btn', { base, slots })` | `Component "btn" sets both \`base\` and \`slots\`…` |
-| `slots: {}` (declared but empty) | `defineComponent('card', { slots: {} })` | `Component "card" has no slots — \`slots\` must declare at least one named part.` |
-| Nothing to emit | `defineComponent('btn', {})` | `Component "btn" has no \`base\`/\`slots\` and no \`variants\`…` |
-| Invalid slot name | `slots: { Header: '…' }` | `Invalid slot name "Header" on component "card" — slot names must match…` |
-| Empty / whitespace expansion | `c: { primary: '   ' }` | `Empty expansion for "btn-c-primary"…` |
-| Variant with zero values | `c: {}` | `Variant "c" on component "btn" has no values…` |
-| Mixed-key variant (some slot names, some not) | `variants: { v: { root: '…', primary: '…' } }` | `Variant "v" on component "card" has an invalid shape. It must be either a string/array, an object whose keys are ALL slot names of this component, or…` |
-| Slot-keyed value references a non-existent slot | `variants: { v: { solid: { root: '…', missing: '…' } } }` | `Variant "v" value "solid" on component "card" references slot "missing", which is not declared in the component's slots.` |
-| Assembled class fails regex | `c: { Primary: 'x' }` (uppercase) | `Invalid class identifier "btn-c-Primary"…` |
 
 The regex `/^[a-z][a-z0-9-]*$/` is applied to the assembled class name, not to individual segments. Numeric values (`s: { 1: 'x' }` produces `btn-s-1`) and arbitrary kebab values (`s: { '2xl': 'x' }` produces `btn-s-2xl`) work naturally.
 
@@ -232,17 +185,6 @@ When the preset resolves, `presetVaria` writes a TypeScript declaration file con
 - Doesn't require any consumer-side gitignore entry.
 - Is rewritten only when content changes (hash-compare), so HMR rebuilds don't churn the file.
 
-### Validation errors
-
-`presetVaria` throws synchronously on:
-
-| Condition | Error message |
-|---|---|
-| Two components with the same name | `Duplicate component name "btn" in presetVaria…` |
-| Two components emitting the same shortcut name | `Duplicate shortcut "btn-c-primary" emitted by both component "btn" and component "btn-old"…` |
-
-The duplicate-component-name check always throws, even when the same reference is passed twice. This is a deliberate choice for safety in monorepos with multiple module instances.
-
 ## `varia/types` subpath
 
 ```ts
@@ -266,4 +208,59 @@ The `varia/types` subpath is for explicit-import use cases: typed `cn()` helpers
 
 ### pnpm caveat
 
-Under pnpm's default symlinked layout, `varia/types` may fail to resolve without a small bit of configuration. See [Troubleshooting → pnpm: `varia/types` subpath](/troubleshooting#pnpm-types-subpath).
+Under pnpm's default symlinked layout, `varia/types` may fail to resolve without a small bit of configuration. See the [pnpm note in Troubleshooting](/troubleshooting#pnpm-types-subpath).
+
+## How emission works
+
+Compound variants and slot-keyed variants both emit as **UnoCSS preflights** rather than shortcuts. Preflights bypass the content scan, so the CSS ships regardless of whether the consumer's markup references the variant class.
+
+- Slot-keyed variant on a non-root slot: `.modal-size-md .modal__container { ... }` (descendant selector).
+- Slot-keyed variant on `root`: `.card-accent { ... }` (chained-class selector — variant class and root class are on the same element).
+- Compound variant: `.btn-s-xs.btn-square { ... }` (chained-class selector across axes).
+
+The trade-off is that every declared compound or slot-keyed rule ships, used or not. This is intentional: a "is this combination used?" check can't be done by scanning for a single class name.
+
+## Validation errors
+
+`defineComponent` and `presetVaria` both throw synchronously on misuse, before any markup is scanned.
+
+### `defineComponent`
+
+| Condition | Example | Error starts with |
+|---|---|---|
+| Invalid component name | `defineComponent('Btn', ...)` | `Invalid component name "Btn" — must match...` |
+| Both `base` and `slots` set | `defineComponent('btn', { base, slots })` | `Component "btn" sets both \`base\` and \`slots\`...` |
+| `slots: {}` (declared but empty) | `defineComponent('card', { slots: {} })` | `Component "card" has no slots — \`slots\` must declare at least one named part.` |
+| Nothing to emit | `defineComponent('btn', {})` | `Component "btn" has no \`base\`/\`slots\` and no \`variants\`...` |
+| Invalid slot name | `slots: { Header: '...' }` | `Invalid slot name "Header" on component "card" — slot names must match...` |
+| Empty / whitespace expansion | `c: { primary: '   ' }` | `Empty expansion for "btn-c-primary"...` |
+| Variant with zero values | `c: {}` | `Variant "c" on component "btn" has no values...` |
+| Mixed-key variant (some slot names, some not) | `variants: { v: { root: '...', primary: '...' } }` | `Variant "v" on component "card" has an invalid shape...` |
+| Slot-keyed value references a non-existent slot | `variants: { v: { solid: { missing: '...' } } }` | `Variant "v" value "solid" on component "card" references slot "missing"...` |
+| Assembled class fails regex | `c: { Primary: 'x' }` (uppercase) | `Invalid class identifier "btn-c-Primary"...` |
+| Compound references undeclared axis | `compoundVariants: [{ when: { xyz: ... } }]` | `Compound variant on component "btn" references variant axis "xyz"...` |
+| Compound sets multi-value axis to undeclared value | `when: { s: 'xl' }` (no `xl` value) | `Compound variant on component "btn" sets "s" to "xl", which is not a declared value.` |
+| Compound sets boolean axis to non-`true` | `when: { square: 'false' }` | `Compound variant on component "btn" sets "square" to "false", but "square" is a boolean variant...` |
+| Empty `when: {}` or empty `class: ''` | — | `Compound variant on component "btn" has an empty "when" clause` / `...has an empty "class"` |
+
+### `presetVaria`
+
+| Condition | Error starts with |
+|---|---|
+| Two components with the same name | `Duplicate component name "btn" in presetVaria...` |
+| Two components emitting the same shortcut | `Duplicate shortcut "btn-c-primary" emitted by both component "btn" and component "btn-old"...` |
+
+The duplicate-component-name check fires even when the same reference is passed twice — a deliberate choice for safety in monorepos with multiple module instances.
+
+## `DefinedComponent` return value
+
+You typically don't read these fields directly; pass the value to `presetVaria`. They're documented for tooling that wants to introspect the manifest.
+
+```ts
+interface DefinedComponent {
+  name: string
+  shortcuts: Array<[className: string, expansion: string]>
+  manifest: { name: string, classNames: string[] }
+  preflights?: Preflight[] // present iff compoundVariants or slot-keyed variants were declared
+}
+```

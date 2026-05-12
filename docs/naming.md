@@ -15,13 +15,13 @@ component__slot          # non-root slot (slot components only)
 
 | Variant shape | Author writes | Generated class |
 |---|---|---|
-| Base only | `defineComponent('btn', { base: '…' })` | `btn` |
-| Multi-value | `s: { lg: '…' }` | `btn-s-lg` |
-| Multi-value with numeric value | `s: { 1: '…' }` | `btn-s-1` |
-| Multi-value with kebab value | `s: { '2xl': '…' }` | `btn-s-2xl` |
-| Boolean | `outline: '…'` | `btn-outline` |
-| Slot (root) | `slots: { root: '…' }` | `modal` |
-| Slot (non-root) | `slots: { container: '…' }` | `modal__container` |
+| Base only | `defineComponent('btn', { base: '...' })` | `btn` |
+| Multi-value | `s: { lg: '...' }` | `btn-s-lg` |
+| Multi-value with numeric value | `s: { 1: '...' }` | `btn-s-1` |
+| Multi-value with kebab value | `s: { '2xl': '...' }` | `btn-s-2xl` |
+| Boolean | `outline: '...'` | `btn-outline` |
+| Slot (root) | `slots: { root: '...' }` | `modal` |
+| Slot (non-root) | `slots: { container: '...' }` | `modal__container` |
 
 ## Rules
 
@@ -47,9 +47,9 @@ component__slot          # non-root slot (slot components only)
 ## Slots vs. variants: the two separators
 
 ```text
-modal              ← root slot (bare name)
-modal__container   ← non-root slot (double underscore)
-modal-size-md      ← variant (single dashes)
+modal              # root slot (bare name)
+modal__container   # non-root slot (double underscore)
+modal-size-md      # variant (single dashes)
 ```
 
 The two never collide. Slot classes always have `__` in them; variant classes never do. Validation enforces this: a slot name can't contain underscores, and a variant axis or value can't either, so the `__` only ever appears as the slot separator. A reader (or a regex) can tell which kind of class they're looking at without context.
@@ -59,7 +59,7 @@ The two never collide. Slot classes always have `__` in them; variant classes ne
 `compoundVariants` rules don't produce a consumer-facing class. They emit a CSS rule with a chained-class selector built from the conditions:
 
 ```text
-.btn-s-xs.btn-square { … }     ← compound rule for `when: { s: 'xs', square: true }`
+.btn-s-xs.btn-square { ... }     # compound rule for `when: { s: 'xs', square: true }`
 ```
 
 The consumer writes the individual variant classes (`btn-s-xs btn-square`) and the compound CSS applies automatically. There is no `btn-compound-1` or `btn-s-xs-square` class to remember.
@@ -77,7 +77,7 @@ The consumer writes the individual variant classes (`btn-s-xs btn-square`) and t
 - **Kebab-case only (no underscores).**
 
   ```text
-  bg-[hsl(0_0%_50%)]   ← underscores inside arbitrary values mean spaces
+  bg-[hsl(0_0%_50%)]   # underscores inside arbitrary values mean spaces
   ```
 
   Matches Tailwind utilities (`text-sm`, not `text_sm`). Avoids overloading the meaning of `_`.
@@ -87,21 +87,16 @@ The consumer writes the individual variant classes (`btn-s-xs btn-square`) and t
 - **No abbreviation magic.** The axis name you write is the axis name in the class:
 
   ```text
-  axis: c       →  btn-c-primary
-  axis: color   →  btn-color-primary
+  axis: c       produces  btn-c-primary
+  axis: color   produces  btn-color-primary
   ```
 
   The library has no opinion.
 
 ## What this enables
 
-The naming format is rigid enough that consumers can rely on it for:
-
-- **Overrides.** To nudge a single button's color in one template, `<button class="btn btn-c-primary !bg-blue-500">`. The override goes after the named variant.
-- **Linting.** `import type { VariaClasses } from 'varia/types'` exposes the union; downstream tools can build linters around it.
-- **Documentation.** The class names tell you what's going on. A reviewer reading `btn-c-danger btn-s-lg btn-outline` knows the intent without opening the config.
-- **Search.** Every variant of a component is reachable by `grep -r 'btn-'`. No abbreviations to hunt down.
+The rigid format means consumers can override (`<button class="btn btn-c-primary !bg-blue-500">`), lint (`VariaClasses` union from `varia/types`), and grep (`grep -r 'btn-'` finds every button class) without needing project-specific conventions.
 
 ## Edge case: identifier conflicts
 
-If two components emit the same class — or a component name collides with a UnoCSS utility — the build either throws or silently picks one. See [Troubleshooting → Identifier conflicts](/troubleshooting#identifier-conflicts) for the worked example.
+If two components emit the same class, or a component name collides with a UnoCSS utility, the build either throws or silently picks one. See [Identifier conflicts](/troubleshooting#identifier-conflicts) in Troubleshooting for the worked example.

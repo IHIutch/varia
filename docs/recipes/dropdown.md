@@ -1,6 +1,6 @@
 # Dropdown
 
-A trigger + popup menu, built as a single component with slots for each part (root, trigger, menu, item, divider). Open/closed state lives on the menu as a `data-state` attribute; per-item variants (e.g. a destructive "Delete") live on items as `data-variant` attributes. No varia variant axes are needed for run-time state — they're all expressed via data attrs that pair naturally with the JavaScript that toggles them.
+A trigger + popup menu, built as a single component with slots for each part (root, trigger, menu, item, divider). Open/closed state lives on the menu as a `data-state` attribute; per-item variants (e.g. a destructive "Delete") live on items as `data-variant` attributes. Runtime state lives on data attributes, not varia variants, so it can pair directly with the JavaScript that toggles them.
 
 ## Authoring
 
@@ -44,11 +44,11 @@ export default defineComponent('dropdown', {
 
 Three things to call out:
 
-1. **`align` is a varia variant**, not a data-attr — it's a build-time configuration choice (which side of the trigger the menu opens from), not a runtime state. The variant class goes on the **root** (`<div class="dropdown dropdown-align-end">`) because it's slot-keyed: it emits `.dropdown-align-end .dropdown__menu { right: 0 }`, a descendant rule that needs the alignment class on an ancestor.
+1. `align` is a varia variant rather than a data-attr because it's a build-time configuration choice (which side of the trigger the menu opens from), not a runtime state. The variant class goes on the root (`<div class="dropdown dropdown-align-end">`) because it's slot-keyed: it emits `.dropdown-align-end .dropdown__menu { right: 0 }`, a descendant rule that needs the alignment class on an ancestor.
 
-2. **Open/closed is a `data-state` attribute** on the menu. The base expansion includes `hidden data-[state=open]:block` — hidden by default, revealed when `data-state="open"` is present. JS just sets or clears that attribute. No varia variant exists for "open" because it's runtime state, not configuration.
+2. Open/closed is a `data-state` attribute on the menu. The base expansion includes `hidden data-[state=open]:block`, so the menu is hidden by default and revealed when `data-state="open"` is present. JS sets or clears that attribute. No varia variant exists for "open" because it's runtime state, not configuration.
 
-3. **Per-item destructive styling is a `data-variant` attribute**, not a separate slot or boolean variant. Adding more item modes later means more `data-[variant=…]:` rules in the `item` slot expansion, not new slots — the slot list stays small.
+3. Per-item destructive styling is a `data-variant` attribute, not a separate slot or boolean variant. Adding more item modes later means more `data-[variant=...]:` rules in the `item` slot expansion, not new slots, so the slot list stays small.
 
 ## Live preview
 
@@ -76,7 +76,7 @@ Three things to call out:
 <div class="dropdown dropdown-align-end">
   <button class="dropdown__trigger" aria-haspopup="menu" aria-expanded="false">
     Options
-    <svg>…chevron…</svg>
+    <svg>...chevron...</svg>
   </button>
 
   <div class="dropdown__menu" data-state="closed" role="menu">
@@ -107,13 +107,6 @@ document.addEventListener('click', (e) => {
     setOpen(false)
 })
 ```
-
-## What's being demonstrated
-
-- **State as attributes, not classes.** Toggling `data-state="open"` is one DOM mutation, surfaces in DevTools, and pairs with `aria-expanded` for accessibility without duplicate plumbing.
-- **Per-item variation via attributes too.** Adding `data-variant="danger"` to a single item is local to that item; no extra varia slot or boolean variant axis needed, no markup proliferation.
-- **Configuration (`align`) and state (`data-state`) are different concerns.** Configuration is fixed at author time and uses a varia variant. State changes at runtime and uses an attribute on the element that owns it.
-- **Behavior is the consumer's problem.** varia emits classes; open/close logic, keyboard navigation, and focus management come from your framework or hand-rolled JS.
 
 ## Generated class names
 

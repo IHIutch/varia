@@ -82,13 +82,6 @@ The consumer scopes their override anywhere in CSS: globally, per-page, per-comp
 
 The consumer never touches the `varia` config. They never recompile. The override lives in their CSS where it belongs.
 
-## What's being demonstrated
-
-- `var(--token, fallback)` is the design-system author's escape hatch. It compiles to plain CSS, no runtime, and lets consumers customize without forking.
-- Per-component variable namespaces (`--avatar-bg`, `--avatar-ring`) keep overrides scoped and self-documenting.
-- `theme(colors.gray.200)` as the fallback keeps your default tied to your design tokens. If your token changes, every avatar that hasn't been overridden moves with it.
-- Four sizes plus the `ring` boolean give five useful classes that stack independently with the theming.
-
 ## Generated class names
 
 | Class | Purpose |
@@ -99,4 +92,4 @@ The consumer never touches the `varia` config. They never recompile. The overrid
 
 ## When to use this pattern
 
-Whenever the consumer might want to override the value but probably won't. Drop a `var(--token, theme(...))` in the expansion. Ship the default. Surface the variable name in your docs. That's the whole pattern.
+Whenever the consumer might want to override the value but probably won't. Drop a `var(--token, theme(...))` in the expansion, ship the default, and surface the variable name in your docs.

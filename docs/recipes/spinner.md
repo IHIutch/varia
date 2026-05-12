@@ -1,6 +1,6 @@
 # Spinner
 
-A spinner using UnoCSS's `animate-spin` utility. Mostly here as a regression test — anything that depends on `@keyframes` is fragile in a build pipeline — but you can use it as a spinner.
+A spinner using UnoCSS's `animate-spin` utility. Mostly here as a regression test (anything that depends on `@keyframes` is fragile in a build pipeline), but you can use it as a spinner.
 
 ## Authoring
 
@@ -38,7 +38,7 @@ A CSS-only spinner is a circle with a transparent right border that rotates. Uno
   <span class="spinner spinner-s-md spinner-c-danger"></span>
   <button class="btn btn-c-primary btn-style-solid btn-s-md" disabled>
     <span class="spinner spinner-s-sm" style="color: currentColor"></span>
-    Saving…
+    Saving...
   </button>
 </div>
 :::
@@ -52,15 +52,9 @@ A CSS-only spinner is a circle with a transparent right border that rotates. Uno
 
 <button class="btn btn-c-primary btn-style-solid btn-s-md" disabled>
   <span class="spinner spinner-s-sm spinner-c-muted"></span>
-  Saving…
+  Saving...
 </button>
 ```
-
-## What's being demonstrated
-
-- `@keyframes` definitions are emitted by UnoCSS at the top level of the stylesheet, not inside any shortcut rule. `varia` doesn't need to do anything special; the keyframes show up because `animate-spin` is referenced.
-- Two multi-value variants that compose orthogonally (`s` times `c` gives nine useful combinations from six expansions).
-- No boolean variants here. A spinner doesn't have an obvious on/off axis.
 
 ## Generated class names
 

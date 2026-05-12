@@ -1,6 +1,6 @@
-# Troubleshooting & roadmap
+# Troubleshooting
 
-Known gotchas and helpers not yet shipped.
+Known gotchas.
 
 ## pnpm: `varia/types` subpath {#pnpm-types-subpath}
 
@@ -21,8 +21,6 @@ node-linker=hoisted
 ```
 
 The UnoCSS VS Code extension works without any of this; autocomplete reads the shortcut list directly from `unocss.config.ts`. The caveat only matters if you import `VariaClasses` for a `cn()` helper or a custom lint rule. See the [Type safety recipe](/recipes/type-safety) for those use cases.
-
-Tracked as a v1.1 follow-up.
 
 ## Identifier conflicts at preset construction {#identifier-conflicts}
 
@@ -50,11 +48,3 @@ presetVaria({ components: [btn, btnCPrimary] })
 The fix is renaming. Either shortcut would surprise some consumer, so neither wins. Rename the conflicting component to something the button can't generate: `primary-btn`, `cta`, `submit-button`.
 
 A related pitfall is naming a component after a UnoCSS utility (`flex`, `grid`, `hidden`). The shortcut wins or loses depending on preset order. Avoid utility-shaped names.
-
-## Roadmap {#roadmap}
-
-### `defineTheme()` helper
-
-The [two-tier semantic tokens pattern](/theming#when-you-want-cross-component-reskinning) currently requires hand-writing a preflight (literal palette generator) and a `rules` array (swap classes). Both are ~15 lines each. A `defineTheme()` helper could generate both from a single config object, plus wire up the `light-dark()` dark-mode integration.
-
-Tracked as a v1.2 candidate. The pattern is established; the macro isn't shipped yet.
