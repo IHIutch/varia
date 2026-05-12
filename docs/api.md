@@ -30,7 +30,7 @@ interface ComponentConfig {
 type ClassInput = string | string[]
 
 type SlotKeyedValue = Record<string, ClassInput>
-type VariantValue  = ClassInput | SlotKeyedValue
+type VariantValue = ClassInput | SlotKeyedValue
 type VariantDefinition = ClassInput | Record<string, VariantValue>
 
 interface CompoundVariantRule {
@@ -65,9 +65,9 @@ For a component with several tightly coupled parts (modal, card with header / ti
 ```ts
 defineComponent('modal', {
   slots: {
-    root:      '…', // → .modal
+    root: '…', // → .modal
     container: '…', // → .modal__container
-    header:    '…', // → .modal__header
+    header: '…', // → .modal__header
   },
   variants: { /* see slot-keyed variant shapes below */ },
 })

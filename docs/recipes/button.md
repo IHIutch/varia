@@ -27,10 +27,10 @@ type Color = keyof typeof COLORS
 function compoundsFor(c: Color) {
   const t = COLORS[c]
   return [
-    { when: { c, style: 'solid' },   class: `bg-${t}-600 border-${t}-600 hover:bg-${t}-700` },
+    { when: { c, style: 'solid' }, class: `bg-${t}-600 border-${t}-600 hover:bg-${t}-700` },
     { when: { c, style: 'outline' }, class: `text-${t}-700 border-${t}-300 hover:bg-${t}-50` },
-    { when: { c, style: 'subtle' },  class: `bg-${t}-50 text-${t}-700 hover:bg-${t}-100` },
-    { when: { c, style: 'ghost' },   class: `text-${t}-700 hover:bg-${t}-50` },
+    { when: { c, style: 'subtle' }, class: `bg-${t}-50 text-${t}-700 hover:bg-${t}-100` },
+    { when: { c, style: 'ghost' }, class: `text-${t}-700 hover:bg-${t}-50` },
   ]
 }
 
@@ -45,15 +45,15 @@ export default defineComponent('btn', {
     c: {
       primary: 'focus-visible:ring-blue-500',
       success: 'focus-visible:ring-emerald-500',
-      danger:  'focus-visible:ring-red-500',
+      danger: 'focus-visible:ring-red-500',
       warning: 'focus-visible:ring-amber-500',
       neutral: 'focus-visible:ring-gray-500',
     },
     style: {
-      solid:   'text-white',
+      solid: 'text-white',
       outline: 'bg-transparent',
-      subtle:  'border-transparent',
-      ghost:   'bg-transparent border-transparent',
+      subtle: 'border-transparent',
+      ghost: 'bg-transparent border-transparent',
     },
     s: {
       sm: 'px-2.5 py-1 text-sm',

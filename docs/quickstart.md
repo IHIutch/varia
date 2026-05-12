@@ -24,7 +24,7 @@ export default defineComponent('btn', {
   variants: {
     c: {
       primary: 'bg-blue-600 text-white border-blue-600 hover:bg-blue-700',
-      danger:  'bg-red-600 text-white border-red-600 hover:bg-red-700',
+      danger: 'bg-red-600 text-white border-red-600 hover:bg-red-700',
       neutral: 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50',
     },
     s: {

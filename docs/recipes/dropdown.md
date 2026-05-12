@@ -94,7 +94,7 @@ A minimal JS toggle that pairs with this markup:
 const trigger = document.querySelector('.dropdown__trigger')
 const menu = document.querySelector('.dropdown__menu')
 
-const setOpen = (open: boolean) => {
+function setOpen(open: boolean) {
   menu.setAttribute('data-state', open ? 'open' : 'closed')
   trigger.setAttribute('aria-expanded', String(open))
 }
