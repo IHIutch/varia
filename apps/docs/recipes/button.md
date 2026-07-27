@@ -8,32 +8,6 @@ A button with three independent variant axes: color, style, and size. The color 
 // recipes/button.config.ts
 import { defineComponent } from 'varia'
 
-// Map each semantic color to a UnoCSS palette tone. Five colors keep the
-// example tight; the same shape extends to as many as a real design system
-// needs.
-const COLORS = {
-  primary: 'blue',
-  success: 'emerald',
-  danger: 'red',
-  warning: 'amber',
-  neutral: 'gray',
-} as const
-
-type Color = keyof typeof COLORS
-
-// For each color, produce one compound rule per style. The compound sets the
-// concrete colours (bg, border, text, hover-bg); the `c` and `style` shortcuts
-// just carry properties that stay constant across the matrix.
-function compoundsFor(c: Color) {
-  const t = COLORS[c]
-  return [
-    { when: { c, style: 'solid' }, class: `bg-${t}-600 border-${t}-600 hover:bg-${t}-700` },
-    { when: { c, style: 'outline' }, class: `text-${t}-700 border-${t}-300 hover:bg-${t}-50` },
-    { when: { c, style: 'subtle' }, class: `bg-${t}-50 text-${t}-700 hover:bg-${t}-100` },
-    { when: { c, style: 'ghost' }, class: `text-${t}-700 hover:bg-${t}-50` },
-  ]
-}
-
 export default defineComponent('btn', {
   base: [
     'inline-flex items-center justify-center rounded-md font-medium border',
@@ -61,7 +35,22 @@ export default defineComponent('btn', {
       lg: 'px-6 py-3 text-lg',
     },
   },
-  compoundVariants: (Object.keys(COLORS) as Color[]).flatMap(compoundsFor),
+  compoundVariants: [
+    // primary (blue)
+    { when: { c: 'primary', style: 'solid' },   class: 'bg-blue-600 border-blue-600 hover:bg-blue-700' },
+    { when: { c: 'primary', style: 'outline' }, class: 'text-blue-700 border-blue-300 hover:bg-blue-50' },
+    { when: { c: 'primary', style: 'subtle' },  class: 'bg-blue-50 text-blue-700 hover:bg-blue-100' },
+    { when: { c: 'primary', style: 'ghost' },   class: 'text-blue-700 hover:bg-blue-50' },
+
+    // success (emerald)
+    { when: { c: 'success', style: 'solid' },   class: 'bg-emerald-600 border-emerald-600 hover:bg-emerald-700' },
+    { when: { c: 'success', style: 'outline' }, class: 'text-emerald-700 border-emerald-300 hover:bg-emerald-50' },
+    { when: { c: 'success', style: 'subtle' },  class: 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100' },
+    { when: { c: 'success', style: 'ghost' },   class: 'text-emerald-700 hover:bg-emerald-50' },
+
+    // danger (red), warning (amber), neutral (gray) follow the same shape;
+    // see the source for the full 20-entry list.
+  ],
 })
 ```
 
@@ -69,7 +58,7 @@ Two things to call out:
 
 1. `c` and `style` carry only the *constant* properties. `c.primary` sets `focus-visible:ring-blue-500`, which is the same regardless of style. `style.solid` sets `text-white`, the same regardless of color. Everything that depends on *both* axes (background, border, hover background, the colored text in outline/subtle/ghost) lives in the compound rules.
 
-2. Compounds are generated programmatically. The `compoundsFor` helper produces the four rules for each color, so adding a sixth color is one entry in `COLORS`. The `${t}` template-literal interpolation runs at recipe-load time, so UnoCSS sees fully-resolved utility strings (`bg-blue-600`, never `bg-${t}-600`).
+2. **Spell every class name out as a literal.** Tailwind and UnoCSS both recommend against constructing class names with template literals (`` `bg-${tone}-600` ``). The JIT extractor scans your source text for class candidates and only sees complete string literals — `bg-${tone}-600` never gets resolved, and the theme variables those classes would have triggered (`--colors-emerald-600`, etc.) never get emitted. Five colors × four styles is twenty rows; that's the price of staying inside the tools' supported usage.
 
 ## Live preview
 
@@ -122,9 +111,9 @@ The compound rules don't get their own consumer-facing class names; they fire au
 
 Three common edits:
 
-- To remap a color to a different palette tone, change one entry in `COLORS`: `primary: 'green'` instead of `'blue'`. The helper rebuilds all four primary compounds with `bg-green-600`, `text-green-700`, etc.
-- To add a new color, add `accent: 'purple'` to `COLORS` and a `c.accent: 'focus-visible:ring-purple-500'` shortcut. The helper produces the four new compounds automatically.
-- To add a new style, add a `style.link: ...` shortcut and extend `compoundsFor` with a fifth entry per color.
+- To remap a color to a different palette tone, rewrite the four `c: '<name>'` compound rows with the new tone (e.g. `bg-green-600` instead of `bg-blue-600`). It's a search-and-replace within the four primary entries.
+- To add a new color, add a `c.accent: 'focus-visible:ring-purple-500'` shortcut and append four new compound rows for `c: 'accent'` × each style.
+- To add a new style, add a `style.link: ...` shortcut and append a new compound row for each color (one row per color).
 
 ## When compound variants are the right shape
 

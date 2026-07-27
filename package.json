@@ -16,6 +16,7 @@
     "docs:dev": "pnpm --filter @varia/docs dev",
     "docs:build": "pnpm --filter @varia/docs build",
     "docs:preview": "pnpm --filter @varia/docs preview",
+    "docs:deploy": "pnpm --filter @varia/docs deploy-pages",
     "example:dev": "pnpm --filter @varia/example dev",
     "example:build": "pnpm --filter @varia/example build"
   },

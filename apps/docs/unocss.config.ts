@@ -7,10 +7,12 @@ import { presetVaria } from '../../packages/varia/src/preset.js'
 import avatar from '../../recipes/avatar.config.js'
 import button from '../../recipes/button.config.js'
 import card from '../../recipes/card.config.js'
+import col from '../../recipes/col.config.js'
 import dropdown from '../../recipes/dropdown.config.js'
 import formInput from '../../recipes/form-input.config.js'
 import iconButton from '../../recipes/icon-button.config.js'
 import modal from '../../recipes/modal.config.js'
+import row from '../../recipes/row.config.js'
 import spinner from '../../recipes/spinner.config.js'
 
 // --- Theming demo wiring -----------------------------------------------------
@@ -86,12 +88,12 @@ function swapClassRules(): Rule<object>[] {
   ])
 }
 
-// Docs markdown files quote recipe source code that uses template-literal
-// helpers like `[--btn-bg:theme(colors.${tone}.600)]`. UnoCSS's default
+// The theming docs page quotes code that uses arbitrary-value utilities with
+// template-literal CSS-var references (`bg-[${BG}]`). UnoCSS's default
 // extractor pulls those substrings out as candidate classes and chokes when
-// it tries to resolve `${tone}` as a theme path. Wrap the default extractor
-// to drop any candidate containing template-literal interpolation syntax —
-// real classes never contain `${`.
+// it tries to resolve `${BG}` as a theme path. Wrap the default extractor to
+// drop any candidate containing template-literal interpolation syntax — real
+// classes never contain `${`.
 const extractorIgnoringInterpolation: Extractor = {
   name: 'filter-template-interpolation',
   order: extractorSplit.order,
@@ -104,15 +106,6 @@ const extractorIgnoringInterpolation: Extractor = {
 }
 
 export default defineConfig({
-  content: {
-    // Recipe source files build classes via template-literal helpers; scanning
-    // them surfaces the unresolved `${tone}` substring as a bogus theme lookup.
-    // The shortcuts the recipes EMIT (via presetVaria) are first-class and
-    // don't depend on content scanning, so excluding the source is safe.
-    pipeline: {
-      exclude: [/[\\/]recipes[\\/].*\.config\.ts$/],
-    },
-  },
   extractorDefault: extractorIgnoringInterpolation,
   presets: [
     presetWind4(),
@@ -126,6 +119,8 @@ export default defineConfig({
         dropdown,
         modal,
         iconButton,
+        row,
+        col,
       ],
       manifest: false,
     }),

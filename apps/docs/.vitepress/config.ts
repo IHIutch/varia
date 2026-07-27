@@ -78,6 +78,7 @@ export default defineConfig({
             { text: 'Dropdown', link: '/recipes/dropdown' },
             { text: 'Modal', link: '/recipes/modal' },
             { text: 'Icon button', link: '/recipes/icon-button' },
+            { text: 'Grid (row + col)', link: '/recipes/grid' },
             { text: 'Type safety', link: '/recipes/type-safety' },
           ],
         },
