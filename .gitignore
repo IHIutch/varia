@@ -7,3 +7,5 @@ node_modules
 
 # Local screenshots from the kitchen-sink example
 examples/**/.screenshot-*.png
+# Vitest visual comparison artifacts
+**/.vitest/
