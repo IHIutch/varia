@@ -37,16 +37,7 @@ Register the definition with `tailwindVaria` in a Tailwind v4 plugin module. Tai
 - Describe multi-element components with slots and combinations of variants with compound rules.
 - Generate optional TypeScript class types for checking component class strings.
 
-Varia is a tool for authoring component styles. The [recipes](apps/docs/recipes/button.md) are examples you can adapt for your own design system. Interactive behavior, markup, and accessibility remain part of your application or component framework.
-
-## Get started
-
-Follow the [quickstart](apps/docs/quickstart.md) to define a button and connect it to your build.
-
-- [Concepts](apps/docs/concepts.md): how definitions become classes and CSS.
-- [API reference](apps/docs/api.md): variants, slots, compound rules, and class types.
-- [Comparison](apps/docs/comparison.md): when to use Varia.
-- [Theming](apps/docs/theming.md): component overrides and shared CSS variables.
+Varia is a tool for authoring component styles. The [recipes](recipes) are examples you can adapt for your own design system. Interactive behavior, markup, and accessibility remain part of your application or component framework.
 
 ## Work on this repository
 
@@ -54,7 +45,6 @@ Use Node.js 22 or newer and pnpm.
 
 ```sh
 pnpm install
-pnpm docs:dev
 ```
 
 Run `pnpm build` followed by `pnpm example:dev` for the Tailwind kitchen-sink demo. `pnpm example:build` creates its production build.
@@ -66,7 +56,6 @@ pnpm build
 pnpm test
 pnpm typecheck
 pnpm lint
-pnpm docs:build
 ```
 
-The library lives in `packages/varia`, documentation in `apps/docs`, example style definitions in `recipes`, and the demo in `examples/kitchen-sink`.
+The library lives in `packages/varia`, example style definitions in `recipes`, and the demo in `examples/kitchen-sink`.
