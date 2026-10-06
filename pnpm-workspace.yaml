@@ -2,7 +2,14 @@ shellEmulator: true
 
 trustPolicy: no-downgrade
 
+# VitePress (docs only) still depends on Vite 5.
+trustPolicyExclude:
+  - vite@5.4.21
+
 packages:
   - 'packages/*'
   - 'apps/*'
   - 'examples/*'
+
+allowBuilds:
+  esbuild: set this to true or false
