@@ -330,6 +330,7 @@ function validateCompound(
       )} has an empty "class" — provide at least one utility class.`,
     )
   }
+  validateExpansion(toClassString(classes), { className: `compound ${JSON.stringify(when)}`, component: componentName })
 
   for (const [axis, value] of Object.entries(when)) {
     const axisInfo = axisRegistry.get(axis)

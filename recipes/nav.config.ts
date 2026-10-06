@@ -22,8 +22,11 @@ export default defineComponent('nav', {
     ],
     // States expressed as slots. Consumer toggles `nav__link-active` /
     // `nav__link-disabled` on the same element that carries `nav__link`.
-    'link-active': 'text-gray-900 hover:text-gray-900',
-    'link-disabled': 'text-gray-500 pointer-events-none cursor-default',
+    // Engines order equal-specificity rules in a layer differently, so `[&&]`
+    // doubles the state class to outrank `.nav__link`, like Bootstrap's
+    // `.nav-link.disabled`.
+    'link-active': '[&&]:text-gray-900 [&&]:hover:text-gray-900',
+    'link-disabled': '[&&]:text-gray-500 pointer-events-none cursor-default',
   },
   variants: {
     style: {

@@ -18,7 +18,9 @@
     "docs:preview": "pnpm --filter @varia/docs preview",
     "docs:deploy": "pnpm --filter @varia/docs deploy-pages",
     "example:dev": "pnpm --filter @varia/example dev",
-    "example:build": "pnpm --filter @varia/example build"
+    "example:dev:unocss": "pnpm --filter @varia/example dev:unocss",
+    "example:build": "pnpm --filter @varia/example build",
+    "example:build:unocss": "pnpm --filter @varia/example build:unocss"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^8.2.0",

@@ -5,3 +5,7 @@
     @layer base, variants, compounds;
   }
 }
+/* Lets tailwindVaria confirm this file was imported. Emits no CSS. */
+@theme reference {
+  --varia: layers;
+}
