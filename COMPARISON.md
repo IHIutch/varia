@@ -27,7 +27,7 @@ The test seam is `packages/varia/test/_engine.ts`. The engine-neutral package im
 
 ## Comparing implementation cost
 
-Use `git diff comparison-base...tailwind-mvp` and `git diff comparison-base...unocss-minimal`. Compare adapter code separately from integration helpers and engine dependencies. Both branches must keep shared source, recipes, demo markup, and shared tests identical. Run `pnpm comparison:check` to detect shared-file drift, mixed engine dependencies, or a changed merge base.
+Use `git diff comparison-base...tailwind-mvp` and `git diff comparison-base...unocss-minimal`. Compare adapter code separately from integration helpers and engine dependencies. Both branches must keep shared source, recipes, demo markup, and shared tests identical. Run `pnpm comparison:reload` on each implementation to verify that recipe edits and restoration update served CSS. The shared Vite hook automatically restarts the demo server when recipe files change because the native config loaders do not report the full recipe import graph. Run `pnpm comparison:check` to detect shared-file drift, mixed engine dependencies, or a changed merge base.
 
 Build the same demo entry points with the same markup and recipes. Treat CSS size and timing as whole-engine measurements, including each engine's reset and theme implementation; do not label those figures as adapter overhead. Verify computed styles for compound buttons, nav states, input groups, descendant slots, and utility overrides before claiming rendered parity. Build success alone does not establish visual parity.
 
