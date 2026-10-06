@@ -56,6 +56,7 @@ pnpm build
 pnpm test
 pnpm typecheck
 pnpm lint
+pnpm test:visual
 ```
 
 The library lives in `packages/varia`, example style definitions in `recipes`, and the demo in `examples/kitchen-sink`.

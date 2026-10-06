@@ -36,3 +36,11 @@ Build the same demo entry points with the same markup and recipes. Treat CSS siz
 Both branches pass the same 136 shared tests, typechecking, lint, and production demo build. Tailwind additionally has three native integration tests for prefix configuration and reference stylesheets. The shared suite covers both engines through the same assertions, including all existing recipe tests.
 
 Browser checks on the production builds matched input-group inner and outer corner radii, collapsed border margins, compound button colors and padding, dropdown closed/open display, and nav tab/pill active and disabled states. Colors were compared as rendered 8-bit sRGB values because the engines serialize equivalent colors differently. These sampled checks do not claim pixel equality for every demo state.
+
+## Visual regression tests
+
+Run `pnpm --filter varia exec playwright install chromium` once, then `pnpm test:visual` on each implementation branch. The shared Vitest Browser Mode suite compiles the same recipes through the selected adapter and runs six Chromium tests with seven screenshot references. It checks button compounds and utility overrides, input-group corners, navigation states, dropdown activation, slot hover/focus, responsive variants, and cascade precedence. Computed-style assertions accompany the screenshots.
+
+Both branches must use the same reference PNGs. Review a deliberate change on one branch with `pnpm test:visual --update`, copy the reviewed references to `comparison-base`, and merge that baseline into both branches. Never update each engine's references independently to hide differences. `pnpm comparison:check` includes the browser fixtures and references in its shared-file check.
+
+The browser provider and Playwright versions are pinned. References are currently for Chromium on macOS (`chromium-darwin`); use one fixed operating system for comparisons. A Linux CI setup needs its own reviewed references shared by both branches. Screenshot comparison permits no mismatched pixels beyond a per-pixel color threshold of 0.1. The fixtures use a common reset and font to test adapter output; engine preflights and every demo state are outside this visual suite's scope.
