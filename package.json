@@ -15,7 +15,8 @@
     "lint:fix": "eslint . --fix",
     "example:dev": "pnpm --filter @varia/example dev",
     "example:build": "pnpm --filter @varia/example build",
-    "comparison:check": "node scripts/check-comparison.mjs"
+    "comparison:check": "node scripts/check-comparison.mjs",
+    "comparison:reload": "node scripts/check-reload.mjs"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^8.2.0",
