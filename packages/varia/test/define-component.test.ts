@@ -140,6 +140,7 @@ describe('validation', () => {
     })).toThrow(/Variant group in "compound/)
     expect(() => defineComponent('btn', { base: 'bg-(--brand) w-[calc(100%-2rem)] [&:hover]:block' })).not.toThrow()
     expect(() => defineComponent('btn', { base: 'content-[\':(\']' })).not.toThrow()
+    expect(() => defineComponent('btn', { base: 'content-[\']:(\']' })).not.toThrow()
   })
 
   it('throws when component has no base and no variants', () => {

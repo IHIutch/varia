@@ -58,6 +58,7 @@ export function validateExpansion(
   }
   // Tailwind has no variant groups. Rejecting them keeps definitions portable.
   let bracketDepth = 0
+  let quote: string | undefined
   let hasVariantGroup = false
   for (let index = 0; index < expansion.length; index++) {
     const char = expansion[index]
@@ -65,7 +66,14 @@ export function validateExpansion(
       index++
       continue
     }
-    if (char === '[')
+    if (quote) {
+      if (char === quote)
+        quote = undefined
+      continue
+    }
+    if (bracketDepth > 0 && (char === '"' || char === '\''))
+      quote = char
+    else if (char === '[')
       bracketDepth++
     else if (char === ']')
       bracketDepth--
