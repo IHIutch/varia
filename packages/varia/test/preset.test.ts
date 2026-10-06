@@ -39,10 +39,12 @@ describe('presetVaria', () => {
     expect(() => presetVaria({ components: [a, b] })).toThrow(/Duplicate shortcut "btn-c-primary"/)
   })
 
-  it('produces a preset with name "varia"', () => {
+  it('gives each preset a distinct Varia name', () => {
     const button = defineComponent('btn', { base: 'inline-block' })
-    const preset = presetVaria({ components: [button] })
+    const preset = presetVaria({ components: [button], manifest: false })
+    const other = presetVaria({ components: [button], manifest: false })
 
-    expect(preset.name).toBe('varia')
+    expect(preset.name).toMatch(/^varia:\d+$/)
+    expect(other.name).not.toBe(preset.name)
   })
 })

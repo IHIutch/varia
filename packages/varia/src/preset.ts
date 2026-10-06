@@ -2,6 +2,8 @@ import type { Preflight, PreflightContext, Preset } from '@unocss/core'
 import type { DefinedComponent } from './internal/types.js'
 import { DEFAULT_MANIFEST_PATH, emitManifest } from './manifest.js'
 
+let nextPresetId = 0
+
 export interface PresetVariaOptions {
   components: DefinedComponent[]
   manifest?: false | { path?: string }
@@ -73,7 +75,8 @@ export function presetVaria(options: PresetVariaOptions): Preset {
   }
 
   return {
-    name: 'varia',
+    // UnoCSS deduplicates presets by name. Keep separate Varia instances.
+    name: `varia:${nextPresetId++}`,
     shortcuts,
     preflights: preflights.length > 0
       ? preflights.map((preflight, index) => ({
