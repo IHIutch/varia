@@ -24,9 +24,18 @@ describe('recipe: IconButton', () => {
     expect(iconButton.preflights!.length).toBe(4)
   })
 
-  it('compound CSS uses the chained-class selector', async () => {
+  it('emits exactly the expected padding for each square size', async () => {
     const css = await generateRecipeCSS([iconButton], 'icon-btn icon-btn-s-sm icon-btn-square')
-    expect(css).toMatch(/\.icon-btn-s-sm\.icon-btn-square\s*\{[^}]*padding/)
+    const rules = Array.from(css.matchAll(/(\.icon-btn-s-(?:xs|sm|md|lg)\.icon-btn-square)\s*\{([^}]*)\}/g))
+      .map(([, selector, body]) => [selector, body])
+      .sort(([a], [b]) => a!.localeCompare(b!))
+    expect(rules).toEqual([
+      ['.icon-btn-s-lg.icon-btn-square', 'padding:calc(var(--spacing) * 2.5);'],
+      ['.icon-btn-s-md.icon-btn-square', 'padding:calc(var(--spacing) * 2);'],
+      ['.icon-btn-s-sm.icon-btn-square', 'padding:calc(var(--spacing) * 1.5);'],
+      ['.icon-btn-s-xs.icon-btn-square', 'padding:calc(var(--spacing) * 1);'],
+    ])
+    expect(css).toMatch(/--spacing:\s*0\.25rem;/)
   })
 
   it('every declared compound emits its CSS rule (preflights bypass tree-shaking)', async () => {
@@ -47,8 +56,11 @@ describe('recipe: IconButton', () => {
     expect(css).toMatch(/font-size/)
     // Square applies aspect-ratio:
     expect(css).toMatch(/aspect-ratio/)
-    // The compound padding wins via the .a.b selector:
-    expect(css).toMatch(/\.icon-btn-s-md\.icon-btn-square\s*\{[^}]*padding/)
+    // The labeled size has wider horizontal padding. The two-class compound
+    // overrides both axes with 0.5rem because it has greater specificity.
+    expect(css).toMatch(/\.icon-btn-s-md\{[^}]*padding-inline:calc\(var\(--spacing\) \* 3\.5\)/)
+    expect(css).toMatch(/\.icon-btn-s-md\{[^}]*padding-block:calc\(var\(--spacing\) \* 2\)/)
+    expect(css).toContain('.icon-btn-s-md.icon-btn-square{padding:calc(var(--spacing) * 2);}')
   })
 
   it('shortcuts snapshot for visual review', () => {

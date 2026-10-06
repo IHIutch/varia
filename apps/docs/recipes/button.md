@@ -58,7 +58,7 @@ The shortcuts define shared properties; the compounds define combinations:
 
 1. `c.primary` sets the focus-ring color for every primary style. `style.solid` sets white text for every solid color. Compound rules define properties that depend on both axes, including backgrounds, borders, hover colors, and text colors for outline, subtle, and ghost styles.
 
-2. Write complete utility strings. Source scanners cannot infer `bg-blue-600` from `` `bg-${tone}-600` ``. Incomplete strings can also prevent UnoCSS from generating palette variables used by the resolved CSS. This recipe lists all five colors and four styles explicitly.
+2. Varia resolves compound utilities before UnoCSS generates their palette variables. This recipe lists all five colors and four styles explicitly so each combination can be reviewed together.
 
 ## Live preview
 

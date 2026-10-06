@@ -249,6 +249,7 @@ Shortcut CSS is generated on demand. Compound and slot-keyed rules currently emi
 |---|---|
 | Two components with the same name | `Duplicate component name "btn" in presetVaria...` |
 | Two components emitting the same shortcut | `Duplicate shortcut "btn-c-primary" emitted by both component "btn" and component "btn-old"...` |
+| Duplicate class names involving slot-keyed variants | `Duplicate class "card-accent" emitted by both component "card" and component "card-accent"...` |
 
 Passing the same component reference twice also triggers the duplicate-name error.
 

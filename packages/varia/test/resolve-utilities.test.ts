@@ -16,14 +16,14 @@ beforeAll(async () => {
 describe('resolveUtilities', () => {
   it('resolves a single utility to a base CSS declaration', async () => {
     const result = await resolveUtilities('bg-blue-600', uno)
-    expect(result.byState.base).toMatch(/background-color\s*:/)
-    expect(result.byState.base).toContain('var(--colors-blue-600)')
+    expect(emitResolvedCSS('.test', result)).toMatch(/background-color\s*:/)
+    expect(emitResolvedCSS('.test', result)).toContain('var(--colors-blue-600)')
   })
 
   it('separates base utilities from hover variants', async () => {
     const result = await resolveUtilities('bg-blue-600 hover:bg-blue-700', uno)
-    expect(result.byState.base).toMatch(/var\(--colors-blue-600\)/)
-    expect(result.byState.hover).toMatch(/var\(--colors-blue-700\)/)
+    expect(emitResolvedCSS('.test', result)).toMatch(/\.test\{[^}]*var\(--colors-blue-600\)/)
+    expect(emitResolvedCSS('.test', result)).toMatch(/\.test:hover\{[^}]*var\(--colors-blue-700\)/)
   })
 
   it('separates focus-visible, disabled, and other pseudo-class states', async () => {
@@ -31,10 +31,9 @@ describe('resolveUtilities', () => {
       'bg-white focus-visible:ring-2 disabled:opacity-50',
       uno,
     )
-    expect(result.byState).toHaveProperty('focus-visible')
-    expect(result.byState).toHaveProperty('disabled')
-    expect(result.byState['focus-visible']).toBeTruthy()
-    expect(result.byState.disabled).toMatch(/opacity/)
+    expect(emitResolvedCSS('.test', result)).toContain('.test:focus-visible{')
+    expect(emitResolvedCSS('.test', result)).toContain('.test:disabled{')
+    expect(emitResolvedCSS('.test', result)).toMatch(/\.test:disabled\{[^}]*opacity/)
   })
 
   it('handles arbitrary-value utilities including theme() lookups', async () => {
@@ -42,8 +41,8 @@ describe('resolveUtilities', () => {
       'bg-[var(--btn-bg,theme(colors.blue.600))] text-[oklch(0.5_0.2_30)]',
       uno,
     )
-    expect(result.byState.base).toContain('--btn-bg')
-    expect(result.byState.base).toContain('oklch')
+    expect(emitResolvedCSS('.test', result)).toContain('--btn-bg')
+    expect(emitResolvedCSS('.test', result)).toContain('oklch')
   })
 
   it('extracts @property declarations to topLevel', async () => {
@@ -66,11 +65,11 @@ describe('resolveUtilities', () => {
     expect(propertyDecls.length).toBe(1)
   })
 
-  it('captures @supports-wrapped declarations in atRuleWrapped', async () => {
+  it('preserves @supports conditions on resolved rules', async () => {
     const result = await resolveUtilities('bg-blue-600', uno)
     // Wind4 emits an @supports block for color-mix in oklab fallbacks
-    expect(result.atRuleWrapped).toBeDefined()
-    const supportsKeys = Object.keys(result.atRuleWrapped ?? {})
+    expect(result.rules.some(rule => rule.parent)).toBe(true)
+    const supportsKeys = result.rules.map(rule => rule.parent ?? '')
     expect(supportsKeys.some(k => k.includes('@supports'))).toBe(true)
   })
 
@@ -82,19 +81,19 @@ describe('resolveUtilities', () => {
 
   it('returns empty result for empty input', async () => {
     const result = await resolveUtilities('', uno)
-    expect(result.byState).toEqual({})
+    expect(result.rules).toEqual([])
     expect(result.topLevel).toEqual([])
   })
 
   it('handles whitespace-only input as empty', async () => {
     const result = await resolveUtilities('   \n\t  ', uno)
-    expect(result.byState).toEqual({})
+    expect(result.rules).toEqual([])
   })
 
-  it('handles multiple base utilities by concatenating their CSS', async () => {
+  it('preserves declarations from multiple base utilities', async () => {
     const result = await resolveUtilities('bg-blue-600 text-white', uno)
-    expect(result.byState.base).toContain('background-color')
-    expect(result.byState.base).toContain('color')
+    expect(emitResolvedCSS('.test', result)).toContain('background-color')
+    expect(emitResolvedCSS('.test', result)).toContain('color')
   })
 })
 

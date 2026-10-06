@@ -27,8 +27,8 @@
   },
   "scripts": {
     "build": "tsdown && cp -f stub/types.d.mts dist/types.d.mts",
-    "test": "vitest run",
-    "test:watch": "vitest",
+    "test": "pnpm run build && vitest run",
+    "test:watch": "pnpm run build && vitest",
     "typecheck": "tsc --noEmit"
   },
   "peerDependencies": {

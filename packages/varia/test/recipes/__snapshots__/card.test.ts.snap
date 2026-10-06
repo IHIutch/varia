@@ -4,7 +4,7 @@ exports[`recipe: Card > emits a single base shortcut and no variant shortcuts 1`
 [
   [
     "card",
-    "block rounded-lg border border-gray-200 bg-white shadow-sm overflow-hidden",
+    "block rounded-lg border border-gray-200 bg-white shadow-sm",
   ],
 ]
 `;

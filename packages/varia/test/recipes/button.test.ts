@@ -20,31 +20,23 @@ describe('recipe: Button', () => {
     expect([...axes].sort()).toEqual(['c', 's', 'style'])
   })
 
-  it('color variants set per-component CSS vars via theme()', async () => {
+  it('color and style compounds emit resolved colors and their palette variables', async () => {
     const css = await generateRecipeCSS(
       [button],
       'btn btn-c-primary btn-style-solid btn-s-md',
     )
-    // The c-primary variant should have set --btn-bg and friends, then the
-    // style-solid variant should consume --btn-bg.
-    expect(css).toContain('--btn-bg')
-    expect(css).toContain('--btn-text')
-    expect(css).toContain('--btn-border')
+    expect(css).toMatch(/\.btn-c-primary\.btn-style-solid\{[^}]*background-color/)
+    expect(css).toContain('var(--colors-blue-600)')
+    expect(css).toMatch(/--colors-blue-600\s*:/)
+    expect(css).toMatch(/--colors-blue-700\s*:/)
   })
 
-  it('style variants pick different roles from the per-component vars', async () => {
-    const solid = await generateRecipeCSS([button], 'btn btn-style-solid')
-    expect(solid).toMatch(/var\(--btn-bg[,)]/)
-
-    const outline = await generateRecipeCSS([button], 'btn btn-style-outline')
-    expect(outline).toMatch(/var\(--btn-text[,)]/)
-    expect(outline).toMatch(/var\(--btn-border[,)]/)
-
-    const subtle = await generateRecipeCSS([button], 'btn btn-style-subtle')
-    expect(subtle).toMatch(/var\(--btn-bg-subtle[,)]/)
-
-    const ghost = await generateRecipeCSS([button], 'btn btn-style-ghost')
-    expect(ghost).toMatch(/var\(--btn-text[,)]/)
+  it('style compounds set the properties for each color and style combination', async () => {
+    const css = await generateRecipeCSS([button], 'btn btn-c-primary btn-style-solid')
+    expect(css).toMatch(/\.btn-c-primary\.btn-style-solid\{[^}]*var\(--colors-blue-600\)/)
+    expect(css).toMatch(/\.btn-c-primary\.btn-style-outline\{[^}]*var\(--colors-blue-700\)/)
+    expect(css).toMatch(/\.btn-c-primary\.btn-style-subtle\{[^}]*var\(--colors-blue-50\)/)
+    expect(css).toMatch(/\.btn-c-primary\.btn-style-ghost\{[^}]*var\(--colors-blue-700\)/)
   })
 
   it('state pseudo-class utilities (hover, focus-visible, disabled) survive through real UnoCSS', async () => {
@@ -58,13 +50,14 @@ describe('recipe: Button', () => {
     expect(css).toContain('transition')
   })
 
-  it('only generates CSS for classes the consumer references (JIT)', async () => {
+  it('generates shortcuts on demand while emitting all compound rules', async () => {
     const css = await generateRecipeCSS(
       [button],
       'btn btn-c-primary btn-style-solid',
     )
     expect(css).toContain('btn')
-    expect(css).not.toMatch(/\.btn-c-danger\b/)
-    expect(css).not.toMatch(/\.btn-style-outline\b/)
+    expect(css).not.toContain('.btn-c-danger:focus-visible{')
+    expect(css).toContain('.btn-c-danger.btn-style-solid{')
+    expect(css).not.toMatch(/(?:^|\n)\.btn-style-outline\{/)
   })
 })

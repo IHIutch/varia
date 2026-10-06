@@ -1,14 +1,8 @@
 import { defineComponent } from '../packages/varia/src/index.js'
 
-// `compoundVariants` lists one entry per (color, style) cell with the class
-// names spelled out in full. Tailwind and UnoCSS both recommend against
-// constructing class names with template literals — the JIT extractor only
-// finds string literals it can read directly from source, so `bg-${t}-600`
-// silently disappears from the scan and any theme variables those classes
-// would have registered (e.g. `--colors-emerald-600`) never get emitted.
-//
-// Spelling each cell out is more verbose, but it's the pattern the underlying
-// tools expect.
+// One explicit compound per color and style combination keeps the palette
+// and interaction styles visible together. Varia resolves these utilities
+// before UnoCSS emits the theme variables they depend on.
 export default defineComponent('btn', {
   base: [
     'inline-flex items-center justify-center rounded-md font-medium border',
