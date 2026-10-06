@@ -2,7 +2,7 @@ import { defineComponent } from '../packages/varia/src/index.js'
 
 // Uses native <details>/<summary> for state, so no JS toggling needed. The
 // caret rotation is driven by the `[open]` attribute on the parent <details>
-// via a UnoCSS arbitrary variant — no group class, no data-attrs.
+// via a Tailwind arbitrary variant — no group class, no data-attrs.
 
 export default defineComponent('accordion', {
   slots: {

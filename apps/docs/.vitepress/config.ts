@@ -1,9 +1,6 @@
 import process from 'node:process'
-import { fileURLToPath } from 'node:url'
-import UnoCSS from '@unocss/vite'
+import tailwindcss from '@tailwindcss/vite'
 import { defineConfig, postcssIsolateStyles } from 'vitepress'
-
-const docsDir = fileURLToPath(new URL('..', import.meta.url))
 
 export default defineConfig({
   title: 'varia',
@@ -17,15 +14,8 @@ export default defineConfig({
   srcExclude: ['adr/**'],
 
   vite: {
-    // @unocss/vite ships Vite 8 plugin types; VitePress 1.x ships Vite 5
-    // plugin types. The two type chains don't unify in @types space even
-    // though the runtime API is identical. Cast to silence the IDE; the
-    // build verifies the runtime contract.
-    plugins: [
-      UnoCSS({
-        configFile: `${docsDir}/unocss.config.ts`,
-      }),
-    ] as never,
+    // VitePress 1.x uses Vite 5 types; the plugin targets Vite 8 types.
+    plugins: [tailwindcss()] as never,
     css: {
       postcss: {
         plugins: [
@@ -59,6 +49,7 @@ export default defineConfig({
           text: 'Getting started',
           items: [
             { text: 'Quickstart', link: '/quickstart' },
+            { text: 'Tailwind CSS', link: '/tailwind' },
             { text: 'Concepts', link: '/concepts' },
             { text: 'API reference', link: '/api' },
             { text: 'Naming convention', link: '/naming' },

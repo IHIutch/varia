@@ -1,21 +1,9 @@
-import { createGenerator } from '@unocss/core'
-import presetWind4 from '@unocss/preset-wind4'
 import { describe, expect, it } from 'vitest'
 import { defineComponent } from '../src/index.js'
-import { presetVaria } from '../src/preset.js'
+import { generateCSS } from './_tailwind.js'
 
-async function generate(
-  component: ReturnType<typeof defineComponent>,
-  classes: string,
-): Promise<string> {
-  const uno = await createGenerator({
-    presets: [
-      presetWind4(),
-      presetVaria({ components: [component], manifest: false }),
-    ],
-  })
-  const { css } = await uno.generate(classes)
-  return css
+async function generate(component: ReturnType<typeof defineComponent>, classes: string): Promise<string> {
+  return generateCSS([component], classes)
 }
 
 describe('compound variants: validation', () => {
@@ -110,7 +98,7 @@ describe('compound variants: emission shape', () => {
     expect(btn.manifest.classNames).toContain('btn-square')
   })
 
-  it('emits a preflight for each compound', () => {
+  it('emits a style descriptor for each compound', () => {
     const btn = defineComponent('btn', {
       base: 'inline-flex',
       variants: { s: { xs: 'p-1', sm: 'p-2', md: 'p-3' }, square: 'aspect-square' },
@@ -121,12 +109,12 @@ describe('compound variants: emission shape', () => {
       ],
     })
 
-    expect(btn.preflights).toBeDefined()
-    expect(btn.preflights!.length).toBe(3)
+    expect(btn.styles).toBeDefined()
+    expect(btn.styles!.length).toBe(3)
   })
 })
 
-describe('compound variants: end-to-end through real UnoCSS', () => {
+describe('compound variants: end-to-end through real Tailwind', () => {
   it('compound rule applies with a combined-class selector', async () => {
     const btn = defineComponent('btn', {
       base: 'inline-flex items-center',
@@ -184,7 +172,7 @@ describe('compound variants: end-to-end through real UnoCSS', () => {
     )
   })
 
-  it('compound CSS responds to pseudo-class state via the resolver', async () => {
+  it('compound CSS responds to pseudo-class state through Tailwind', async () => {
     const btn = defineComponent('btn', {
       base: 'inline-flex',
       variants: {
@@ -222,11 +210,11 @@ describe('compound variants: end-to-end through real UnoCSS', () => {
     expect(css).toMatch(/\.btn-loading\.btn-square\s*\{/)
   })
 
-  it('component without compoundVariants does not produce preflights', () => {
+  it('component without compoundVariants does not produce style descriptors', () => {
     const btn = defineComponent('btn', {
       base: 'inline-flex',
       variants: { s: { sm: 'p-2' } },
     })
-    expect(btn.preflights).toBeUndefined()
+    expect(btn.styles).toBeUndefined()
   })
 })

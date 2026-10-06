@@ -3,6 +3,7 @@ export type {
   ClassInput,
   ComponentConfig,
   ComponentManifest,
+  ComponentStyle,
   CompoundVariantRule,
   CompoundVariantWhen,
   DefinedComponent,

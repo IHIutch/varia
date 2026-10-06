@@ -1,0 +1,7 @@
+/* Import before Tailwind so ordering precedes all generated rules. */
+@layer theme, base, components, utilities;
+@layer utilities {
+  @layer varia {
+    @layer base, variants, compounds;
+  }
+}

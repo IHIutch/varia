@@ -15,7 +15,7 @@ import { defineComponent } from '../packages/varia/src/index.js'
 // behavior. Setting `col-span-N` carries `flex-none` to cancel the base's
 // flex-grow and `w-N/12` for the explicit width.
 //
-// Responsive: write `md:col-span-6` on the consumer side. UnoCSS resolves the
+// Responsive: write `md:col-span-6` on the consumer side. Tailwind resolves the
 // `md:` variant prefix against the shortcut's underlying utilities.
 export default defineComponent('col', {
   base: 'flex-1 px-[calc(var(--row-gx,0)/2)]',
@@ -35,19 +35,20 @@ export default defineComponent('col', {
       11: 'flex-none w-11/12',
       12: 'flex-none w-full',
     },
+    // Arbitrary percentage expressions work in Tailwind.
     offset: {
       0: 'ml-0',
-      1: 'ml-1/12',
-      2: 'ml-2/12',
-      3: 'ml-3/12',
-      4: 'ml-4/12',
-      5: 'ml-5/12',
-      6: 'ml-6/12',
-      7: 'ml-7/12',
-      8: 'ml-8/12',
-      9: 'ml-9/12',
-      10: 'ml-10/12',
-      11: 'ml-11/12',
+      1: 'ml-[calc(100%*1/12)]',
+      2: 'ml-[calc(100%*2/12)]',
+      3: 'ml-[calc(100%*3/12)]',
+      4: 'ml-[calc(100%*4/12)]',
+      5: 'ml-[calc(100%*5/12)]',
+      6: 'ml-[calc(100%*6/12)]',
+      7: 'ml-[calc(100%*7/12)]',
+      8: 'ml-[calc(100%*8/12)]',
+      9: 'ml-[calc(100%*9/12)]',
+      10: 'ml-[calc(100%*10/12)]',
+      11: 'ml-[calc(100%*11/12)]',
     },
     order: {
       first: 'order-first',

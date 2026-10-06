@@ -1,5 +1,3 @@
-import type { Preflight } from '@unocss/core'
-
 /**
  * Anywhere a utility-class string is accepted, an array of strings is also
  * accepted and joined with a single space. Lets authors break long class
@@ -86,15 +84,17 @@ export interface ComponentManifest {
   classNames: string[]
 }
 
+/** Utility strings and selectors relative to an activation class. */
+export interface ComponentStyle {
+  trigger: string
+  kind: 'slot' | 'compound'
+  rules: { selector: string, utilities: string }[]
+}
+
 export interface DefinedComponent {
   name: string
   shortcuts: Shortcut[]
   manifest: ComponentManifest
-  /**
-   * Selector-style descriptors for slot-keyed and compound variants.
-   * presetVaria resolves descriptors from defineComponent on demand through
-   * their activation shortcuts. Ordinary user-authored preflights remain
-   * unconditional.
-   */
-  preflights?: Preflight<object>[]
+  /** Slot and compound styles, resolved by Tailwind on demand. */
+  styles?: ComponentStyle[]
 }

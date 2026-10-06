@@ -13,6 +13,6 @@
     "skipLibCheck": true,
     "ignoreDeprecations": "6.0"
   },
-  "include": [".vitepress/**/*", "unocss.config.ts"],
+  "include": [".vitepress/**/*", "tailwind.config.ts"],
   "exclude": ["node_modules", ".vitepress/dist", ".vitepress/cache"]
 }

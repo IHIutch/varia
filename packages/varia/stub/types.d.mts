@@ -5,7 +5,7 @@
 // and the manifest sits at node_modules/.varia/manifest.d.ts (the locked default).
 //
 // If the user's TypeScript reports "Cannot find module '../../.varia/manifest.js'", they
-// need to wire `presetVaria` into their UnoCSS config so the manifest gets generated.
+// need to register `tailwindVaria` in their Tailwind stylesheet so the manifest gets generated.
 //
 // Note for pnpm users: with the default symlinked layout and tsconfig
 // `preserveSymlinks: false`, this relative path resolves through the symlink's real

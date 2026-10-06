@@ -12,7 +12,6 @@ export default antfu({
     'apps/docs/.vitepress/dist/**',
     'adr/**',
     'packages/varia/stub/**',
-    'recipes/_proto/**',
     'packages/varia/test/recipes/__snapshots__/**',
     'coverage/**',
   ],

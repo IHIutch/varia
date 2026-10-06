@@ -4,7 +4,7 @@ layout: home
 hero:
   name: varia
   text: Component classes, generated on demand
-  tagline: Tailwind-style CSS generation with the ergonomics of regular CSS. Define styles with UnoCSS utilities, use readable component classes in any template, and generate CSS at build time without a styling runtime.
+  tagline: Tailwind CSS generation with the ergonomics of regular CSS. Define styles with Tailwind utilities, use readable component classes in any template, and generate CSS at build time without a styling runtime.
   actions:
     - theme: brand
       text: Quickstart
@@ -19,17 +19,15 @@ features:
   - title: Slots and compound variants
     details: <code>slots</code> for multi-element widgets (Modal, Card, Dialog). <code>compoundVariants</code> for cross-axis CSS that applies when conditions combine.
   - title: Pure build-time
-    details: Zero runtime. <code>presetVaria</code> emits UnoCSS shortcuts; UnoCSS produces the actual CSS.
+    details: Zero runtime. <code>tailwindVaria</code> registers component styles; Tailwind produces the actual CSS.
   - title: Framework-agnostic consumption
     details: Class strings work in HTML, ERB, Liquid, HEEx, JSX, or any other template language. No JS required at consumption sites.
   - title: Readable class names
     details: Generated names follow <code>btn-c-primary</code> / <code>btn-outline</code> / <code>modal__container</code> patterns the consumer can grep for and override.
-  - title: Editor autocomplete out of the box
-    details: The UnoCSS VS Code extension reads your config and offers completion in HTML, JSX, ERB, Liquid, HEEx, and anywhere else classes live.
   - title: Optional TypeScript checking
     details: A generated <code>VariaClasses</code> union lets you type-check class strings in TS projects, or build custom lint rules.
-  - title: On-demand shortcut CSS
-    details: UnoCSS generates styles when it finds component and variant classes in your source. Slot rules activate with their variant class; compounds activate with their first condition class.
+  - title: On-demand component CSS
+    details: Tailwind generates styles when it finds component and variant classes in your source. Slot rules activate with their variant class; compounds activate with their first condition class.
 ---
 
 ## Define once, use ordinary classes
@@ -50,7 +48,7 @@ export default defineComponent('btn', {
 <button class="btn btn-c-primary btn-s-lg">Save</button>
 ```
 
-Register this definition with `presetVaria` in your UnoCSS config. UnoCSS scans your templates and generates the shortcut CSS they use. The same markup works in HTML, JSX, ERB, HEEx, and Liquid.
+Register this definition with `tailwindVaria` in a plugin module. Tailwind scans your templates and generates the component CSS they use. The same markup works in HTML, JSX, ERB, HEEx, and Liquid.
 
 Varia handles component styling. The recipes show styles you can adapt; your application or component framework supplies markup, interaction behavior, and accessibility.
 

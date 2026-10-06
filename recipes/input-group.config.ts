@@ -6,7 +6,7 @@ import { defineComponent } from '../packages/varia/src/index.js'
 // The interesting design problem: when the input group contains a form-input,
 // the form-input's own border-radius should collapse with its neighbors. Bootstrap
 // expresses this via descendant selectors (`.input-group > .form-control { border-radius: 0 }`).
-// Here we do the same via UnoCSS arbitrary variants in the root slot expansion,
+// Here we do the same via Tailwind arbitrary variants in the root slot expansion,
 // which lets the wrapper coordinate with foreign-component children without
 // either component knowing about the other.
 
@@ -15,7 +15,7 @@ export default defineComponent('input-group', {
     root: [
       'inline-flex items-stretch w-full',
       // Strip every child's border-radius first, then re-round the ends.
-      // Uses descendant arbitrary variants (UnoCSS handles natively).
+      // Uses descendant arbitrary variants (Tailwind handles natively).
       '[&>*]:rounded-none',
       '[&>*:first-child]:rounded-l-md',
       '[&>*:last-child]:rounded-r-md',

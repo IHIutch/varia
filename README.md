@@ -2,7 +2,7 @@
 
 On-demand CSS with the ergonomics of regular CSS classes.
 
-Varia lets you define component styles with UnoCSS utilities, then use readable classes such as `btn btn-c-primary btn-s-lg` in your markup. You get Tailwind-style just-in-time CSS generation without repeating utility lists on every element. UnoCSS generates the CSS at build time; Varia adds no styling runtime to your application.
+Varia lets you define component styles with utility classes, then use readable classes such as `btn btn-c-primary btn-s-lg` in your markup. Tailwind CSS generates the CSS at build time; Varia adds no styling runtime to your application.
 
 ```ts
 import { defineComponent } from 'varia'
@@ -26,22 +26,22 @@ export default defineComponent('btn', {
 <button class="btn btn-c-primary btn-s-lg">Save</button>
 ```
 
-Register the definition with `presetVaria` in your UnoCSS config. UnoCSS scans your source files and emits CSS for the component and variant classes it finds. A slot-keyed variant emits its slot rules when its variant class is used. A compound emits when the class for its first `when` condition is used; the combined selector checks the remaining conditions in the browser. Unused components and activation classes produce no component CSS.
+Register the definition with `tailwindVaria` in a Tailwind v4 plugin module. Tailwind scans your source files and emits CSS for the component and variant classes it finds. A slot-keyed variant emits its slot rules when its variant class is used. A compound emits when the class for its first `when` condition is used; the combined selector checks the remaining conditions in the browser. Unused components and activation classes produce no component CSS.
 
 ## Why Varia
 
 - Define shared styles once and select variants with ordinary CSS classes.
 - Keep class names readable, searchable, and available to your own CSS selectors.
-- Generate shortcut CSS on demand rather than shipping a complete component stylesheet.
+- Generate component CSS on demand rather than shipping a complete component stylesheet.
 - Use the same classes in HTML, JSX, Rails ERB, Phoenix HEEx, Liquid, or other templates.
 - Describe multi-element components with slots and combinations of variants with compound rules.
-- Get class completion through the UnoCSS VS Code extension, with optional generated TypeScript class types.
+- Generate optional TypeScript class types for checking component class strings.
 
 Varia is a tool for authoring component styles. The [recipes](apps/docs/recipes/button.md) are examples you can adapt for your own design system. Interactive behavior, markup, and accessibility remain part of your application or component framework.
 
 ## Get started
 
-Follow the [quickstart](apps/docs/quickstart.md) to install Varia, define a button, and connect it to UnoCSS. An existing UnoCSS integration is required to scan templates and load the generated stylesheet.
+Follow the [quickstart](apps/docs/quickstart.md) to define a button and connect it to your build.
 
 - [Concepts](apps/docs/concepts.md): how definitions become classes and CSS.
 - [API reference](apps/docs/api.md): variants, slots, compound rules, and class types.
@@ -57,7 +57,9 @@ pnpm install
 pnpm docs:dev
 ```
 
-Run `pnpm example:dev` for the kitchen-sink demo.
+Run `pnpm build` followed by `pnpm example:dev` for the Tailwind kitchen-sink demo. `pnpm example:build` creates its production build.
+
+This branch experiments with Tailwind as the only CSS engine. The `main` branch retains the UnoCSS implementation for comparison.
 
 ```sh
 pnpm build

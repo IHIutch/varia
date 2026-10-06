@@ -1,18 +1,9 @@
-import { createGenerator } from '@unocss/core'
-import presetWind4 from '@unocss/preset-wind4'
 import { describe, expect, it } from 'vitest'
 import { defineComponent } from '../src/index.js'
-import { presetVaria } from '../src/preset.js'
+import { generateCSS } from './_tailwind.js'
 
 async function generate(component: ReturnType<typeof defineComponent>, classes: string): Promise<string> {
-  const uno = await createGenerator({
-    presets: [
-      presetWind4(),
-      presetVaria({ components: [component], manifest: false }),
-    ],
-  })
-  const { css } = await uno.generate(classes)
-  return css
+  return generateCSS([component], classes)
 }
 
 describe('defineComponent: basic slot declaration', () => {
@@ -99,8 +90,8 @@ describe('defineComponent: string-returning variants apply to root', () => {
   })
 })
 
-describe('defineComponent: slot-keyed variants emit preflights', () => {
-  it('boolean slot-keyed variant produces a preflight (not a shortcut)', () => {
+describe('defineComponent: slot-keyed variants emit style descriptors', () => {
+  it('boolean slot-keyed variant produces a style descriptor (not a shortcut)', () => {
     const card = defineComponent('card', {
       slots: { root: 'rounded-lg bg-white', header: 'p-4', title: 'font-semibold' },
       variants: {
@@ -115,11 +106,11 @@ describe('defineComponent: slot-keyed variants emit preflights', () => {
     const shortcutNames = card.shortcuts.map(([n]) => n)
     expect(shortcutNames).not.toContain('card-accent') // not a shortcut
     expect(card.manifest.classNames).toContain('card-accent') // but in the manifest
-    expect(card.preflights).toBeDefined()
-    expect(card.preflights!.length).toBeGreaterThan(0)
+    expect(card.styles).toBeDefined()
+    expect(card.styles!.length).toBeGreaterThan(0)
   })
 
-  it('multi-value variant with slot-keyed values produces a preflight per value', () => {
+  it('multi-value variant with slot-keyed values produces a style descriptor per value', () => {
     const card = defineComponent('card', {
       slots: { root: 'rounded-lg bg-white', title: 'font-semibold' },
       variants: {
@@ -132,7 +123,7 @@ describe('defineComponent: slot-keyed variants emit preflights', () => {
 
     expect(card.manifest.classNames).toContain('card-variant-solid')
     expect(card.manifest.classNames).toContain('card-variant-outline')
-    expect(card.preflights!.length).toBe(2)
+    expect(card.styles!.length).toBe(2)
   })
 
   it('multi-value variant with mixed string and slot-keyed values', () => {
@@ -141,7 +132,7 @@ describe('defineComponent: slot-keyed variants emit preflights', () => {
       variants: {
         variant: {
           solid: 'bg-blue-600 text-white', // string -> shortcut for root
-          accent: { root: 'ring-2', title: 'text-blue-900' }, // slot-keyed -> preflight
+          accent: { root: 'ring-2', title: 'text-blue-900' }, // slot-keyed -> style descriptor
         },
       },
     })
@@ -150,7 +141,7 @@ describe('defineComponent: slot-keyed variants emit preflights', () => {
     expect(shortcutNames).toContain('card-variant-solid')
     expect(shortcutNames).not.toContain('card-variant-accent')
     expect(card.manifest.classNames).toContain('card-variant-accent')
-    expect(card.preflights!.length).toBe(1)
+    expect(card.styles!.length).toBe(1)
   })
 
   it('throws if slot-keyed value references a non-existent slot', () => {
@@ -181,7 +172,7 @@ describe('defineComponent: slot-keyed variants emit preflights', () => {
   })
 })
 
-describe('defineComponent: end-to-end through real UnoCSS', () => {
+describe('defineComponent: end-to-end through real Tailwind', () => {
   it('slot shortcuts resolve correctly and appear in generated CSS', async () => {
     const card = defineComponent('card', {
       slots: {
@@ -225,7 +216,7 @@ describe('defineComponent: end-to-end through real UnoCSS', () => {
 
     const css = await generate(card, 'card card-accent card__header card__title')
 
-    // Root variant repeats its class for specificity.
+    // Root variant uses the variants layer.
     expect(css).toMatch(/\.card-accent\s*\{[^}]*box-shadow/)
     // Header: descendant selector
     expect(css).toMatch(/\.card-accent\s+\.card__header\s*\{[^}]*background-color/)
@@ -335,15 +326,15 @@ describe('defineComponent: array class inputs', () => {
       },
     })
 
-    // Slot-keyed boolean variant: class name is registered, CSS comes from a preflight.
+    // Slot-keyed boolean variant: class name is registered, CSS comes from a style descriptor.
     expect(result.manifest.classNames).toContain('card-accent')
-    expect(result.preflights).toBeDefined()
-    expect(result.preflights!.length).toBeGreaterThan(0)
+    expect(result.styles).toBeDefined()
+    expect(result.styles!.length).toBeGreaterThan(0)
   })
 })
 
 describe('defineComponent: compound variants on slot components', () => {
-  it('accepts compoundVariants on a slot config and emits a preflight', () => {
+  it('accepts compoundVariants on a slot config and emits a style descriptor', () => {
     const card = defineComponent('card', {
       slots: { root: 'rounded-lg bg-white', title: 'font-semibold' },
       variants: {
@@ -355,9 +346,9 @@ describe('defineComponent: compound variants on slot components', () => {
       ],
     })
 
-    expect(card.preflights).toBeDefined()
-    // One preflight per compound rule (no slot-keyed variants here).
-    expect(card.preflights!.length).toBe(1)
+    expect(card.styles).toBeDefined()
+    // One style descriptor per compound rule (no slot-keyed variants here).
+    expect(card.styles!.length).toBe(1)
   })
 
   it('compound CSS chains the variant classes in the selector', async () => {

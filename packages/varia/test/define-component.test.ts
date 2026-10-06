@@ -228,7 +228,7 @@ describe('array class inputs', () => {
       ],
     })
 
-    expect(asArray.preflights).toBeDefined()
-    expect(asArray.preflights).toHaveLength(1)
+    expect(asArray.styles).toBeDefined()
+    expect(asArray.styles).toHaveLength(1)
   })
 })

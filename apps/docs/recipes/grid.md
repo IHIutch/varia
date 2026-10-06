@@ -1,6 +1,6 @@
 # Grid (row + col)
 
-A twelve-column flex grid. `row` wraps columns, and `col-span-N` sets each column's width. Use UnoCSS prefixes such as `md:` and `lg:` for responsive layouts.
+A twelve-column flex grid. `row` wraps columns, and `col-span-N` sets each column's width. Use Tailwind prefixes such as `md:` and `lg:` for responsive layouts.
 
 ## Authoring
 
@@ -55,7 +55,7 @@ export default defineComponent('col', {
       12: 'flex-none w-full',
     },
     offset: {
-      0: 'ml-0', 1: 'ml-1/12', /* ... up to 11 */
+      0: 'ml-0', 1: 'ml-[calc(100%*1/12)]', /* ... up to 11 */
     },
     order: {
       first: 'order-first', last: 'order-last',
@@ -138,7 +138,7 @@ The outer column controls layout; the inner element holds the content styles.
 </div>
 ```
 
-UnoCSS applies `md:` and `lg:` to the shortcut utilities. For example, `md:col-span-6` generates a media query for half-width columns with `flex-none`.
+Tailwind applies `md:` and `lg:` to the shortcut utilities. For example, `md:col-span-6` generates a media query for half-width columns with `flex-none`.
 
 ## Generated class names
 
@@ -155,12 +155,12 @@ UnoCSS applies `md:` and `lg:` to the shortcut utilities. For example, `md:col-s
 
 ## Comparison with Bootstrap's class shape
 
-Bootstrap includes breakpoints in names such as `col-md-6`. Varia keeps the `component-axis-value` name and uses UnoCSS prefixes for breakpoints:
+Bootstrap includes breakpoints in names such as `col-md-6`. Varia keeps the `component-axis-value` name and uses Tailwind prefixes for breakpoints:
 
-- Use `md:col-span-6` where Bootstrap uses `col-md-6`. UnoCSS generates the media query.
+- Use `md:col-span-6` where Bootstrap uses `col-md-6`. Tailwind generates the media query.
 - Use `col-offset-2` where Bootstrap uses `offset-2`. Varia keeps offset and order variants under the `col` component.
 
-Matching Bootstrap names exactly would require extra definitions for breakpoint, offset, and order classes. UnoCSS prefixes let you reuse the same shortcuts at different breakpoints.
+Matching Bootstrap names exactly would require extra definitions for breakpoint, offset, and order classes. Tailwind prefixes let you reuse the same shortcuts at different breakpoints.
 
 ## What's not included
 

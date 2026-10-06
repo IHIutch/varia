@@ -1,15 +1,15 @@
 # Concepts
 
-Varia combines on-demand CSS generation with the ergonomics of regular CSS classes. You define reusable styles and variants with UnoCSS utilities, then select them by writing component classes in your templates.
+Varia combines on-demand CSS generation with the ergonomics of regular CSS classes. You define reusable styles and variants with Tailwind CSS utilities, then select them by writing component classes in your templates.
 
 ## From a definition to generated CSS
 
-1. `defineComponent` turns base styles and variants into named UnoCSS shortcuts, such as `btn`, `btn-c-primary`, and `btn-s-lg`.
-2. `presetVaria` registers those shortcuts with UnoCSS.
-3. UnoCSS scans the source files configured in your project and generates CSS for the shortcuts it finds.
+1. `defineComponent` turns base styles and variants into named component classes, such as `btn`, `btn-c-primary`, and `btn-s-lg`.
+2. `tailwindVaria` registers those classes with Tailwind CSS.
+3. Tailwind CSS scans the source files configured in your project and generates CSS for the component classes it finds.
 4. Your application loads the generated stylesheet. Templates use ordinary class strings with no Varia styling runtime.
 
-This gives you Tailwind-style just-in-time generation while keeping repeated utility lists inside component definitions. You can use the generated names in your own CSS selectors, and mix component classes with utilities for one-off adjustments.
+This gives you Tailwind just-in-time generation while keeping repeated utility lists inside component definitions. You can use the generated names in your own CSS selectors, and mix component classes with utilities for one-off adjustments.
 
 Varia authors styles rather than complete interactive components. Recipes are examples to adapt. Your application provides the markup and behavior, including dialog focus management and keyboard interactions.
 
@@ -31,18 +31,18 @@ Plain class strings work in Rails templates, Phoenix HEEx, Astro, Hugo, Liquid, 
 
 The [Comparison page](/comparison) covers this trade-off against four peer libraries.
 
-## UnoCSS basics
+## Tailwind CSS basics
 
-[UnoCSS](https://unocss.dev) generates the CSS. Varia uses its utilities and shortcuts:
+[Tailwind CSS](https://tailwindcss.com) generates the CSS. Varia adds named component classes to its utilities:
 
-- Atomic utilities apply individual styles, such as `bg-blue-600`, `px-4`, and `hover:bg-blue-700`. UnoCSS generates their CSS on demand.
-- Shortcuts map a name to a utility list. Varia registers a shortcut for each base or slot style and each flat variant value.
+- Atomic utilities apply individual styles, such as `bg-blue-600`, `px-4`, and `hover:bg-blue-700`. Tailwind CSS generates their CSS on demand.
+- Varia registers a component class for each base or slot style and each flat variant value. Tailwind resolves the applied utility strings.
 
-For shortcuts, UnoCSS emits CSS for classes it discovers through its configured source scan or safelist. An unused `btn-c-purple` shortcut can exist in the manifest without shipping CSS.
+For component classes, Tailwind CSS emits CSS for classes it discovers through its configured source scan or `@source inline()`. An unused `btn-c-purple` class can exist in the manifest without shipping CSS.
 
-Slot-keyed variants emit their slot rules when the variant class is scanned or safelisted. Compounds emit when the class for their first `when` condition is scanned or safelisted. Their full selectors determine when those styles apply in the browser. Unused activation classes produce no component CSS. See [How emission works](/api#how-emission-works) for details.
+Slot-keyed variants emit their slot rules when the variant class is scanned or included with `@source inline()`. Compounds emit when the class for their first `when` condition is scanned or included with `@source inline()`. Their full selectors determine when those styles apply in the browser. Unused activation classes produce no component CSS. See [How emission works](/api#how-emission-works) for details.
 
-The build still needs a JavaScript tooling environment and a UnoCSS integration. The generated stylesheet can be consumed by any template language.
+The build still needs a JavaScript tooling environment and a Tailwind CSS integration. The generated stylesheet can be consumed by any template language.
 
 ## Glossary
 
@@ -57,4 +57,4 @@ See the [API reference](/api) for configuration details.
 | Compound variant | A rule that fires when two axes are set together. Emits CSS but no new class. |
 | Slot | A named part of a multi-element component. Produces `component__slot` classes. |
 | Slot-keyed variant | A variant whose values target specific slots, emitted as descendant rules. |
-| Manifest | The TypeScript file `presetVaria` writes to `node_modules/.varia/manifest.d.ts`. Exports a `VariaClasses` union of every valid class. |
+| Manifest | The TypeScript file `tailwindVaria` writes to `node_modules/.varia/manifest.d.ts`. Exports a `VariaClasses` union of every valid class. |

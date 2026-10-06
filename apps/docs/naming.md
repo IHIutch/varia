@@ -72,7 +72,7 @@ Write the individual variant classes, such as `btn-s-xs btn-square`. The combine
   btn-c-Primary  ✗  silently a different class from btn-c-primary
   ```
 
-  Lowercase names match the UnoCSS and Tailwind utility convention and avoid names that differ only by case.
+  Lowercase names match the Tailwind utility convention and avoid names that differ only by case.
 
 - Kebab-case only (no underscores).
 
@@ -99,4 +99,4 @@ Use utilities to override styles, the `VariaClasses` union to check names, and t
 
 ## Edge case: identifier conflicts
 
-Duplicate shortcuts cause `presetVaria` to throw. A collision with a UnoCSS utility depends on preset order. See [Identifier conflicts](/troubleshooting#identifier-conflicts) for examples.
+Duplicate shortcuts cause `tailwindVaria` to throw. A collision with a built-in Tailwind utility can produce both definitions. See [Identifier conflicts](/troubleshooting#identifier-conflicts) for examples.

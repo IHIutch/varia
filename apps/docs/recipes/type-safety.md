@@ -4,7 +4,7 @@ Use `VariaClasses` to reject unknown class names during TypeScript checking.
 
 ## Authoring
 
-`presetVaria` writes `node_modules/.varia/manifest.d.ts` with a union of all registered class names:
+`tailwindVaria` writes `node_modules/.varia/manifest.d.ts` with a union of all registered class names:
 
 ```ts
 // node_modules/.varia/manifest.d.ts (generated)

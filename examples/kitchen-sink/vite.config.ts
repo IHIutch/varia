@@ -1,13 +1,13 @@
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import UnoCSS from '@unocss/vite'
+import tailwindcss from '@tailwindcss/vite'
 import { defineConfig } from 'vite'
 
 const here = dirname(fileURLToPath(import.meta.url))
 
 export default defineConfig({
   root: here,
-  plugins: [UnoCSS({ configFile: resolve(here, 'uno.config.ts') })],
+  plugins: [tailwindcss()],
   build: {
     outDir: resolve(here, 'dist'),
     emptyOutDir: true,

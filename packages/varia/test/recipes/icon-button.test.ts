@@ -19,9 +19,9 @@ describe('recipe: IconButton', () => {
     expect(names).not.toContain('icon-btn-compound-1')
   })
 
-  it('declares one preflight per compound rule', () => {
-    expect(iconButton.preflights).toBeDefined()
-    expect(iconButton.preflights!.length).toBe(4)
+  it('declares one style descriptor per compound rule', () => {
+    expect(iconButton.styles).toBeDefined()
+    expect(iconButton.styles!.length).toBe(4)
   })
 
   it('emits exactly the expected padding for each square size', async () => {
@@ -33,9 +33,9 @@ describe('recipe: IconButton', () => {
       ['.icon-btn-s-lg.icon-btn-square', 'padding:calc(var(--spacing) * 2.5);'],
       ['.icon-btn-s-md.icon-btn-square', 'padding:calc(var(--spacing) * 2);'],
       ['.icon-btn-s-sm.icon-btn-square', 'padding:calc(var(--spacing) * 1.5);'],
-      ['.icon-btn-s-xs.icon-btn-square', 'padding:calc(var(--spacing) * 1);'],
+      ['.icon-btn-s-xs.icon-btn-square', 'padding:var(--spacing);'],
     ])
-    expect(css).toMatch(/--spacing:\s*0\.25rem;/)
+    expect(css).toMatch(/--spacing:\s*\.25rem;/)
   })
 
   it('omits compounds for unused sizes', async () => {
@@ -46,7 +46,7 @@ describe('recipe: IconButton', () => {
     expect(css).not.toMatch(/\.icon-btn-s-lg\.icon-btn-square\s*\{/)
   })
 
-  it('base + size + square produces working CSS through real UnoCSS', async () => {
+  it('base + size + square produces working CSS through real Tailwind', async () => {
     const css = await generateRecipeCSS([iconButton], 'icon-btn icon-btn-s-md icon-btn-square')
     // Base styles present:
     expect(css).toMatch(/display:\s*inline-flex/)
@@ -55,7 +55,7 @@ describe('recipe: IconButton', () => {
     // Square applies aspect-ratio:
     expect(css).toMatch(/aspect-ratio/)
     // The labeled size has wider horizontal padding. The two-class compound
-    // overrides both axes with 0.5rem because it has greater specificity.
+    // overrides both axes with 0.5rem through the compounds layer.
     expect(css).toMatch(/\.icon-btn-s-md\{[^}]*padding-inline:calc\(var\(--spacing\) \* 3\.5\)/)
     expect(css).toMatch(/\.icon-btn-s-md\{[^}]*padding-block:calc\(var\(--spacing\) \* 2\)/)
     expect(css).toContain('.icon-btn-s-md.icon-btn-square{padding:calc(var(--spacing) * 2);}')

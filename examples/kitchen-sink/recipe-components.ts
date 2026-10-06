@@ -1,6 +1,4 @@
-import presetWind4 from '@unocss/preset-wind4'
-import { defineConfig } from 'unocss'
-import { presetVaria } from '../../packages/varia/src/preset.js'
+import type { DefinedComponent } from 'varia'
 import accordion from '../../recipes/accordion.config.js'
 import alert from '../../recipes/alert.config.js'
 import avatar from '../../recipes/avatar.config.js'
@@ -23,34 +21,26 @@ import spinner from '../../recipes/spinner.config.js'
 import table from '../../recipes/table.config.js'
 import tooltip from '../../recipes/tooltip.config.js'
 
-export default defineConfig({
-  presets: [
-    presetWind4(),
-    presetVaria({
-      components: [
-        button,
-        card,
-        formInput,
-        spinner,
-        avatar,
-        dropdown,
-        modal,
-        iconButton,
-        nav,
-        badge,
-        alert,
-        tooltip,
-        pagination,
-        inputGroup,
-        progress,
-        accordion,
-        breadcrumb,
-        table,
-        navbar,
-        row,
-        col,
-      ],
-      manifest: false,
-    }),
-  ],
-})
+export const components: DefinedComponent[] = [
+  button,
+  card,
+  formInput,
+  spinner,
+  avatar,
+  dropdown,
+  modal,
+  iconButton,
+  nav,
+  badge,
+  alert,
+  tooltip,
+  pagination,
+  inputGroup,
+  progress,
+  accordion,
+  breadcrumb,
+  table,
+  navbar,
+  row,
+  col,
+]

@@ -1,6 +1,6 @@
 # Spinner
 
-A CSS spinner with size and color variants. It uses UnoCSS's `animate-spin` utility.
+A CSS spinner with size and color variants. It uses Tailwind's `animate-spin` utility.
 
 ## Authoring
 
@@ -25,7 +25,7 @@ export default defineComponent('spinner', {
 })
 ```
 
-The spinner is a rotating circle with a transparent right border. UnoCSS generates the spin keyframes when it resolves `animate-spin`.
+The spinner is a rotating circle with a transparent right border. Tailwind generates the spin keyframes when it resolves `animate-spin`.
 
 ## Live preview
 
@@ -60,6 +60,6 @@ The spinner is a rotating circle with a transparent right border. UnoCSS generat
 
 | Class | Purpose |
 |---|---|
-| `spinner` | Base + `animate-spin` (keyframes injected by UnoCSS) |
+| `spinner` | Base + `animate-spin` (keyframes injected by Tailwind) |
 | `spinner-s-sm` / `-md` / `-lg` | Size + border thickness |
 | `spinner-c-primary` / `-muted` / `-danger` | Color (via `currentColor` on the border) |

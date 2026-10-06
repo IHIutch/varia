@@ -1,6 +1,6 @@
 # API reference
 
-`defineComponent` defines component styles and class names. `presetVaria` registers them with UnoCSS. The `varia/types` subpath provides the generated class-name union for TypeScript.
+`defineComponent` defines component styles and class names. `tailwindVaria` registers them with Tailwind. The `varia/types` subpath provides the generated class-name union for TypeScript.
 
 ## `defineComponent(name, config)`
 
@@ -155,37 +155,37 @@ Write `<button class="btn btn-s-xs btn-square">`. The selector `.btn-s-xs.btn-sq
 
 Varia validates the assembled class name against `/^[a-z][a-z0-9-]*$/`. Values can start with numbers because the component prefix starts with a letter. For example, `s: { 1: 'x' }` produces `btn-s-1`, and `s: { '2xl': 'x' }` produces `btn-s-2xl`.
 
-## `presetVaria(options)`
+## `tailwindVaria(options)`
 
 ```ts
-import { presetVaria } from 'varia/preset'
+import { tailwindVaria } from 'varia/tailwind'
+
+export default tailwindVaria({ components: [button, modal] })
 ```
 
-Returns a UnoCSS preset containing shortcuts and rules that activate component styles on demand. Calling `presetVaria` also writes the TypeScript manifest unless `manifest` is `false`.
+Returns a Tailwind v4 JavaScript plugin. Register it with `@plugin` and import `varia/tailwind.css` before Tailwind. See the [quickstart](/quickstart).
 
 ### Options
 
 ```ts
-interface PresetVariaOptions {
+interface TailwindVariaOptions {
   components: DefinedComponent[]
   manifest?: false | { path?: string }
+  prefix?: string
 }
 ```
 
-| Field | Type | Default | Description |
-|---|---|---|---|
-| `components` | `DefinedComponent[]` | required | The components to register with UnoCSS. Order is preserved in the resulting shortcut list. |
-| `manifest` | `false \| { path?: string }` | `{ path: 'node_modules/.varia/manifest.d.ts' }` | Controls manifest emission. Pass `false` to disable. Pass `{ path }` to override the default path. |
+| Field | Default | Description |
+|---|---|---|
+| `components` | required | Component definitions to register. Duplicate component or class names throw. |
+| `manifest` | `{}` | Writes `node_modules/.varia/manifest.d.ts`. Pass `false` to disable or `{ path }` to choose another path. |
+| `prefix` | unset | Configures a lowercase Tailwind prefix, or matches an existing CSS `prefix(tw)`. See [prefixes](/tailwind#options). |
 
 ### Manifest emission
 
-`presetVaria` writes a TypeScript declaration containing a `VariaClasses` union of all registered class names. The default path is `node_modules/.varia/manifest.d.ts`.
+The plugin writes a `VariaClasses` union when Tailwind loads it during compilation. Plugins sharing an output path combine their classes within that compilation. A new compilation replaces the previous union, removing stale classes. Plugins using different paths write separate manifests.
 
-When UnoCSS resolves a configuration with multiple Varia presets, it combines their classes into one manifest for each output path. Reloading the configuration removes classes from presets that are no longer registered. Presets using different paths write separate manifests.
-
-- Varia recreates the file on the next UnoCSS run if you delete `node_modules`.
-- The file uses the existing `node_modules` gitignore entry.
-- Varia compares the existing file contents and writes only when they change, avoiding unnecessary HMR rebuilds.
+Varia recreates the file on the next build if it is deleted. Unchanged contents do not cause a write. The default path uses the existing `node_modules` gitignore entry.
 
 ## `varia/types` subpath
 
@@ -202,11 +202,9 @@ cn('btn-c-primary') // ok
 cn('not-a-real-class') // type error
 ```
 
-### Editor autocomplete is separate
+### Typed completion
 
-The [UnoCSS VS Code extension](https://marketplace.visualstudio.com/items?itemName=antfu.unocss) reads shortcuts from `unocss.config.ts`. It offers completion in files matching its configured globs, including HTML, JSX, ERB, Liquid, and HEEx. Autocomplete requires no manifest import.
-
-Import `varia/types` when writing typed `cn()` helpers, validators, or lint rules.
+Import `varia/types` when writing typed `cn()` helpers, validators, or lint rules. Editors can complete values of the generated `VariaClasses` union. Template completion through Tailwind's editor extension has not been verified for the experimental adapter.
 
 ### pnpm caveat
 
@@ -214,24 +212,22 @@ Under pnpm's default symlinked layout, `varia/types` may need additional configu
 
 ## How emission works
 
-Varia activates selector-based styles through UnoCSS shortcuts and internal rules. Unused components produce no component CSS or utility dependencies during a fresh generation.
+Tailwind generates registered component utilities for classes found in its configured sources or `@source inline()` entries. Unused activation classes produce no component rules or utility dependencies.
 
-- A slot-keyed variant activates when its variant class is scanned or safelisted. All its slot rules emit together, including descendants whose classes may live in a separate template.
-- A compound activates when the class for its first `when` condition is scanned or safelisted. For `{ when: { s: 'xs', square: true } }`, `btn-s-xs` activates the rule; its combined selector still requires `btn-square` on the same element.
+- A slot-keyed variant activates with its variant class. All descendant rules emit together, even if the slot classes are not scanned separately.
+- A compound activates with the class for its first `when` condition. For `{ when: { s: 'xs', square: true } }`, `btn-s-xs` activates a selector that still requires `btn-square` on the same element.
 
-Compound filtering is conservative. Rules sharing the same first condition ship together even if some remaining conditions are unused. Put the axis that should control emission first in `when`. Varia does not infer class co-occurrence from templates or add a consumer-facing compound class.
+Compound filtering is conservative. Rules sharing the same first condition ship together. Put the axis that should control emission first in `when`. Varia does not infer class co-occurrence or create a consumer-facing compound class.
 
-- A non-root slot uses a descendant selector, such as `.modal-size-md .modal__container { ... }`.
-- A root slot repeats the variant selector, such as `.card-accent.card-accent { ... }`, so its styles override the base. Put the variant class on the root element once.
-- A compound uses a combined selector, such as `.btn-s-xs.btn-square { ... }`.
+A root variant uses a single class selector. A slot uses a descendant selector such as `.modal-size-md .modal__container`. A compound uses a combined selector such as `.btn-s-xs.btn-square`.
 
-Slot and compound rules use UnoCSS's configured `shortcutsLayer`, including when `outputToCssLayers` is enabled. A compound with only one condition repeats its class selector to override the ordinary variant. Utilities within these rules follow UnoCSS's ordering, so responsive breakpoints and shorthand overrides behave as they do in shortcuts.
+The stylesheet defines ordered `base`, `variants`, and `compounds` sublayers inside Tailwind's utilities layer. Compounds override variants, variants override bases, and ordinary Tailwind utilities override all Varia sublayers. This order does not require repeated selectors or important modifiers. Explicit important declarations follow CSS's reversed layer precedence.
 
-Palette variables, properties, and keyframes referenced by active rules resolve before UnoCSS emits its dependency preflights. Ordinary user-authored preflights remain unconditional.
+Tailwind resolves `@apply` strings against its current theme and emits referenced variables, properties, and keyframes. Exclude definition files from source scanning to avoid emitting their literal atomic utility strings independently of the component classes.
 
 ## Validation errors
 
-`defineComponent` and `presetVaria` both throw synchronously on misuse, before any markup is scanned.
+`defineComponent` validates authoring inputs immediately. `tailwindVaria` validates names when constructed and checks collisions across plugin registrations when Tailwind loads it.
 
 ### `defineComponent`
 
@@ -255,11 +251,11 @@ Palette variables, properties, and keyframes referenced by active rules resolve 
 | Compound sets boolean axis to non-`true` | `when: { square: 'false' }` | `Compound variant on component "btn" sets "square" to "false", but "square" is a boolean variant...` |
 | Empty `when: {}` or empty `class: ''` | — | `Compound variant on component "btn" has an empty "when" clause` / `...has an empty "class"` |
 
-### `presetVaria`
+### `tailwindVaria`
 
 | Condition | Error starts with |
 |---|---|
-| Two components with the same name | `Duplicate component name "btn" in presetVaria...` |
+| Two components with the same name | `Duplicate component name "btn" in tailwindVaria...` |
 | Two components emitting the same shortcut | `Duplicate shortcut "btn-c-primary" emitted by both component "btn" and component "btn-old"...` |
 | Duplicate class names involving slot-keyed variants | `Duplicate class "card-accent" emitted by both component "card" and component "card-accent"...` |
 
@@ -267,13 +263,19 @@ Passing the same component reference twice also triggers the duplicate-name erro
 
 ## `DefinedComponent` return value
 
-Pass the returned value to `presetVaria`. Tools can read these fields to inspect shortcuts, class names, and selector-style descriptors. The `preflights` field retains its existing shape; `presetVaria` activates descriptors produced by `defineComponent` on demand.
+Pass the returned value to `tailwindVaria`. Tools can inspect class names, utility expansions, and relative selectors. Tailwind resolves the utility strings on demand. Slot and compound rules are stored in `styles`.
 
 ```ts
 interface DefinedComponent {
   name: string
   shortcuts: Array<[className: string, expansion: string]>
   manifest: { name: string, classNames: string[] }
-  preflights?: Preflight[] // present iff compoundVariants or slot-keyed variants were declared
+  styles?: Array<{
+    trigger: string
+    kind: 'slot' | 'compound'
+    rules: Array<{ selector: string, utilities: string }>
+  }>
 }
 ```
+
+Each `selector` is relative to the activation class, represented by `&`. A root slot override uses `&`; descendant slots use selectors such as `& .card__title`. See the [Tailwind guide](/tailwind) for cascade behavior and setup.

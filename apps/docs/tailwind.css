@@ -1,0 +1,7 @@
+@import "varia/tailwind.css";
+/* Keep VitePress's base styles; Tailwind supplies the recipe utilities. */
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" layer(utilities) source(none);
+@source "./*.md";
+@source "./recipes/*.md";
+@plugin "./tailwind.config.ts";
