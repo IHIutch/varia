@@ -9,3 +9,4 @@ node_modules
 examples/**/.screenshot-*.png
 # Vitest visual comparison artifacts
 **/.vitest/
+**/.vitest-attachments/

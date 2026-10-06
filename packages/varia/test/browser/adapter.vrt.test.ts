@@ -5,7 +5,7 @@ import { page } from 'vitest/browser'
 const style = document.createElement('style')
 style.textContent = `
 @layer fixture-reset {
-  * { box-sizing: border-box; }
+  * { box-sizing: border-box; border: 0 solid; }
   body { margin: 0; font: 16px/1.5 Arial, sans-serif; color: #111827; background: white; }
   button, input { margin: 0; padding: 0; font: inherit; border-style: solid; background: transparent; }
   a { text-decoration: none; }
