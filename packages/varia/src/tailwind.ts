@@ -25,6 +25,10 @@ export function tailwindVaria(options: TailwindVariaOptions): { handler: (api: P
   return {
     config: prefix ? { prefix } : undefined,
     handler(api) {
+      // Without the layer order, sublayers follow first use and base styles
+      // can override variants.
+      if (api.theme('--varia') !== 'layers')
+        throw new Error('tailwindVaria requires `@import "varia/tailwind.css";` before `@import "tailwindcss";`.')
       const configuredPrefix = api.config('prefix', '') as string
       const effectivePrefix = prefix ?? configuredPrefix.replace(/-$/, '')
       const apply = (utilities: string): Css => ({

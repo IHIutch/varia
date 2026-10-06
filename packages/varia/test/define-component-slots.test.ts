@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { defineComponent } from '../src/index.js'
-import { generateCSS } from './_tailwind.js'
+import { generateCSS } from './_generate.js'
 
 async function generate(component: ReturnType<typeof defineComponent>, classes: string): Promise<string> {
   return generateCSS([component], classes)
@@ -172,7 +172,7 @@ describe('defineComponent: slot-keyed variants emit style descriptors', () => {
   })
 })
 
-describe('defineComponent: end-to-end through real Tailwind', () => {
+describe('defineComponent: end-to-end through the selected engine', () => {
   it('slot shortcuts resolve correctly and appear in generated CSS', async () => {
     const card = defineComponent('card', {
       slots: {

@@ -131,6 +131,17 @@ describe('validation', () => {
     ).toThrow(/Empty expansion for "btn"/)
   })
 
+  it('throws on variant groups so definitions stay portable across engines', () => {
+    expect(() => defineComponent('btn', { base: 'hover:(bg-red-500 text-white)' })).toThrow(/Variant group in "btn"/)
+    expect(() => defineComponent('card', { slots: { title: 'block' }, variants: { accent: { title: 'focus:(ring-2 ring-blue-500)' } } })).toThrow(/Variant group in "card-accent"/)
+    expect(() => defineComponent('btn', {
+      variants: { square: 'aspect-square' },
+      compoundVariants: [{ when: { square: true }, class: 'md:(p-1 p-2)' }],
+    })).toThrow(/Variant group in "compound/)
+    expect(() => defineComponent('btn', { base: 'bg-(--brand) w-[calc(100%-2rem)] [&:hover]:block' })).not.toThrow()
+    expect(() => defineComponent('btn', { base: 'content-[\':(\']' })).not.toThrow()
+  })
+
   it('throws when component has no base and no variants', () => {
     expect(() => defineComponent('btn', {})).toThrow(/no `base`\/`slots` and no `variants`/)
   })

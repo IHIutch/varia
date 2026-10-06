@@ -11,7 +11,7 @@ describe('recipe: Form input', () => {
     expect(formInput.manifest.classNames).toMatchSnapshot()
   })
 
-  it('focus/disabled/invalid/placeholder pseudo-classes survive through real Tailwind', async () => {
+  it('focus/disabled/invalid/placeholder pseudo-classes survive through the selected engine', async () => {
     const css = await generateRecipeCSS(
       [formInput],
       'form-input form-input-state-error form-input-s-md form-input-readonly',

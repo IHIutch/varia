@@ -1,1 +1,1 @@
-export { generateCSS as generateRecipeCSS } from '../_tailwind.js'
+export { generateCSS as generateRecipeCSS } from '../_generate.js'

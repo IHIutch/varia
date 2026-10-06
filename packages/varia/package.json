@@ -2,7 +2,7 @@
   "name": "varia",
   "type": "module",
   "version": "0.0.0",
-  "description": "Build-time component variants for Tailwind CSS",
+  "description": "Build-time component variants",
   "license": "MIT",
   "exports": {
     ".": {
@@ -11,6 +11,10 @@
     },
     "./types": {
       "types": "./dist/types.d.mts"
+    },
+    "./adapter": {
+      "types": "./dist/adapter.d.mts",
+      "import": "./dist/adapter.mjs"
     },
     "./tailwind": {
       "types": "./dist/tailwind.d.mts",
@@ -35,8 +39,14 @@
   "peerDependencies": {
     "tailwindcss": "^4.3.3"
   },
+  "peerDependenciesMeta": {
+    "tailwindcss": {
+      "optional": true
+    }
+  },
   "devDependencies": {
     "@tailwindcss/node": "^4.3.3",
+    "postcss": "^8.5.14",
     "tailwindcss": "^4.3.3",
     "tsdown": "^0.22.0",
     "vitest": "^4.1.5"

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { defineComponent } from '../src/index.js'
-import { generateCSS } from './_tailwind.js'
+import { generateCSS } from './_generate.js'
 
 async function generate(component: ReturnType<typeof defineComponent>, classes: string): Promise<string> {
   return generateCSS([component], classes)
@@ -114,7 +114,7 @@ describe('compound variants: emission shape', () => {
   })
 })
 
-describe('compound variants: end-to-end through real Tailwind', () => {
+describe('compound variants: end-to-end through the selected engine', () => {
   it('compound rule applies with a combined-class selector', async () => {
     const btn = defineComponent('btn', {
       base: 'inline-flex items-center',
@@ -172,7 +172,7 @@ describe('compound variants: end-to-end through real Tailwind', () => {
     )
   })
 
-  it('compound CSS responds to pseudo-class state through Tailwind', async () => {
+  it('compound CSS responds to pseudo-class state through the selected engine', async () => {
     const btn = defineComponent('btn', {
       base: 'inline-flex',
       variants: {

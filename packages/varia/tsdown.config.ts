@@ -1,7 +1,7 @@
 import { defineConfig } from 'tsdown'
 
 export default defineConfig({
-  entry: ['src/index.ts', 'src/tailwind.ts'],
+  entry: ['src/index.ts', 'src/tailwind.ts', 'src/adapter.ts'],
   format: ['esm'],
   dts: true,
   clean: true,

@@ -1,13 +1,13 @@
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import tailwindcss from '@tailwindcss/vite'
 import { defineConfig } from 'vite'
+import { enginePlugin } from './engine.js'
 
 const here = dirname(fileURLToPath(import.meta.url))
 
 export default defineConfig({
   root: here,
-  plugins: [tailwindcss()],
+  plugins: [enginePlugin()],
   build: {
     outDir: resolve(here, 'dist'),
     emptyOutDir: true,

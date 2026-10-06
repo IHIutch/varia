@@ -26,20 +26,20 @@ describe('recipe: Button', () => {
       'btn btn-c-primary btn-style-solid btn-s-md',
     )
     expect(css).toMatch(/\.btn-c-primary\.btn-style-solid\{[^}]*background-color/)
-    expect(css).toContain('var(--color-blue-600)')
-    expect(css).toMatch(/--color-blue-600\s*:/)
-    expect(css).toMatch(/--color-blue-700\s*:/)
+    expect(css).toMatch(/var\(--colors?-blue-600\)/)
+    expect(css).toMatch(/--colors?-blue-600\s*:/)
+    expect(css).toMatch(/--colors?-blue-700\s*:/)
   })
 
   it('style compounds set the properties for each color and style combination', async () => {
     const css = await generateRecipeCSS([button], 'btn btn-c-primary btn-style-solid')
-    expect(css).toMatch(/\.btn-c-primary\.btn-style-solid\{[^}]*var\(--color-blue-600\)/)
-    expect(css).toMatch(/\.btn-c-primary\.btn-style-outline\{[^}]*var\(--color-blue-700\)/)
-    expect(css).toMatch(/\.btn-c-primary\.btn-style-subtle\{[^}]*var\(--color-blue-50\)/)
-    expect(css).toMatch(/\.btn-c-primary\.btn-style-ghost\{[^}]*var\(--color-blue-700\)/)
+    expect(css).toMatch(/\.btn-c-primary\.btn-style-solid\{[^}]*var\(--colors?-blue-600\)/)
+    expect(css).toMatch(/\.btn-c-primary\.btn-style-outline\{[^}]*var\(--colors?-blue-700\)/)
+    expect(css).toMatch(/\.btn-c-primary\.btn-style-subtle\{[^}]*var\(--colors?-blue-50\)/)
+    expect(css).toMatch(/\.btn-c-primary\.btn-style-ghost\{[^}]*var\(--colors?-blue-700\)/)
   })
 
-  it('state pseudo-class utilities (hover, focus-visible, disabled) survive through real Tailwind', async () => {
+  it('state pseudo-class utilities (hover, focus-visible, disabled) survive through the selected engine', async () => {
     const css = await generateRecipeCSS(
       [button],
       'btn btn-c-primary btn-style-solid btn-s-md',
