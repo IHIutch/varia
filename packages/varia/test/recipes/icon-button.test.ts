@@ -33,7 +33,7 @@ describe('recipe: IconButton', () => {
       ['.icon-btn-s-lg.icon-btn-square', 'padding:calc(var(--spacing) * 2.5);'],
       ['.icon-btn-s-md.icon-btn-square', 'padding:calc(var(--spacing) * 2);'],
       ['.icon-btn-s-sm.icon-btn-square', 'padding:calc(var(--spacing) * 1.5);'],
-      ['.icon-btn-s-xs.icon-btn-square', 'padding:var(--spacing);'],
+      ['.icon-btn-s-xs.icon-btn-square', expect.stringMatching(/^padding:(?:var\(--spacing\)|calc\(var\(--spacing\) \* 1\));$/)],
     ])
     expect(css).toMatch(/--spacing:\s*\.25rem;/)
   })

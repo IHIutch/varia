@@ -27,6 +27,12 @@ The test seam is `packages/varia/test/_engine.ts`. The engine-neutral package im
 
 ## Comparing implementation cost
 
-Use `git diff comparison-base...tailwind-mvp` and `git diff comparison-base...unocss-minimal`. Compare adapter code separately from integration helpers and engine dependencies. Both branches must keep shared source, recipes, demo markup, and shared tests identical.
+Use `git diff comparison-base...tailwind-mvp` and `git diff comparison-base...unocss-minimal`. Compare adapter code separately from integration helpers and engine dependencies. Both branches must keep shared source, recipes, demo markup, and shared tests identical. Run `pnpm comparison:check` to detect shared-file drift, mixed engine dependencies, or a changed merge base.
 
 Build the same demo entry points with the same markup and recipes. Treat CSS size and timing as whole-engine measurements, including each engine's reset and theme implementation; do not label those figures as adapter overhead. Verify computed styles for compound buttons, nav states, input groups, descendant slots, and utility overrides before claiming rendered parity. Build success alone does not establish visual parity.
+
+## Verified comparison
+
+Both branches pass the same 136 shared tests, typechecking, lint, and production demo build. Tailwind additionally has three native integration tests for prefix configuration and reference stylesheets. The shared suite covers both engines through the same assertions, including all existing recipe tests.
+
+Browser checks on the production builds matched input-group inner and outer corner radii, collapsed border margins, compound button colors and padding, dropdown closed/open display, and nav tab/pill active and disabled states. Colors were compared as rendered 8-bit sRGB values because the engines serialize equivalent colors differently. These sampled checks do not claim pixel equality for every demo state.
