@@ -1,8 +1,20 @@
 # Comparison
 
-`varia` lives in a small but real gap between Tailwind/UnoCSS utilities and traditional CSS components. The closest peers each occupy a slightly different point in the design space; the most useful question is "when would you pick this?"
+Varia combines on-demand CSS generation with regular component classes. You author styles with UnoCSS utilities, then use names such as `btn btn-c-primary` in markup.
 
-## At a glance
+## Compared with utility classes
+
+Utility classes let you style an element directly in markup. Varia lets you collect repeated utility lists into a component definition and expose named variants. You still use UnoCSS's on-demand generation, and can mix component classes with individual utilities.
+
+## Compared with a traditional component stylesheet
+
+A traditional component stylesheet defines selectors such as `.btn` and `.btn-primary` up front. Varia gives consumers similar class ergonomics, but generates shortcut CSS as UnoCSS discovers classes in source files. You don't need to ship CSS for every shortcut in your design system.
+
+Compound and slot-keyed rules are the current exception: all registered rules ship, used or not. See [How emission works](/api#how-emission-works).
+
+## Compared with variant libraries
+
+### At a glance
 
 | | varia | CVA | tailwind-variants | vanilla-extract recipes | Panda CSS |
 |---|---|---|---|---|---|
@@ -17,19 +29,21 @@
 
 ## When to pick `varia`
 
-- You're building a design-system or component library that ships a vocabulary, not a runtime.
-- Consumers come from many ecosystems (Rails + ViewComponent, Astro, Eleventy, Hugo, Phoenix HEEx, Django) and you want one library that works across all of them.
-- You're already using UnoCSS, or are happy to adopt it.
-- You want readable, grep-able class names (`btn-c-primary`) instead of hashed atomic IDs.
+- You want regular component classes with on-demand CSS generation.
+- You want to keep shared utility lists in component definitions and select variants in markup.
+- You need the same component styles in Rails ERB, Phoenix HEEx, Astro, Liquid, or other templates.
+- You use UnoCSS or want to adopt it.
+- You want names such as `btn-c-primary` that you can search for and target in CSS.
 
 ## When to pick something else
 
 ### CVA (`class-variance-authority`)
 
-CVA is the API-shape ancestor of `varia` — the config feels almost identical. The difference is what it returns: CVA returns a JS function you call from JSX (`button({ color: 'primary' })`); `varia` returns class names you write directly in markup.
+Varia uses a variant configuration similar to CVA. CVA returns a function such as `button({ color: 'primary' })` to assemble class strings. Varia registers class names with UnoCSS for use in markup.
 
 Pick CVA if:
-- You're shipping a React/Vue/Svelte component library and want the callable.
+
+- You want to select variants through a JavaScript function in your components.
 - You need default variants computed at the call site (CVA does this at runtime).
 - You don't mind the small runtime cost.
 - You don't need consumption from non-JS template languages.
@@ -37,34 +51,35 @@ Pick CVA if:
 ### tailwind-variants
 
 Pick `tailwind-variants` if:
+
 - You're React-first and want the slots-and-compounds API as a runtime function call from JSX.
 - You don't care about consumption from non-JS template languages.
 
-`tailwind-variants` is roughly CVA plus slots and compound variants. `varia` covers the same authoring surface (slots and `compoundVariants` are both first-class on `defineComponent`) but emits class names you write directly in markup instead of returning a callable from JSX. The choice is mostly about consumption model: callable function vs. plain HTML.
+`tailwind-variants` supports slots and compound variants through a JavaScript function. Varia defines slots and compounds at build time, then lets templates use the class names directly.
 
 ### vanilla-extract recipes
 
 Pick `vanilla-extract` recipes if:
+
 - You want a fully build-time CSS pipeline that doesn't depend on Tailwind/UnoCSS.
 - You're comfortable with hashed class names, and have tooling that doesn't grep for class strings.
 - You want first-class typed CSS values in TypeScript, not just utility strings.
 
-vanilla-extract owns its own extractor and CSS engine. `varia` deliberately doesn't; UnoCSS does that part.
+vanilla-extract generates its own CSS. Varia uses UnoCSS for CSS generation.
 
 ### Panda CSS
 
-Panda is the closest peer to `varia` in concept: recipes are similar to variants, both are build-time, both are JIT. Panda differs on three axes: it's framework-coupled, it owns its own CSS engine, and it emits hashed class names.
+Panda includes recipes and a CSS generation system. Varia uses UnoCSS and exposes component styles as readable class names.
 
 Pick Panda if:
+
 - You want a complete framework-coupled styling solution (recipes, patterns, conditions, semantic tokens, layout primitives) all in one tool.
 - You're committed to React, Vue, Svelte, or Solid.
 - Hashed atomic class names are acceptable.
 
-Panda is excellent at what it does. The reason `varia` exists isn't a complaint about Panda; the JS-framework coupling and hashed class names make Panda a non-option for the Rails / Phoenix / Astro / Hugo audience that ships server-rendered HTML. If you're React-first and the framework coupling is fine, try Panda first.
-
 ## Why `varia` vs. just writing UnoCSS shortcuts manually
 
-You can express the same component vocabulary by hand-writing UnoCSS shortcuts:
+You can define the same base and variant shortcuts by hand:
 
 ```ts
 // unocss.config.ts (manual)
@@ -77,11 +92,11 @@ shortcuts: [
 ]
 ```
 
-`defineComponent` gives you:
+Use `defineComponent` to:
 
-1. Structure. A variants-shaped config separates "this is the base" from "these are the colors" from "these are the sizes." Six shortcuts collapse into one readable block.
-2. Validation. Catches duplicate names, empty expansions, and invalid identifiers at config time, with error messages that name the offending component and class.
-3. Manifest output. The `VariaClasses` union for type-strict tooling, which you'd hand-roll alongside manual shortcuts.
-4. Boolean shorthand. `outline: '...'` produces `btn-outline` (no value suffix). Hand-rolled shortcuts can't represent this without ad-hoc naming conventions.
+1. Group base styles and variant values in one component definition.
+2. Check duplicate names, empty expansions, and invalid identifiers when loading the config. Errors identify the component and class.
+3. Generate a `VariaClasses` union for type checking instead of maintaining it alongside the shortcuts.
+4. Generate boolean names consistently. `outline: '...'` produces `btn-outline`.
 
-If your component library has fewer than ~5 variants total, manual shortcuts are fine. Past that, the structure starts to pay off.
+Manual shortcuts work well for a few definitions. Varia helps when you need consistent variant naming, validation, and generated class types across components.

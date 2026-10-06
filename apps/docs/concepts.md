@@ -1,6 +1,17 @@
 # Concepts
 
-A 5-minute orientation before the [Quickstart](/quickstart) or [API reference](/api).
+Varia combines on-demand CSS generation with the ergonomics of regular CSS classes. You define reusable styles and variants with UnoCSS utilities, then select them by writing component classes in your templates.
+
+## From a definition to generated CSS
+
+1. `defineComponent` turns base styles and variants into named UnoCSS shortcuts, such as `btn`, `btn-c-primary`, and `btn-s-lg`.
+2. `presetVaria` registers those shortcuts with UnoCSS.
+3. UnoCSS scans the source files configured in your project and generates CSS for the shortcuts it finds.
+4. Your application loads the generated stylesheet. Templates use ordinary class strings with no Varia styling runtime.
+
+This gives you Tailwind-style just-in-time generation while keeping repeated utility lists inside component definitions. You can use the generated names in your own CSS selectors, and mix component classes with utilities for one-off adjustments.
+
+Varia authors styles rather than complete interactive components. Recipes are examples to adapt. Your application provides the markup and behavior, including dialog focus management and keyboard interactions.
 
 ## Why class names, not functions
 
@@ -16,22 +27,26 @@ CVA and tailwind-variants return JavaScript functions you call from JSX. `varia`
 <button class="btn btn-c-primary btn-s-md">Save</button>
 ```
 
-The callable is fine in JSX. The class name works anywhere a JS function can't: Rails templates, Phoenix HEEx, Astro, Hugo, Liquid, plain HTML.
+Plain class strings work in Rails templates, Phoenix HEEx, Astro, Hugo, Liquid, and HTML without calling a JavaScript function.
 
 The [Comparison page](/comparison) covers this trade-off against four peer libraries.
 
-## A 60-second UnoCSS primer
+## UnoCSS basics
 
-`varia` doesn't own the CSS pipeline; [UnoCSS](https://unocss.dev) does. Two UnoCSS concepts matter:
+[UnoCSS](https://unocss.dev) generates the CSS. Varia uses its utilities and shortcuts:
 
-- **Atomic utilities.** Single-purpose classes UnoCSS recognises via rules and matchers, like `bg-blue-600`, `px-4`, `hover:bg-blue-700`. Tailwind-style, but generated on demand instead of from a pre-built stylesheet.
-- **Shortcuts.** A shortcut maps one class name to a string of utilities. `presetVaria` generates one shortcut per variant axis × value pair and registers them with UnoCSS.
+- Atomic utilities apply individual styles, such as `bg-blue-600`, `px-4`, and `hover:bg-blue-700`. UnoCSS generates their CSS on demand.
+- Shortcuts map a name to a utility list. Varia registers a shortcut for each base or slot style and each flat variant value.
 
-UnoCSS only emits CSS for classes it finds in your source files. A `btn-c-purple` shortcut may exist in the manifest, but if no template references it, it doesn't ship.
+For shortcuts, UnoCSS emits CSS for classes it discovers through its configured source scan or safelist. An unused `btn-c-purple` shortcut can exist in the manifest without shipping CSS.
+
+Compound variants and slot-keyed variants use UnoCSS preflights instead. Their rules currently ship for every registered component, whether their classes appear in templates or not. The selectors determine when those styles apply in the browser. See [How emission works](/api#how-emission-works) for details.
+
+The build still needs a JavaScript tooling environment and a UnoCSS integration. The generated stylesheet can be consumed by any template language.
 
 ## Glossary
 
-A quick lookup. Each term has a full treatment in the [API reference](/api).
+See the [API reference](/api) for configuration details.
 
 | Term | Meaning |
 |---|---|

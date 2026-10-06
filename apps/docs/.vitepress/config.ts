@@ -7,7 +7,7 @@ const docsDir = fileURLToPath(new URL('..', import.meta.url))
 
 export default defineConfig({
   title: 'varia',
-  description: 'Build-time variants for UnoCSS',
+  description: 'On-demand CSS with the ergonomics of regular CSS classes',
   cleanUrls: true,
   lastUpdated: true,
   base: process.env.DOCS_BASE ?? '/',

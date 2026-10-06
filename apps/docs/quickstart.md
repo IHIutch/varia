@@ -1,15 +1,17 @@
 # Quickstart
 
-From `npm install` to a working button in five minutes.
+Define a button once, use regular component classes in your markup, and let UnoCSS generate its CSS on demand.
+
+This guide assumes UnoCSS is already integrated with your build so it scans your templates and loads the generated stylesheet. If you haven't set that up, follow the [UnoCSS integration guide](https://unocss.dev/integrations/) first.
 
 ## 1. Install
 
 ```bash
-pnpm add -D varia unocss
-# or: npm install --save-dev varia unocss
+pnpm add -D varia unocss @unocss/preset-wind4
+# or: npm install --save-dev varia unocss @unocss/preset-wind4
 ```
 
-`varia` declares `unocss` as a peer dependency. You bring your own UnoCSS version (latest recommended).
+`varia` declares `unocss` as a peer dependency. The utility strings in this example use the Wind4 preset.
 
 ## 2. Define a component
 
@@ -36,13 +38,13 @@ export default defineComponent('btn', {
 })
 ```
 
-Two axes (`c` and `s`), three values each. `base` carries everything that doesn't depend on the variant axes. The full [Button recipe](/recipes/button) extends this with a `style` axis (solid / outline / subtle / ghost) using `compoundVariants` for the cross-cutting CSS.
+The color and size axes each define three values. `base` defines shared styles. The [Button recipe](/recipes/button) adds solid, outline, subtle, and ghost styles with compound rules for color and style combinations.
 
 ## 3. Wire `presetVaria` into your UnoCSS config
 
 ```ts
-import presetWind4 from '@unocss/preset-wind4'
 // unocss.config.ts
+import presetWind4 from '@unocss/preset-wind4'
 import { defineConfig } from 'unocss'
 import { presetVaria } from 'varia/preset'
 
@@ -72,7 +74,9 @@ export default defineConfig({
 </button>
 ```
 
-UnoCSS expands the shortcuts into atomic CSS at build time. Only the classes you actually reference end up in the output.
+UnoCSS generates CSS for the shortcuts it finds in your configured source files. For this button, an unused color or size shortcut produces no CSS. The class names remain ordinary CSS selectors, so you can also target them in your own styles.
+
+Compound variants and slot-keyed variants, covered in the recipes, currently emit all their registered rules. See [How emission works](/api#how-emission-works).
 
 ## 5. Editor autocomplete (recommended)
 
@@ -82,5 +86,5 @@ For TypeScript projects that also want to type-check class strings against the m
 
 ## Next
 
-- [Concepts](/concepts) — a 5-minute orientation if "build-time variants", "shortcuts", or "manifest" felt unfamiliar.
-- [Recipes](/recipes/button) — worked examples for state handling, multi-element slot components, and slot-keyed variants.
+- [Concepts](/concepts) explains shortcuts, generated CSS, and the class manifest.
+- [Recipes](/recipes/button) shows state styles, slots, and compound variants.

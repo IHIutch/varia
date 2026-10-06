@@ -1,6 +1,6 @@
 # Icon button
 
-An icon button with two interacting axes: **size** (xs/sm/md/lg) and **square** (icon-only). A labeled button wants asymmetric padding (wider than tall) so the text has room; an icon-only button wants equal padding all round, or the icon sits in a lopsided rectangle. The right padding depends on *both* axes, so neither can decide it alone. `compoundVariants` expresses that cross-axis dependency.
+An icon button with size and square variants. Labeled buttons use more horizontal than vertical padding. Icon-only buttons use equal padding. Compound rules choose the padding for each size when the square variant is present.
 
 ## Authoring
 
@@ -35,12 +35,12 @@ export default defineComponent('icon-btn', {
 })
 ```
 
-Each compound rule says: "when these axes are set together on the same element, apply this class." The compound emits a CSS rule with a chained-class selector (`.icon-btn-s-md.icon-btn-square`), not a new consumer-facing class. The consumer keeps writing the same individual variant classes side by side.
+Each compound emits a combined selector such as `.icon-btn-s-md.icon-btn-square`. It applies the padding when both classes are present on the same element, without adding a class name.
 
 ## Live preview
 
 <div class="my-6 space-y-6 vp-raw">
-<p class="text-sm text-gray-700">Each row shows the same size variant rendered with a label (asymmetric padding from the size variant alone) and with just an icon (equal padding from the size × square compound). The icon-only variant sits in a true square; the labeled variant reads as a button shape.</p>
+<p class="text-sm text-gray-700">Each row compares a labeled button with an icon-only button at the same size. The compound rule gives the icon-only button equal padding on all sides.</p>
 <div class="grid grid-cols-2 gap-x-8 gap-y-3 items-center">
 <div class="text-xs font-mono text-gray-500"><code>icon-btn icon-btn-s-xs</code></div>
 <div class="text-xs font-mono text-gray-500"><code>icon-btn icon-btn-s-xs icon-btn-square</code></div>
@@ -76,7 +76,7 @@ Each compound rule says: "when these axes are set together on the same element, 
 </button>
 ```
 
-The consumer writes `icon-btn-s-md` and `icon-btn-square` as two side-by-side classes. UnoCSS resolves each individually via shortcuts; varia's preflight emits the compound CSS rule `.icon-btn-s-md.icon-btn-square { padding: ... }` that overrides the asymmetric size padding when both classes appear on the same element.
+Write `icon-btn-s-md icon-btn-square` on the button. UnoCSS generates each shortcut, and the preflight adds a combined rule that overrides the size variant's padding.
 
 ## The CSS varia emits
 
@@ -88,16 +88,16 @@ For the rule above, the generated output includes:
 .icon-btn-s-md.icon-btn-square { padding: ... }   /* compound — overrides */
 ```
 
-Three rules in increasing specificity. The browser's cascade does the rest. There's no `icon-btn-s-md-square` class to remember.
+The combined selector is more specific than either shortcut selector, so its padding takes precedence.
 
 ## Why this isn't a multi-value `square` variant
 
-You could collapse the matrix by making `square` a multi-value variant: `square: { xs, sm, md, lg }`. That would replace the four compounds with four direct shortcuts. Two reasons not to:
+You could define `square: { xs, sm, md, lg }` and replace the compounds with direct shortcuts. Keeping the axes separate has two benefits:
 
-1. `square` and `size` mean different things. The size variant controls font size and (for labeled buttons) padding. The square flag controls aspect ratio. Squishing them into one axis loses that meaning at the consumer site.
-2. Consumers would have to write *both* the size and the square value redundantly. `<button class="icon-btn icon-btn-s-md icon-btn-square-md">` reads worse than `<button class="icon-btn icon-btn-s-md icon-btn-square">`. The compound shape pushes the matrix into the config where it belongs and keeps the markup short.
+1. Size controls font size and labeled-button padding. Square controls aspect ratio. Separate axes let consumers choose them independently.
+2. Consumers specify the size once. `icon-btn-s-md icon-btn-square` avoids repeating `md` in a second class such as `icon-btn-square-md`.
 
-The general rule of thumb: use a compound when two axes are conceptually independent but have CSS that needs them combined. Use a single multi-value variant when the axes are really one concept.
+Use compounds when separate choices affect the same CSS property. Use one multi-value variant when the choices represent a single setting.
 
 ## Generated class names
 
@@ -107,13 +107,13 @@ The general rule of thumb: use a compound when two axes are conceptually indepen
 | `icon-btn-s-xs` / `-sm` / `-md` / `-lg` | Size (font + padding for labeled buttons) |
 | `icon-btn-square` | Force a square aspect ratio (icon-only) |
 
-Six consumer-facing classes, four compound CSS rules (no extra class for each).
+The recipe generates six class names and four compound rules.
 
-## When you'd reach for this pattern
+## When to use this pattern
 
 - A button's icon-only mode needs different padding than its labeled mode.
 - A card's `compact` variant needs different gap behavior at each size.
 - A tag's `dismissible` variant needs different right-padding to leave room for the close button.
-- Any "feature flag" boolean that interacts with a sizing axis.
+- A boolean variant changes styles differently at each size.
 
-When the axes don't interact (color × size for a Button, where color picks the palette and size picks the dimensions independently), you don't need compounds. See the [Button recipe](/recipes/button) for the per-component-vars pattern that handles independent axes.
+Independent axes need no compounds. Color and size can each define their own styles. The [Button recipe](/recipes/button) uses compounds for color and style because those choices interact.

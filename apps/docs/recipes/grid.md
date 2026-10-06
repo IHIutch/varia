@@ -1,6 +1,6 @@
 # Grid (row + col)
 
-A Bootstrap-style twelve-column grid expressed as two cooperating components: a `row` flex container and `col` children that opt into explicit widths via `col-span-N`. Responsive behavior is delegated to UnoCSS's variant prefixes (`md:`, `lg:`, etc.) instead of breakpoint-embedded class names.
+A twelve-column flex grid. `row` wraps columns, and `col-span-N` sets each column's width. Use UnoCSS prefixes such as `md:` and `lg:` for responsive layouts.
 
 ## Authoring
 
@@ -65,17 +65,17 @@ export default defineComponent('col', {
 })
 ```
 
-Three things to call out:
+The row and column styles share the gutter width:
 
-1. **Gutters use padding + negative margin, not `gap`.** `gap` sits between siblings, so the total horizontal space consumed by N siblings is `N × width + (N-1) × gap`. With explicit fractional widths that sum to 100%, the gap pushes the last sibling onto the next row. Bootstrap's padding-on-col + negative-margin-on-row pattern avoids this: with `box-sizing: border-box`, an explicit `w-6/12` includes the padding, so two siblings still total exactly 100%.
+1. Horizontal gutters use column padding and negative row margins. Adding `gap` to columns whose widths total 100% would push the last column onto a new row. With `box-sizing: border-box`, column padding stays inside the declared width, so two `w-6/12` columns still fit.
 
-2. **The gutter flows through a CSS custom property.** Setting `row-gx-3` writes `--row-gx: 1rem` on the row element; cols inherit the variable and use it for symmetric horizontal padding. One source of truth, no coordination required between the row's variant and the col's padding value.
+2. `row-gx-3` sets `--row-gx: 1rem` on the row. Columns inherit it and apply half that value as padding on each side.
 
-3. **`col`'s base is `flex-1` — the bare `.col` behavior.** When you add `col-span-N`, that variant carries `flex-none` to cancel the base's flex-grow and `w-N/12` to set the explicit width.
+3. The base `col` uses `flex-1` for equal-width columns. A `col-span-N` variant adds `flex-none` to disable growth and sets an explicit width.
 
 ## The `row > col > content` pattern
 
-The `col` element is structural: it owns the explicit width and the internal gutter padding. **Don't put styling utilities (backgrounds, content padding, borders) on the col itself** — they'll either stomp the gutter padding or visually consume it, making siblings appear flush. Put the styled content inside the col:
+The `col` element sets width and gutter padding. Put backgrounds, borders, and content padding on an inner element. Styling the column itself can override or cover the gutter:
 
 ```html
 <div class="row row-g-3">
@@ -88,7 +88,7 @@ The `col` element is structural: it owns the explicit width and the internal gut
 </div>
 ```
 
-This matches Bootstrap's convention. The col is the layout slot; the inner element is the visual cell.
+The outer column controls layout; the inner element holds the content styles.
 
 ## Live preview
 
@@ -138,7 +138,7 @@ This matches Bootstrap's convention. The col is the layout slot; the inner eleme
 </div>
 ```
 
-The `md:` and `lg:` prefixes work because UnoCSS resolves them against the shortcut's underlying utilities. `md:col-span-6` becomes `md:w-1/2 md:flex-none` at build time — same media-query mechanism Tailwind uses on its own utilities.
+UnoCSS applies `md:` and `lg:` to the shortcut utilities. For example, `md:col-span-6` generates a media query for half-width columns with `flex-none`.
 
 ## Generated class names
 
@@ -155,15 +155,15 @@ The `md:` and `lg:` prefixes work because UnoCSS resolves them against the short
 
 ## Comparison with Bootstrap's class shape
 
-Bootstrap's literal classes embed breakpoints (`col-md-6`, `offset-lg-2`); varia's naming convention is `component-axis-value` with no slot for a breakpoint segment. Two consequences:
+Bootstrap includes breakpoints in names such as `col-md-6`. Varia keeps the `component-axis-value` name and uses UnoCSS prefixes for breakpoints:
 
-- **Class shape differs.** Where Bootstrap writes `col-md-6`, varia uses `md:col-span-6`. The leading `md:` is UnoCSS's variant prefix, which it strips when emitting the media-queried CSS rule. Same outcome, different shape.
-- **Offset / order classes are namespaced under `col`.** Bootstrap has `.offset-2` standing alone; varia emits `col-offset-2`. The semantics are the same — both apply to a column element — but the class name reflects that.
+- Use `md:col-span-6` where Bootstrap uses `col-md-6`. UnoCSS generates the media query.
+- Use `col-offset-2` where Bootstrap uses `offset-2`. Varia keeps offset and order variants under the `col` component.
 
-If you want Bootstrap-literal class names (`col-md-6`, `offset-2`), you'd need one component per breakpoint and standalone `offset`/`order` components. That's roughly 250 shortcuts for full coverage; the variant-prefix approach above is roughly 30.
+Matching Bootstrap names exactly would require extra definitions for breakpoint, offset, and order classes. UnoCSS prefixes let you reuse the same shortcuts at different breakpoints.
 
 ## What's not included
 
-- **Container.** Bootstrap's `.container` (max-width with horizontal padding) is one base shortcut — fits a `defineComponent('container', { ... })` with size variants if you need it.
-- **Responsive gutters.** `md:row-g-3` works (UnoCSS resolves the prefix against the shortcut), so no separate variant needed.
-- **`row-cols-N`** (Bootstrap's "force N equal columns inside the row"). Achievable as a `cols` variant on `row` setting `grid-cols-N` and switching base to `grid`, but that conflicts with the flex base. Easier to write explicit `col-span-*` values per child.
+- Define a separate `container` component if you need a max-width wrapper with horizontal padding.
+- Use prefixes such as `md:row-g-3` for responsive gutters. They need no additional definitions.
+- The recipe does not provide `row-cols-N` to set the number of equal columns on the parent. Set `col-span-*` on each child instead.

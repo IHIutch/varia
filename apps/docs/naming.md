@@ -1,6 +1,6 @@
 # Naming convention
 
-`varia` assembles each class name by concatenating the component name, variant key, and (for multi-value variants) the variant value with single dashes. The format is fixed by design. Predictable names are easier to grep, override, and document.
+Varia joins the component name, variant key, and variant value with single dashes. Boolean variants omit the value. Slots use a double underscore. These names let you search for component styles and target them in CSS.
 
 ## The shape
 
@@ -25,9 +25,9 @@ component__slot          # non-root slot (slot components only)
 
 ## Rules
 
-1. The component name is always the prefix. Searching for `btn-` finds every button class in the codebase.
+1. The component name is the prefix. Searching for `btn-` finds button variant classes; the base class is `btn`.
 
-2. The variant axis name is the second segment. Whatever you type as the key is used verbatim: `c`, `color`, `colour`, `theme`, `bg-color`. The library does no abbreviation, no inference.
+2. The variant axis is the second segment. Varia uses the key exactly as written, whether it is `c`, `color`, `colour`, `theme`, or `bg-color`.
 
 3. For multi-value variants, the variant value is the third segment, joined with a single dash.
 
@@ -40,9 +40,9 @@ component__slot          # non-root slot (slot components only)
 
    The off state is the absence of the class. If you need explicit off styling, use a multi-value variant with named values (`state: { open, closed }`).
 
-5. Every assembled class must match `/^[a-z][a-z0-9-]*$/`: lowercase plus kebab-case, starting with a letter. Validation runs at config time, on the assembled class rather than individual segments. This is why numeric values like `1`, `2xl`, `100` work: the assembled string (`btn-s-1`, `btn-s-2xl`, `btn-bg-100`) starts with the letter from the component-name prefix and stays in the allowed character set.
+5. Base and variant class names must match `/^[a-z][a-z0-9-]*$/`. They start with a lowercase letter and contain lowercase letters, digits, or dashes. Varia checks the assembled name, so values such as `1`, `2xl`, and `100` are valid in `btn-s-1`, `btn-s-2xl`, and `btn-bg-100`.
 
-6. Slot classes use the BEM `__` (double-underscore) suffix. The `root` slot maps to the bare component name; every other slot is `component__slot`. The slot name itself must match `/^[a-z][a-z0-9-]*$/`. The combined `component__slot` form is the only place double underscores appear in `varia` class names.
+6. Non-root slot classes use the BEM `__` separator. The `root` slot uses the component name; other slots use `component__slot`. Slot names must match `/^[a-z][a-z0-9-]*$/`. Only the slot separator can contain underscores.
 
 ## Slots vs. variants: the two separators
 
@@ -52,51 +52,51 @@ modal__container   # non-root slot (double underscore)
 modal-size-md      # variant (single dashes)
 ```
 
-The two never collide. Slot classes always have `__` in them; variant classes never do. Validation enforces this: a slot name can't contain underscores, and a variant axis or value can't either, so the `__` only ever appears as the slot separator. A reader (or a regex) can tell which kind of class they're looking at without context.
+Non-root slot classes contain `__`; variant classes use dashes. Validation prevents underscores in slot names, variant axes, and variant values.
 
 ## Compound variants emit no class
 
-`compoundVariants` rules don't produce a consumer-facing class. They emit a CSS rule with a chained-class selector built from the conditions:
+`compoundVariants` emits a CSS rule that combines the existing variant classes:
 
 ```text
 .btn-s-xs.btn-square { ... }     # compound rule for `when: { s: 'xs', square: true }`
 ```
 
-The consumer writes the individual variant classes (`btn-s-xs btn-square`) and the compound CSS applies automatically. There is no `btn-compound-1` or `btn-s-xs-square` class to remember.
+Write the individual variant classes, such as `btn-s-xs btn-square`. The combined selector applies the compound styles when both classes are present.
 
 ## Why these rules
 
-- **Lowercase only.**
+- Lowercase only.
 
   ```text
   btn-c-Primary  ✗  silently a different class from btn-c-primary
   ```
 
-  Matches the UnoCSS and Tailwind utility convention; case-sensitive class names are too easy a foot-gun.
+  Lowercase names match the UnoCSS and Tailwind utility convention and avoid names that differ only by case.
 
-- **Kebab-case only (no underscores).**
+- Kebab-case only (no underscores).
 
   ```text
   bg-[hsl(0_0%_50%)]   # underscores inside arbitrary values mean spaces
   ```
 
-  Matches Tailwind utilities (`text-sm`, not `text_sm`). Avoids overloading the meaning of `_`.
+  Dashes match utility names such as `text-sm`. Underscores already represent spaces inside arbitrary utility values.
 
-- **Single-dash separator everywhere.** No mental model of "when it's a dash vs. a colon vs. a double-dash." Always a dash.
+- Variant segments always use a single dash.
 
-- **No abbreviation magic.** The axis name you write is the axis name in the class:
+- Varia preserves the axis name:
 
   ```text
   axis: c       produces  btn-c-primary
   axis: color   produces  btn-color-primary
   ```
 
-  The library has no opinion.
+  Choose the axis names you want consumers to write.
 
 ## What this enables
 
-The rigid format means consumers can override (`<button class="btn btn-c-primary !bg-blue-500">`), lint (`VariaClasses` union from `varia/types`), and grep (`grep -r 'btn-'` finds every button class) without needing project-specific conventions.
+Use utilities to override styles, the `VariaClasses` union to check names, and text search to locate component variants. For example, `<button class="btn btn-c-primary !bg-blue-500">` overrides the background.
 
 ## Edge case: identifier conflicts
 
-If two components emit the same class, or a component name collides with a UnoCSS utility, the build either throws or silently picks one. See [Identifier conflicts](/troubleshooting#identifier-conflicts) in Troubleshooting for the worked example.
+Duplicate shortcuts cause `presetVaria` to throw. A collision with a UnoCSS utility depends on preset order. See [Identifier conflicts](/troubleshooting#identifier-conflicts) for examples.

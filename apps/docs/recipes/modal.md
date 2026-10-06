@@ -1,6 +1,6 @@
 # Modal
 
-A modal with backdrop, container, header, body, and footer, built with the `slots` shape of `defineComponent`. The parts are tightly coupled inside a single container, so slots give them a shared namespace instead of forcing consumers to remember five separate prefixed classes (the way Dropdown's siblings do).
+A modal with named slots for its backdrop, container, header, body, and footer. All parts share the `modal` class prefix.
 
 ## Authoring
 
@@ -32,16 +32,16 @@ export default defineComponent('modal', {
 })
 ```
 
-Two notes on the config:
+Slots determine where the size styles apply:
 
-1. The `root` slot maps to the bare component class (`modal`); every other slot maps to `modal__slotName` using BEM. The double underscore separates slot classes from variant classes, which use single dashes.
-2. The `size` variant is **slot-keyed**: each size value targets the `container` slot. `modal-size-md` doesn't change the backdrop or header; it only sets the inner box's max-width. Slot-keyed variants emit as descendant-selector CSS rules (`.modal-size-md .modal__container { max-width: ... }`), so they apply through the tree without consumers adding a class to the container element.
+1. The root uses `modal`. Other slots use names such as `modal__container`. Double underscores separate slots; dashes separate variants.
+2. The size variant targets the container through a descendant selector, such as `.modal-size-md .modal__container { max-width: ... }`. Put the size class on the root; the container needs only its slot class.
 
 ## Live preview
 
 :::raw
 <div class="my-6">
-  <p class="mb-3 text-sm text-gray-700">A modal rendered statically (open, inline, contained inside the docs page rather than full-viewport) so you can see all the slots at once:</p>
+  <p class="mb-3 text-sm text-gray-700">This static preview contains the modal inside the page so you can see all its parts:</p>
   <div class="relative border border-gray-200 rounded-md overflow-hidden" style="height: 360px; background: linear-gradient(135deg, #f1f5f9, #e2e8f0);">
     <div class="modal modal-size-md" style="position: absolute;" role="dialog" aria-modal="true" aria-labelledby="demo-modal-title">
       <div class="modal__container">
@@ -69,7 +69,7 @@ Two notes on the config:
 
 ## Size variants in action
 
-The interesting property of `size` being a **slot-keyed** variant is that swapping it changes *only* the container's max-width. The backdrop, header padding, and close-button position don't react. Here are the same modal contents at the smallest and largest sizes; `md` and `lg` sit between them:
+Changing size affects the container's max-width. The backdrop, header padding, and close-button position stay the same. These previews show the smallest and largest sizes:
 
 :::raw
 <div class="my-6 space-y-4">
@@ -121,7 +121,7 @@ The interesting property of `size` being a **slot-keyed** variant is that swappi
 </div>
 :::
 
-The CSS rule each variant emits, for reference:
+Each size emits a descendant rule:
 
 ```css
 .modal-size-sm .modal__container { max-width: var(--container-sm); }
@@ -130,7 +130,7 @@ The CSS rule each variant emits, for reference:
 .modal-size-xl .modal__container { max-width: var(--container-2xl); }
 ```
 
-The variant class lives on the root, but the styling lands on the container via the descendant selector. No class change is needed on `modal__container` itself; `varia` writes the descendant rule into a preflight at preset construction.
+The size class goes on the root. Varia emits a preflight rule that targets the descendant `modal__container`.
 
 ## Consumption
 
@@ -157,13 +157,13 @@ The variant class lives on the root, but the styling lands on the container via 
 </div>
 ```
 
-Behavior is the consumer's problem: `varia` doesn't ship open/close logic, focus trapping, or scroll locking. Pair these classes with your framework's dialog primitive (native `<dialog>`, Radix Dialog, Headless UI). `varia` doesn't apply default variants, so the container has no max-width unless a size class is present.
+Your application provides open and close logic, focus management, and scroll locking. Pair the styles with a native `<dialog>` or a dialog component such as Radix Dialog or Headless UI. Add a size class explicitly; Varia applies no default variants.
 
 ## Generated class names
 
 | Class | Slot |
 |---|---|
-| `modal` | The root — full-viewport backdrop with centering |
+| `modal` | Full-viewport backdrop that centers the container |
 | `modal__container` | The dialog box |
 | `modal__header` | Top bar (title row) |
 | `modal__title` | Heading inside the header |
@@ -173,11 +173,11 @@ Behavior is the consumer's problem: `varia` doesn't ship open/close logic, focus
 | `modal__close` | Floating close button |
 | `modal-size-sm` / `-md` / `-lg` / `-xl` | Container max-width |
 
-Nine consumer-facing classes, one component, slot-keyed sizing.
+The recipe generates eight slot classes and four size classes.
 
-## Why a `<dialog>`-shaped helper isn't part of `varia`
+## Using a native `<dialog>`
 
-`varia` emits classes; it doesn't render DOM. The native `<dialog>` element handles focus trapping and the top-layer paint for free in modern browsers, but you opt into it from your framework. A typical pairing:
+Varia generates styles; your application renders the elements. A native `<dialog>` provides modal focus handling and top-layer rendering when opened with `showModal()`. Apply the container and slot classes to it:
 
 ```html
 <dialog class="modal modal-size-md" role="dialog">
@@ -185,4 +185,4 @@ Nine consumer-facing classes, one component, slot-keyed sizing.
 </dialog>
 ```
 
-The `.modal`'s `position: fixed` and `inset: 0` give you the backdrop styling even outside the top layer, so the same classes work whether you reach for `<dialog>`, a portaled `<div>`, or your framework's dialog component.
+The `modal` root uses `position: fixed` and `inset: 0` for its backdrop. You can use that wrapper with a `<div>` dialog or adapt the slots to your framework's dialog component.

@@ -1,6 +1,6 @@
 # Button
 
-A button with three independent variant axes: color, style, and size. The color × style matrix is expressed via `compoundVariants`, one explicit rule per (color, style) cell, which keeps the recipe direct and the call sites readable.
+A button with color, style, and size variants. Compound rules define the styles for each color and style combination.
 
 ## Authoring
 
@@ -54,11 +54,11 @@ export default defineComponent('btn', {
 })
 ```
 
-Two things to call out:
+The shortcuts define shared properties; the compounds define combinations:
 
-1. `c` and `style` carry only the *constant* properties. `c.primary` sets `focus-visible:ring-blue-500`, which is the same regardless of style. `style.solid` sets `text-white`, the same regardless of color. Everything that depends on *both* axes (background, border, hover background, the colored text in outline/subtle/ghost) lives in the compound rules.
+1. `c.primary` sets the focus-ring color for every primary style. `style.solid` sets white text for every solid color. Compound rules define properties that depend on both axes, including backgrounds, borders, hover colors, and text colors for outline, subtle, and ghost styles.
 
-2. **Spell every class name out as a literal.** Tailwind and UnoCSS both recommend against constructing class names with template literals (`` `bg-${tone}-600` ``). The JIT extractor scans your source text for class candidates and only sees complete string literals — `bg-${tone}-600` never gets resolved, and the theme variables those classes would have triggered (`--colors-emerald-600`, etc.) never get emitted. Five colors × four styles is twenty rows; that's the price of staying inside the tools' supported usage.
+2. Write complete utility strings. Source scanners cannot infer `bg-blue-600` from `` `bg-${tone}-600` ``. Incomplete strings can also prevent UnoCSS from generating palette variables used by the resolved CSS. This recipe lists all five colors and four styles explicitly.
 
 ## Live preview
 
@@ -94,31 +94,31 @@ Two things to call out:
 <button class="btn btn-c-primary btn-style-solid btn-s-md" disabled>Loading...</button>
 ```
 
-Three classes per button: color, style, size. The base class (`btn`) carries state styling (`hover:`, `focus-visible:`, `disabled:`) once for all combinations.
+Each button uses the base class plus color, style, and size classes. The base defines shared focus and disabled styles; the compound rules provide hover colors.
 
 ## Generated class names
 
 | Class | Purpose |
 |---|---|
-| `btn` | Base styling (state, transitions, focus ring scaffolding) |
-| `btn-c-primary` / `-success` / `-danger` / `-warning` / `-neutral` | Color (carries focus-ring tint, used as a compound-match key) |
-| `btn-style-solid` / `-outline` / `-subtle` / `-ghost` | Style (carries the cross-color constant for that style) |
+| `btn` | Shared layout, transitions, focus, and disabled styles |
+| `btn-c-primary` / `-success` / `-danger` / `-warning` / `-neutral` | Focus-ring color and color condition for compounds |
+| `btn-style-solid` / `-outline` / `-subtle` / `-ghost` | Shared style properties and style condition for compounds |
 | `btn-s-sm` / `-md` / `-lg` | Size |
 
-The compound rules don't get their own consumer-facing class names; they fire automatically when both `btn-c-*` and `btn-style-*` are present on the same element.
+Compound selectors match when both the color and style classes are on the same element. They add no class names.
 
 ## Customizing
 
-Three common edits:
+To change the recipe:
 
-- To remap a color to a different palette tone, rewrite the four `c: '<name>'` compound rows with the new tone (e.g. `bg-green-600` instead of `bg-blue-600`). It's a search-and-replace within the four primary entries.
-- To add a new color, add a `c.accent: 'focus-visible:ring-purple-500'` shortcut and append four new compound rows for `c: 'accent'` × each style.
-- To add a new style, add a `style.link: ...` shortcut and append a new compound row for each color (one row per color).
+- Change a palette tone by editing the four compound rules for that color, such as replacing `bg-blue-600` with `bg-green-600`. Update its focus-ring shortcut too.
+- Add a color by defining a shortcut such as `c.accent: 'focus-visible:ring-purple-500'` and one compound rule per style.
+- Add a style by defining a shortcut such as `style.link` and one compound rule per color.
 
 ## When compound variants are the right shape
 
-The button uses `compoundVariants` because the color × style matrix has a genuine cross-axis dependency: the background color of a "solid primary" button is `blue-600`, but a "solid danger" button is `red-600`, and an "outline primary" button has no background at all. There's no way to compute that from `c` alone or `style` alone; the cell value needs both axes.
+The required CSS depends on both color and style. A solid primary button uses a blue background, a solid danger button uses red, and an outline primary button uses a transparent background. Compound rules describe those combinations.
 
-The trade-off: compound rules emit unconditionally (they're preflight CSS, not JIT shortcuts), so all 20 ship in your bundle even if your page only uses two of them. At this matrix size, that's a few hundred bytes; at much larger matrices (every Tailwind palette color, say) it would be worth reconsidering.
+All 20 compound rules ship even if a page uses only two combinations. They use preflights rather than on-demand shortcuts. Consider the resulting CSS size before expanding the matrix.
 
-The [Icon button recipe](/recipes/icon-button) shows compound variants with a different shape: `square × size`, where the compound is essential because each cell sets a different CSS property (`padding`, not just a different padding value).
+The [Icon button recipe](/recipes/icon-button) combines size and an icon-only flag to adjust padding.

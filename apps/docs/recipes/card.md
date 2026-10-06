@@ -1,6 +1,6 @@
 # Card
 
-A base-styled container with no variants. Components with nothing to vary are still valid; `base` alone is a complete config.
+A container with base styles and no variants. `base` alone is a valid component definition.
 
 ## Authoring
 
@@ -13,7 +13,7 @@ export default defineComponent('card', {
 })
 ```
 
-No `variants` block. `defineComponent` accepts this; `base` alone is a valid component. The generated manifest contains a single class name: `card`.
+The generated manifest contains one class name, `card`.
 
 ## Live preview
 
@@ -44,12 +44,13 @@ No `variants` block. `defineComponent` accepts this; `base` alone is a valid com
 </article>
 ```
 
-The header and body styling are plain utilities, not part of the `card` component's vocabulary. If you find yourself using the same header pattern across many cards, that's the moment to graduate `card` into a slot component with `header`, `body`, and `footer` slots. See the [Modal recipe](/recipes/modal) for the shape.
+The header and body use utilities directly. If you repeat those styles across cards, define `header`, `body`, and `footer` slots. See the [Modal recipe](/recipes/modal).
 
 ## When to add variants
 
-You don't need them yet, but watch for:
+Add variants when multiple uses need the same alternatives:
 
-- Two or more callers manually overriding the same property (`bg-blue-50`, `bg-amber-50`); that's a candidate for `c: { ... }`.
-- A pattern emerging where you compose `card` with `border-2 border-blue-500` for an accent; that's an `accent: '...'` boolean variant waiting to happen.
-- More than three of these and you're growing into the [Button recipe's](/recipes/button) shape.
+- Repeated background overrides, such as `bg-blue-50` and `bg-amber-50`, can become a color variant.
+- A repeated accent border can become a boolean variant such as `accent`.
+
+See the [Button recipe](/recipes/button) for a component with several variant axes.

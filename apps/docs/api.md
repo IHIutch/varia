@@ -1,6 +1,6 @@
 # API reference
 
-`varia` exposes three things: `defineComponent` (authoring), `presetVaria` (UnoCSS integration), and `varia/types` (consumer-side type access).
+`defineComponent` defines component styles and class names. `presetVaria` registers them with UnoCSS. The `varia/types` subpath provides the generated class-name union for TypeScript.
 
 ## `defineComponent(name, config)`
 
@@ -46,7 +46,7 @@ interface CompoundVariantRule {
 | `variants` | `Record<string, VariantDefinition>` (optional) | The component's variant axes. Keys are the axis names (`c`, `s`, `outline`); values are the variant definitions. |
 | `compoundVariants` | `CompoundVariantRule[]` (optional) | Cross-axis rules. See [Compound variants](#compound-variants). |
 
-At least one of `base`/`slots` or `variants` must be present. A `base`-only component is the simplest valid shape; see the [Card recipe](/recipes/card) for that minimum form. `slots`-with-no-variants is also valid: a multi-element component with no variant axes.
+Provide `base`, `slots`, or `variants`. A component can have base styles or slots without variants. See the [Card recipe](/recipes/card) for a base-only example.
 
 ### Single-element vs. multi-element
 
@@ -60,7 +60,7 @@ defineComponent('btn', {
 // Generates: btn, btn-c-primary
 ```
 
-For a component with several tightly coupled parts (modal, card with header / title / body, dropdown menu), declare `slots`:
+For a component with several parts, such as a modal or a card with a header and body, declare `slots`:
 
 ```ts
 defineComponent('modal', {
@@ -77,7 +77,7 @@ The `root` slot maps to the bare component name (`.modal`); every other slot map
 
 ### Variant shapes
 
-A `VariantDefinition` has four valid shapes, distinguished by value type and (for slot components) whether object keys match the declared slot names. Anywhere a class string appears, you can pass `string[]` and it will be joined with a space.
+A `VariantDefinition` accepts the four forms below. For components with slots, object keys determine whether a variant targets slots or names values. You can use `string[]` wherever a class string is accepted; Varia joins the array with spaces.
 
 #### Boolean variant (applied to root)
 
@@ -86,7 +86,7 @@ pill: 'rounded-full'
 // Generates: badge-pill
 ```
 
-A string or string-array value is a boolean variant — the class is either present or absent. The off state is the absence of the class. For explicit off-state styling (or three+ states), use a multi-value variant.
+A string or string array defines a boolean variant. Adding the class enables its styles; omitting it disables them. Use named values for explicit off-state styling or more than two states.
 
 #### Multi-value variant (applied to root)
 
@@ -110,7 +110,7 @@ variants: {
 // Emits: .card-accent .card__header { ... }, .card-accent .card__title { ... }
 ```
 
-When all keys of the object are declared slot names, the variant targets specific slots. Each slot's CSS is emitted as a preflight with a descendant selector. Mixing slot-name keys and value-name keys throws.
+When every key is a declared slot name, the variant targets those slots. Varia emits preflight rules with descendant selectors for non-root slots and a variant selector for the root. Mixing slot names and value names throws.
 
 #### Multi-value slot-keyed variant (slot components only)
 
@@ -130,7 +130,7 @@ Each value can independently be a `ClassInput` (apply to root) or a slot-keyed o
 
 ### Compound variants
 
-A compound variant defines CSS that applies only when *multiple* variant axes are set together. It does NOT produce a new consumer-facing class. Instead, `varia` emits a CSS rule with a chained-class selector built from the `when` conditions.
+A compound variant applies styles when the variant classes in its `when` clause are present on the same element. Varia emits a CSS selector that combines those classes. It adds no class name.
 
 ```ts
 defineComponent('btn', {
@@ -146,14 +146,14 @@ defineComponent('btn', {
 })
 ```
 
-Authors write `<button class="btn btn-s-xs btn-square">`, with both variant classes side by side, and the compound rule's CSS applies automatically via the selector `.btn-s-xs.btn-square`.
+Write `<button class="btn btn-s-xs btn-square">`. The selector `.btn-s-xs.btn-square` matches when both variant classes are present.
 
 | `when` value | Meaning |
 |---|---|
 | `'value'` | The matching multi-value axis is set to this value. The value must be declared in the variant. |
 | `true` | The matching boolean axis is present. Boolean axes can only take `true` in a compound; the absence-of-class is the off state. |
 
-The regex `/^[a-z][a-z0-9-]*$/` is applied to the assembled class name, not to individual segments. Numeric values (`s: { 1: 'x' }` produces `btn-s-1`) and arbitrary kebab values (`s: { '2xl': 'x' }` produces `btn-s-2xl`) work naturally.
+Varia validates the assembled class name against `/^[a-z][a-z0-9-]*$/`. Values can start with numbers because the component prefix starts with a letter. For example, `s: { 1: 'x' }` produces `btn-s-1`, and `s: { '2xl': 'x' }` produces `btn-s-2xl`.
 
 ## `presetVaria(options)`
 
@@ -161,7 +161,7 @@ The regex `/^[a-z][a-z0-9-]*$/` is applied to the assembled class name, not to i
 import { presetVaria } from 'varia/preset'
 ```
 
-Returns a UnoCSS preset that flattens components into shortcuts and emits a TypeScript declaration manifest as a side-effect.
+Returns a UnoCSS preset containing the registered shortcuts and preflights. Calling `presetVaria` also writes the TypeScript manifest unless `manifest` is `false`.
 
 ### Options
 
@@ -179,11 +179,11 @@ interface PresetVariaOptions {
 
 ### Manifest emission
 
-When the preset resolves, `presetVaria` writes a TypeScript declaration file containing a `VariaClasses` union of every valid class name across all registered components. The default path is `node_modules/.varia/manifest.d.ts`, a Prisma-style location that:
+`presetVaria` writes a TypeScript declaration containing a `VariaClasses` union of all registered class names. The default path is `node_modules/.varia/manifest.d.ts`.
 
-- Survives `rm -rf node_modules` (regenerates on next UnoCSS run).
-- Doesn't require any consumer-side gitignore entry.
-- Is rewritten only when content changes (hash-compare), so HMR rebuilds don't churn the file.
+- Varia recreates the file on the next UnoCSS run if you delete `node_modules`.
+- The file uses the existing `node_modules` gitignore entry.
+- Varia compares the existing file contents and writes only when they change, avoiding unnecessary HMR rebuilds.
 
 ## `varia/types` subpath
 
@@ -191,7 +191,7 @@ When the preset resolves, `presetVaria` writes a TypeScript declaration file con
 import type { VariaClasses } from 'varia/types'
 ```
 
-A re-export shim that surfaces the `VariaClasses` union from the manifest. Use it for type-strict tooling on the consumer side:
+This subpath re-exports `VariaClasses` from the generated manifest. Import it to check class strings in TypeScript:
 
 ```ts
 function cn(c: VariaClasses) { return c }
@@ -202,23 +202,23 @@ cn('not-a-real-class') // type error
 
 ### Editor autocomplete is separate
 
-The primary editor-completion path is the UnoCSS VS Code extension ([antfu.unocss](https://marketplace.visualstudio.com/items?itemName=antfu.unocss)), not the manifest. The extension reads shortcuts directly from `unocss.config.ts` and offers completion in any file matching its glob: HTML, JSX, ERB, Liquid, HEEx, etc. You don't need to import anything for autocomplete.
+The [UnoCSS VS Code extension](https://marketplace.visualstudio.com/items?itemName=antfu.unocss) reads shortcuts from `unocss.config.ts`. It offers completion in files matching its configured globs, including HTML, JSX, ERB, Liquid, and HEEx. Autocomplete requires no manifest import.
 
-The `varia/types` subpath is for explicit-import use cases: typed `cn()` helpers, custom validators, lint rules.
+Import `varia/types` when writing typed `cn()` helpers, validators, or lint rules.
 
 ### pnpm caveat
 
-Under pnpm's default symlinked layout, `varia/types` may fail to resolve without a small bit of configuration. See the [pnpm note in Troubleshooting](/troubleshooting#pnpm-types-subpath).
+Under pnpm's default symlinked layout, `varia/types` may need additional configuration. See [Troubleshooting](/troubleshooting#pnpm-types-subpath).
 
 ## How emission works
 
-Compound variants and slot-keyed variants both emit as **UnoCSS preflights** rather than shortcuts. Preflights bypass the content scan, so the CSS ships regardless of whether the consumer's markup references the variant class.
+Varia emits compound and slot-keyed rules as UnoCSS preflights. Preflights bypass the source scan, so every registered rule ships even if templates never reference its classes.
 
-- Slot-keyed variant on a non-root slot: `.modal-size-md .modal__container { ... }` (descendant selector).
-- Slot-keyed variant on `root`: `.card-accent { ... }` (chained-class selector — variant class and root class are on the same element).
-- Compound variant: `.btn-s-xs.btn-square { ... }` (chained-class selector across axes).
+- A non-root slot uses a descendant selector, such as `.modal-size-md .modal__container { ... }`.
+- A root slot uses the variant selector, such as `.card-accent { ... }`. Put the variant class on the root element.
+- A compound uses a combined selector, such as `.btn-s-xs.btn-square { ... }`.
 
-The trade-off is that every declared compound or slot-keyed rule ships, used or not. This is intentional: a "is this combination used?" check can't be done by scanning for a single class name.
+Shortcut CSS is generated on demand. Compound and slot-keyed rules currently emit unconditionally; checking one class name alone would not establish whether a combination or descendant selector is used.
 
 ## Validation errors
 
@@ -250,11 +250,11 @@ The trade-off is that every declared compound or slot-keyed rule ships, used or 
 | Two components with the same name | `Duplicate component name "btn" in presetVaria...` |
 | Two components emitting the same shortcut | `Duplicate shortcut "btn-c-primary" emitted by both component "btn" and component "btn-old"...` |
 
-The duplicate-component-name check fires even when the same reference is passed twice — a deliberate choice for safety in monorepos with multiple module instances.
+Passing the same component reference twice also triggers the duplicate-name error.
 
 ## `DefinedComponent` return value
 
-You typically don't read these fields directly; pass the value to `presetVaria`. They're documented for tooling that wants to introspect the manifest.
+Pass the returned value to `presetVaria`. Tools can read these fields to inspect shortcuts, class names, and preflights.
 
 ```ts
 interface DefinedComponent {

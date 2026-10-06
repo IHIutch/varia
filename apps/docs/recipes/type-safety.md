@@ -1,10 +1,10 @@
 # Type safety
 
-Use the `VariaClasses` union to type-check class names at build time. The manifest exists so tooling can refuse unknown strings before they reach the browser.
+Use `VariaClasses` to reject unknown class names during TypeScript checking.
 
 ## Authoring
 
-When `presetVaria` resolves, it writes `node_modules/.varia/manifest.d.ts` containing a union of every valid class across all registered components:
+`presetVaria` writes `node_modules/.varia/manifest.d.ts` with a union of all registered class names:
 
 ```ts
 // node_modules/.varia/manifest.d.ts (generated)
@@ -38,11 +38,11 @@ cn('btn', 'btn-c-purple')
 // ✗ type error: 'btn-c-purple' is not assignable to type VariaClasses
 ```
 
-The check is structural. TypeScript catches the typo on save, before any test or build runs.
+TypeScript reports the unknown class in your editor and during type checking.
 
 ## Going further
 
-The union is just a string literal type. Anything that consumes string literal types can consume it.
+The union can also type schema outputs or provide valid names for lint tooling.
 
 ### Zod schema
 
@@ -57,11 +57,11 @@ const VariaClassSchema = z.custom<VariaClasses>(
 // which the union alone doesn't provide.
 ```
 
-For a true runtime check, generate a Zod enum from the manifest module rather than the type. The manifest file is small and stable enough to commit-snapshot if you want runtime validation.
+This schema checks only that the value is a string. It does not reject unknown class names at runtime. For runtime validation, generate a list of class names and pass it to `z.enum`. The declaration manifest contains types, not runtime values.
 
 ### ESLint rule
 
-A custom rule that walks `class="..."` attributes and rejects any token not present in `VariaClasses` (or the project's allow-list). The union gives TypeScript the answer; ESLint can read the union via the TypeScript parser plugin.
+A custom ESLint rule can inspect `class="..."` attributes and reject names outside the Varia union or your project's allow-list. Use TypeScript's type information to read the union.
 
 ## pnpm caveat
 

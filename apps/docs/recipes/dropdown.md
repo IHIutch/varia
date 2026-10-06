@@ -1,6 +1,6 @@
 # Dropdown
 
-A trigger + popup menu, built as a single component with slots for each part (root, trigger, menu, item, divider). Open/closed state lives on the menu as a `data-state` attribute; per-item variants (e.g. a destructive "Delete") live on items as `data-variant` attributes. Runtime state lives on data attributes, not varia variants, so it can pair directly with the JavaScript that toggles them.
+A dropdown with root, trigger, menu, item, and divider slots. The menu uses `data-state` for open and closed states. Items use `data-variant` for styles such as destructive actions. JavaScript changes those attributes.
 
 ## Authoring
 
@@ -42,13 +42,13 @@ export default defineComponent('dropdown', {
 })
 ```
 
-Three things to call out:
+Alignment and state target different elements:
 
-1. `align` is a varia variant rather than a data-attr because it's a build-time configuration choice (which side of the trigger the menu opens from), not a runtime state. The variant class goes on the root (`<div class="dropdown dropdown-align-end">`) because it's slot-keyed: it emits `.dropdown-align-end .dropdown__menu { right: 0 }`, a descendant rule that needs the alignment class on an ancestor.
+1. Put the `align` variant on the root, such as `<div class="dropdown dropdown-align-end">`. Its slot-keyed rule emits `.dropdown-align-end .dropdown__menu { right: 0 }` to position the menu relative to the root.
 
-2. Open/closed is a `data-state` attribute on the menu. The base expansion includes `hidden data-[state=open]:block`, so the menu is hidden by default and revealed when `data-state="open"` is present. JS sets or clears that attribute. No varia variant exists for "open" because it's runtime state, not configuration.
+2. The menu uses `hidden data-[state=open]:block`. It stays hidden until JavaScript sets `data-state="open"` on the menu element.
 
-3. Per-item destructive styling is a `data-variant` attribute, not a separate slot or boolean variant. Adding more item modes later means more `data-[variant=...]:` rules in the `item` slot expansion, not new slots, so the slot list stays small.
+3. Destructive item styles use `data-variant`. Add other item styles with `data-[variant=...]:` utilities in the `item` slot.
 
 ## Live preview
 
@@ -88,7 +88,7 @@ Three things to call out:
 </div>
 ```
 
-A minimal JS toggle that pairs with this markup:
+Toggle the menu state with JavaScript:
 
 ```ts
 const trigger = document.querySelector('.dropdown__trigger')
@@ -119,4 +119,4 @@ document.addEventListener('click', (e) => {
 | `dropdown__divider` | A horizontal separator |
 | `dropdown-align-start` / `dropdown-align-end` | Variant on the root that anchors the menu's left or right edge |
 
-Six classes (plus the two data-attrs you set in markup) for trigger, menu, items, divider, and alignment.
+The recipe generates seven classes and uses two data attributes for state and item styling.

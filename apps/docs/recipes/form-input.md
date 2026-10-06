@@ -1,6 +1,6 @@
 # Form input
 
-A form input with `:focus`, `:disabled`, `:invalid`, `:placeholder`, and `:read-only` styling embedded inside variant expansions. Use this pattern when state pseudo-classes are part of the component's vocabulary.
+A form input with focus, disabled, invalid, placeholder, and read-only styles. State utilities can appear in base styles or variant definitions.
 
 ## Authoring
 
@@ -26,11 +26,11 @@ export default defineComponent('form-input', {
 })
 ```
 
-Every state-driven style lives next to the value it modifies:
+This recipe groups state styles with their base or variant:
 
-- `placeholder:text-gray-400` in `base` styles the placeholder uniformly.
-- `invalid:border-red-500` only inside the `error` state expansion. The consumer opts in by writing `form-input-state-error`.
-- `read-only:` utilities only emit when the consumer adds `form-input-readonly` to the element.
+- `placeholder:text-gray-400` in `base` sets the placeholder color.
+- `form-input-state-error` includes `invalid:border-red-500`, which applies when the input is invalid.
+- `form-input-readonly` includes read-only utilities, which apply when the input has the `readonly` attribute.
 
 ## Live preview
 

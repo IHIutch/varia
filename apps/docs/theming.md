@@ -1,46 +1,35 @@
 # Theming
 
-Theming has three levels. Pick the lowest one that meets your needs.
+Varia uses ordinary CSS classes, so theming can use explicit variant classes, CSS custom properties, or inherited theme tokens. Pick the pattern that meets your needs.
 
 | Need | Pattern |
 |---|---|
-| One-off override of a single component's color | Per-component knob var ([Avatar recipe](/recipes/avatar)) |
-| Multiple colors × multiple shapes on a single component | The default [Button recipe](/recipes/button): per-component CSS vars via `c` / `style` axes |
-| Wrap a subtree and reskin every descendant | Two-tier semantic tokens + swap classes (this page, below) |
-| Automatic dark mode across a multi-component library | Two-tier semantic tokens with `light-dark()` literals (this page, below) |
+| Override a single component's color | CSS custom properties ([Avatar recipe](/recipes/avatar)) |
+| Multiple colors × multiple shapes on a single component | The [Button recipe](/recipes/button): explicit `c` / `style` compound rules |
+| Theme several components within a subtree | Shared semantic tokens and theme classes |
+| Automatic dark mode across components | Semantic tokens with `light-dark()` values |
 
-The default Button recipe is already a small theming system:
+The Button recipe defines a rule for each color and style combination. For example, `btn-c-primary btn-style-solid` selects blue background and border utilities. Changing a color means editing the corresponding utility strings in its compound rules.
 
-```ts
-const TONES = { primary: 'blue', danger: 'red', /* ... */ }
-//                          ^^^^                 ^^^
-// Remapping a tone is one edit. Adding a new color is one more entry.
-```
+For a component that needs an individual override, expose CSS custom properties as the [Avatar recipe](/recipes/avatar) does. For a shared theme across components, the examples below use inherited semantic tokens and optional `light-dark()` values.
 
-The `c` variant generates per-component CSS variables from the palette; the `style` variant consumes them. For most libraries that's enough.
+These are patterns you implement in your component definitions and UnoCSS config. Varia doesn't supply a built-in theme system. The palette preflight emits its full token block; the theme swap classes and component shortcuts are generated on demand.
 
-This page covers the two patterns the default button doesn't handle:
+## When explicit variants are enough
 
-1. Cross-component reskinning: one class on an ancestor that themes every descendant component simultaneously, the way Bootstrap v6, Radix Themes, and Nuxt UI do.
-2. Automatic dark mode: `light-dark()` in your palette so toggling `prefers-color-scheme` flips every themed component with zero JS.
+Explicit variants are enough when:
 
-Both are docs-and-config patterns you adopt selectively.
+- Components can each select their own color.
+- Dark mode is unnecessary or handled with UnoCSS's `dark:` prefix.
+- Consumers override one component at a time.
 
-## When you don't need either
+Use classes such as `btn-c-primary btn-style-solid` on each button. No shared theme wrapper is needed.
 
-If your library:
-
-- Has fewer than ~10 components.
-- Doesn't need dark mode (or handles it per-component via UnoCSS's `dark:` prefix).
-- Lets consumers reskin one component at a time.
-
-Then stick with the default pattern. `btn-c-primary btn-style-solid` on each button is more grep-able and easier to debug than wrapping subtrees, and the recipes ship in that shape.
-
-For one-off knob overrides (a single `--avatar-bg` override in a CSS file), see the [Avatar recipe](/recipes/avatar). It shows the narrowest form of per-component theming.
+For a single color override such as `--avatar-bg`, see the [Avatar recipe](/recipes/avatar).
 
 ## When you want cross-component reskinning
 
-Imagine a consumer writes this:
+To apply one brand color across several components, a consumer might write:
 
 ```html
 <form class="brand-primary">
@@ -50,21 +39,21 @@ Imagine a consumer writes this:
 </form>
 ```
 
-...and expects every component inside to pick up the brand color. With per-component knobs, `brand-primary` does nothing; each component carries its own color class (`btn-c-primary`, `input-c-primary`, `badge-c-primary`). Adding the wrapper would mean threading the color into each child individually.
+A wrapper class has no effect unless the children read shared CSS variables. With explicit color variants, each child selects its own color, such as `btn-c-primary` or `badge-c-primary`.
 
-The answer is **two-tier semantic tokens**, adapted from Bootstrap v6's [theming refactor](https://github.com/twbs/bootstrap/pull/41789).
+Shared semantic tokens let children inherit a theme from the wrapper. This example adapts the pattern from Bootstrap's [theming refactor](https://github.com/twbs/bootstrap/pull/41789).
 
-The model has three layers on top of the default recipe:
+This pattern adds three layers:
 
-1. *Literal tokens* — color-specific variables on `:root`: `--varia-primary-bg`, `--varia-primary-text`, `--varia-success-bg-subtle`, etc. One set per color in your palette.
-2. *Semantic tokens* — role-shaped variables set by swap classes: `--varia-theme-bg`, `--varia-theme-text`, `--varia-theme-border`, `--varia-theme-bg-subtle`, `--varia-theme-bg-muted`, `--varia-theme-contrast`, `--varia-theme-focus-ring`.
-3. *Swap classes* — `.varia-theme-primary`, `.varia-theme-danger`, etc. Each writes the semantic tokens by pointing them at one color's literal tokens.
+1. Literal tokens store palette values on `:root`, such as `--varia-primary-bg` and `--varia-success-bg-subtle`.
+2. Semantic tokens name component roles, such as `--varia-theme-bg`, `--varia-theme-text`, and `--varia-theme-border`.
+3. Theme classes such as `.varia-theme-primary` assign the palette values to semantic tokens.
 
-Components that opt in read *only* the semantic tokens. They never reference a literal directly.
+The themed components read semantic tokens rather than color-specific palette tokens.
 
 ### Step 1. Generate the literal palette from `theme.colors`
 
-Emit the literal-token block via a UnoCSS preflight. Read values from the project's existing palette so adding a color to your UnoCSS theme automatically extends the set.
+Use a UnoCSS preflight to generate the palette variables from the project's `theme.colors`.
 
 ```ts
 // unocss.config.ts (excerpt)
@@ -111,7 +100,7 @@ export default defineConfig({
 })
 ```
 
-The `light-dark()` calls in each token are what enable automatic dark mode, covered below.
+`light-dark()` selects light or dark palette values, as described below.
 
 ### Step 2. Define the swap classes
 
@@ -140,7 +129,7 @@ export default defineConfig({
 
 ### Step 3. Author components that consume semantic tokens
 
-A component that wants to participate in wrapper-driven theming reads `var(--varia-theme-bg)`, `var(--varia-theme-text)`, etc., never the literal palette tokens. Include `theme()` fallbacks so the component still renders sensibly outside any swap class.
+Themed components read variables such as `var(--varia-theme-bg)`. Include `theme()` fallbacks for use outside a theme wrapper.
 
 ```ts
 import { defineComponent } from 'varia'
@@ -169,9 +158,9 @@ export default defineComponent('themable-btn', {
 })
 ```
 
-Notice: no `c` (color) variant. Color comes from the outer `.varia-theme-*` wrapper, not from a per-button class. A 4-style × 6-color matrix that would cost 24 expansions on the default button costs 4 expansions on this one. The swap classes carry the color; the component carries the shape.
+This definition has no color variant. The wrapper sets the color through CSS variables, and the button selects a style. Four style shortcuts can serve six wrapper colors without defining 24 color and style combinations.
 
-The `theme(colors.gray.X)` fallbacks matter: a `themable-btn` rendered outside any wrapper falls back to neutral gray rather than appearing broken.
+The `theme(colors.gray.X)` fallbacks give the button neutral colors outside a theme wrapper.
 
 ### Consumption
 
@@ -188,7 +177,7 @@ Wrap a subtree in a swap class. Every themable component inside picks up the col
 </div>
 ```
 
-A second component that also consumes the semantic tokens (a `themable-badge`, an `alert`, a `form-input`) reskins alongside the button without any per-component knobs.
+Any component that reads the same tokens inherits the wrapper's theme, including badges, alerts, and inputs.
 
 ## Automatic dark mode with `light-dark()`
 
@@ -199,7 +188,7 @@ Two requirements:
 1. Set `color-scheme: light dark;` on `:root` (or on any ancestor of your themed content). This tells the browser the page supports both modes.
 2. Write your literal-palette tokens with `light-dark()` for any value that should change between modes (already done in step 1).
 
-That's the entire dark-mode integration. Swap classes and component expansions stay unchanged; every themed component flips automatically when the user toggles their system preference.
+With this setup, the themed components follow the user's system color preference without changes to their class names.
 
 ::: tip Browser support
 `light-dark()` is supported in modern Chrome, Safari, and Firefox (2024+). For older baselines, add a `@media (prefers-color-scheme: dark)` block that overrides the literal tokens.
@@ -207,12 +196,12 @@ That's the entire dark-mode integration. Swap classes and component expansions s
 
 ## Anti-patterns
 
-- Don't author every component twice (once for per-component vars, once for semantic tokens). Pick the layer each component participates in and commit to it.
-- Don't expose every utility as a var. Token soup makes APIs harder to reason about and bloats CSS.
-- Don't chain `var(--a, var(--b, var(--c, ...)))` deeper than one hop. Multi-hop fallback chains make debugging painful.
-- Don't forget `color-scheme: light dark` if you use `light-dark()`. Without it, browsers may render in light mode forever on dark-OS systems.
+- Choose explicit variants or inherited semantic tokens for each component to avoid duplicate definitions.
+- Expose variables for values consumers need to change. Unnecessary variables add CSS and make the configuration harder to follow.
+- Keep variable fallbacks short. Nested chains such as `var(--a, var(--b, var(--c, ...)))` make it harder to identify the value in use.
+- Set `color-scheme: light dark` when using `light-dark()` to follow the system preference.
 
 ## Inspiration and credit
 
-The patterns documented here are not novel. The defaults draw from Tailwind's utility model and Radix Themes' per-component CSS variables. The two-tier semantic-token model is adapted from Bootstrap v6's [theming refactor (#41789)](https://github.com/twbs/bootstrap/pull/41789). The semantic-color-names-with-remappable-tones approach mirrors [Nuxt UI's theming model](https://ui.nuxt.com/getting-started/theme). `varia` takes the best parts of each: explicit color in markup (Tailwind/Radix), Bootstrap's wrapper reskinning for libraries that grow large, and Nuxt UI's remappable defaults for consumer-side customization.
+The recipes use utility strings and ordinary CSS custom properties. The two-tier semantic-token model is adapted from Bootstrap v6's [theming refactor (#41789)](https://github.com/twbs/bootstrap/pull/41789). The semantic-color-names-with-remappable-tones approach mirrors [Nuxt UI's theming model](https://ui.nuxt.com/getting-started/theme). These examples show how to use those CSS patterns with Varia component definitions.
 

@@ -1,8 +1,8 @@
 # Avatar
 
-A single component with one or two CSS variables and a `theme()` fallback. Use this shape when consumers should be able to override a specific value without touching anything else.
+An avatar with CSS custom properties for background, text, and ring colors. Each property has a `theme()` fallback, so consumers can override individual colors in CSS.
 
-For most components, the [Button recipe](/recipes/button)'s pattern (color sets a fixed set of CSS variables, style consumes them) is a stronger starting point. For libraries that need wrapper-driven theming or automatic dark mode, see the [Theming deep-dive](/theming).
+Use the [Button recipe](/recipes/button) for explicit color and style variants. See [Theming](/theming) for inherited theme tokens and automatic dark mode.
 
 ## Authoring
 
@@ -24,7 +24,7 @@ export default defineComponent('avatar', {
 })
 ```
 
-The pattern in detail:
+The background utility uses a CSS variable with a palette fallback:
 
 ```text
 bg-[var(--avatar-bg,theme(colors.gray.200))]
@@ -63,7 +63,7 @@ bg-[var(--avatar-bg,theme(colors.gray.200))]
 
 ## Re-theming without forking
 
-The consumer scopes their override anywhere in CSS: globally, per-page, per-component.
+Set the variables globally or on an ancestor of the avatar:
 
 ```css
 /* App-wide brand override */
@@ -80,7 +80,7 @@ The consumer scopes their override anywhere in CSS: globally, per-page, per-comp
 }
 ```
 
-The consumer never touches the `varia` config. They never recompile. The override lives in their CSS where it belongs.
+The browser applies these overrides without changing the Varia definition or regenerating its shortcuts.
 
 ## Generated class names
 
@@ -92,4 +92,4 @@ The consumer never touches the `varia` config. They never recompile. The overrid
 
 ## When to use this pattern
 
-Whenever the consumer might want to override the value but probably won't. Drop a `var(--token, theme(...))` in the expansion, ship the default, and surface the variable name in your docs.
+Use `var(--token, theme(...))` when consumers need CSS overrides and a default value. Document the variable name and its fallback.

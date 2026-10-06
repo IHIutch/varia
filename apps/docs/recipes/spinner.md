@@ -1,6 +1,6 @@
 # Spinner
 
-A spinner using UnoCSS's `animate-spin` utility. Mostly here as a regression test (anything that depends on `@keyframes` is fragile in a build pipeline), but you can use it as a spinner.
+A CSS spinner with size and color variants. It uses UnoCSS's `animate-spin` utility.
 
 ## Authoring
 
@@ -25,7 +25,7 @@ export default defineComponent('spinner', {
 })
 ```
 
-A CSS-only spinner is a circle with a transparent right border that rotates. UnoCSS's `animate-spin` injects `@keyframes spin { from { transform: rotate(0); } to { transform: rotate(360deg); } }` into the generated CSS automatically, whenever any `animate-spin` class is referenced anywhere.
+The spinner is a rotating circle with a transparent right border. UnoCSS generates the spin keyframes when it resolves `animate-spin`.
 
 ## Live preview
 

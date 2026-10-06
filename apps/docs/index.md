@@ -3,8 +3,8 @@ layout: home
 
 hero:
   name: varia
-  text: Build-time variants for UnoCSS
-  tagline: A CVA-shaped config for authoring component vocabularies. JIT for design systems, no runtime, framework-agnostic at consumption.
+  text: Component classes, generated on demand
+  tagline: Tailwind-style CSS generation with the ergonomics of regular CSS. Define styles with UnoCSS utilities, use readable component classes in any template, and generate CSS at build time without a styling runtime.
   actions:
     - theme: brand
       text: Quickstart
@@ -14,8 +14,8 @@ hero:
       link: /api
 
 features:
-  - title: Familiar config shape
-    details: A CVA-shaped <code>defineComponent</code> for authoring variants. If you've used class-variance-authority, you'll feel at home.
+  - title: Regular CSS class ergonomics
+    details: Define shared styles once, then write <code>btn btn-c-primary btn-s-lg</code> in your markup. Select variants without repeating utility lists or calling a styling function.
   - title: Slots and compound variants
     details: <code>slots</code> for multi-element widgets (Modal, Card, Dialog). <code>compoundVariants</code> for cross-axis CSS that applies when conditions combine.
   - title: Pure build-time
@@ -28,6 +28,30 @@ features:
     details: The UnoCSS VS Code extension reads your config and offers completion in HTML, JSX, ERB, Liquid, HEEx, and anywhere else classes live.
   - title: Optional TypeScript checking
     details: A generated <code>VariaClasses</code> union lets you type-check class strings in TS projects, or build custom lint rules.
-  - title: Ship only what's used
-    details: Consumers compile only the components they actually reference. A class in the manifest that no template uses doesn't make it into the CSS.
+  - title: On-demand shortcut CSS
+    details: UnoCSS generates component and variant shortcut CSS when it finds their classes in your source. Compound and slot-keyed rules currently ship for every registered definition.
 ---
+
+## Define once, use ordinary classes
+
+```ts
+import { defineComponent } from 'varia'
+
+export default defineComponent('btn', {
+  base: 'inline-flex items-center rounded font-medium',
+  variants: {
+    c: { primary: 'bg-blue-600 text-white hover:bg-blue-700' },
+    s: { lg: 'px-4 py-2 text-lg' },
+  },
+})
+```
+
+```html
+<button class="btn btn-c-primary btn-s-lg">Save</button>
+```
+
+Register this definition with `presetVaria` in your UnoCSS config. UnoCSS scans your templates and generates the shortcut CSS they use. The same markup works in HTML, JSX, ERB, HEEx, and Liquid.
+
+Varia handles component styling. The recipes show styles you can adapt; your application or component framework supplies markup, interaction behavior, and accessibility.
+
+[Get started with a working button](/quickstart) or [learn how CSS generation works](/concepts).
