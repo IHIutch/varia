@@ -8,8 +8,6 @@ export default antfu({
   ignores: [
     '**/dist/**',
     '**/node_modules/**',
-    'apps/docs/.vitepress/cache/**',
-    'apps/docs/.vitepress/dist/**',
     'adr/**',
     'packages/varia/stub/**',
     'packages/varia/test/recipes/__snapshots__/**',

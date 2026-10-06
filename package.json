@@ -2,7 +2,7 @@
   "name": "varia-workspace",
   "type": "module",
   "private": true,
-  "description": "Workspace root for varia (library, docs, example)",
+  "description": "Workspace root for varia (library, example)",
   "engines": {
     "node": ">=22"
   },
@@ -13,10 +13,6 @@
     "typecheck": "pnpm -r typecheck",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "docs:dev": "pnpm --filter @varia/docs dev",
-    "docs:build": "pnpm --filter @varia/docs build",
-    "docs:preview": "pnpm --filter @varia/docs preview",
-    "docs:deploy": "pnpm --filter @varia/docs deploy-pages",
     "example:dev": "pnpm --filter @varia/example dev",
     "example:dev:unocss": "pnpm --filter @varia/example dev:unocss",
     "example:build": "pnpm --filter @varia/example build",
