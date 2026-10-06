@@ -1,4 +1,4 @@
-import './tailwind.css'
+import './styles.css'
 
 // Click-to-activate behavior for both varia tabs and pills. Active state is
 // expressed by toggling `.nav__link-active` (a slot class) on the clicked link.

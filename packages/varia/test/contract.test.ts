@@ -1,6 +1,5 @@
-// The MVP contract every engine adapter must meet. Each case runs against
-// Tailwind and UnoCSS and compares normalized rules rather than raw output.
-// Engine-specific behavior lives in tailwind.test.ts and unocss.test.ts.
+// The MVP contract every engine adapter must meet. Each branch runs the same cases
+// against its selected engine, comparing normalized rules rather than raw output.
 
 import { mkdtemp, readFile, rm } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
@@ -44,6 +43,33 @@ describe.each(adapters)('$name adapter', (adapter) => {
     expect(css).toContain('@keyframes spin')
     expect(rules.map(entry => entry.selector)).not.toContain('.card')
     expect(rules.map(entry => entry.selector)).not.toContain('.card__title')
+  })
+
+  it('keeps usage-site states on the activation element and definition states on the slot', async () => {
+    const card = defineComponent('card', {
+      slots: { root: 'block', title: 'block' },
+      variants: { accent: { title: 'opacity-50 focus:opacity-75' } },
+    })
+    const rules = cssRules(await adapter.generate([card], ['hover:card-accent']))
+    expect(rules).toContainEqual(rule({ selector: '.hover\\:card-accent:hover .card__title', decls: decls({ opacity: '.5' }) }))
+    expect(rules).toContainEqual(rule({ selector: '.hover\\:card-accent:hover .card__title:focus', decls: decls({ opacity: '.75' }) }))
+  })
+
+  it('preserves literal variant-group punctuation inside arbitrary values', async () => {
+    const literal = defineComponent('literal', { base: 'content-[\':(\']' })
+    const css = await adapter.generate([literal], ['literal'])
+    const literalRules = cssRules(css).filter(entry => entry.selector === '.literal')
+    expect(literalRules).toContainEqual(rule({ decls: decls({ content: expect.any(String) }) }))
+    expect(literalRules.some(entry => Object.values(entry.decls).some(value => value.includes(':(')))).toBe(true)
+  })
+
+  it.each(['base', 'slot', 'compound'] as const)('fails on unknown utilities in an active %s expansion', async (kind) => {
+    const component = defineComponent('broken', {
+      slots: { root: kind === 'base' ? 'varia-unknown-utility' : 'block', title: 'block' },
+      variants: { active: kind === 'slot' ? { title: 'varia-unknown-utility' } : 'opacity-50' },
+      compoundVariants: kind === 'compound' ? [{ when: { active: true }, class: 'varia-unknown-utility' }] : undefined,
+    })
+    await expect(adapter.generate([component], ['broken', 'broken-active'])).rejects.toThrow(/varia-unknown-utility/)
   })
 
   it('activates compounds through their first condition and keeps their states', async () => {
@@ -97,7 +123,8 @@ describe.each(adapters)('$name adapter', (adapter) => {
     const css = await adapter.generate([badge], ['badge', 'md:badge', 'badge-active'], { custom: true })
     const rules = cssRules(css)
     expect(css).toContain('#123456')
-    expect(rules).toContainEqual(rule({ selector: '.badge', decls: decls({ 'padding': '3px', 'text-decoration': 'underline' }) }))
+    expect(rules).toContainEqual(rule({ selector: '.badge', decls: decls({ 'text-decoration': 'underline' }) }))
+    expect(rules).toContainEqual(rule({ selector: '.badge', decls: decls({ padding: '3px' }) }))
     expect(rules).toContainEqual(rule({ media: ['(min-width: 50rem)'], selector: '.md\\:badge' }))
     expect(rules).toContainEqual(rule({ media: ['(min-width: 50rem)'], selector: '.badge-active', decls: decls({ opacity: '.5' }) }))
   })

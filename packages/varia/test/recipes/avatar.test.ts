@@ -7,7 +7,7 @@ describe('recipe: Avatar', () => {
     expect(avatar.shortcuts).toMatchSnapshot()
   })
 
-  it('cSS custom properties with theme() fallbacks survive through real Tailwind', async () => {
+  it('cSS custom properties with theme() fallbacks survive through the selected engine', async () => {
     const css = await generateRecipeCSS([avatar], 'avatar avatar-s-md avatar-ring')
 
     expect(css).toContain('--avatar-bg')

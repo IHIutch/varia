@@ -1,0 +1,32 @@
+# Adapter comparison
+
+Compare `tailwind-mvp` and `unocss-minimal` against `comparison-base`, their shared merge base. Each implementation has one CSS engine. The common baseline contains definitions, validation, manifests, recipes, demo markup, and engine-independent tests. It is an extraction baseline rather than a runnable styling integration.
+
+## Required behavior
+
+Both adapters must pass the identical contract and recipe suites:
+
+- Generate only referenced base and activation classes. Slot variants activate every slot rule; compounds activate through their first condition.
+- Preserve states and arbitrary selectors inside definitions on the styled element. Usage-site states such as `hover:card-accent` apply to the activation element before selecting descendant slots.
+- Order normal declarations as base, variants, compounds, then atomic utilities through cascade layers.
+- Resolve themes, custom utilities, arbitrary values, responsive classes, important modifiers, and user CSS `@apply`.
+- Fail on unknown utilities in active component expansions, including slots and compounds.
+- Validate duplicate names, malformed definitions, and prefixes. Reject variant groups outside arbitrary-value brackets.
+- Write prefixed manifests, aggregate registrations, and replace stale classes on config reload.
+- Load packaged adapters and TypeScript definitions through the real engine loader. Import built adapters without requiring the CSS engine at module-import time.
+
+Engine-native prefix spelling is allowed: Tailwind uses `tw:card`; UnoCSS uses `tw-card`. Generated CSS formatting, private variable names, engine preflights, and conditional browser fallbacks may differ. Equal-specificity conflicts within one layer are not a portable API; recipes must express intended precedence explicitly.
+
+## Setup
+
+Use Node.js 22 or newer and pnpm. Run `pnpm install`, `pnpm test`, `pnpm typecheck`, `pnpm lint`, and `pnpm example:build` on each implementation branch.
+
+Tailwind registers `tailwindVaria` from `varia/tailwind`. Import `varia/tailwind.css` before `tailwindcss`, then load the plugin config. UnoCSS registers `presetVaria` from `varia/unocss` alongside `presetWind4` and requires `outputToCssLayers: true`. Each branch includes its own example configuration.
+
+The test seam is `packages/varia/test/_engine.ts`. The engine-neutral package import `varia/adapter` exports `createAdapter` for packaging verification; consumers can use the native named integration. Shared tests must not convert engine warnings into failures on behalf of the production adapter.
+
+## Comparing implementation cost
+
+Use `git diff comparison-base...tailwind-mvp` and `git diff comparison-base...unocss-minimal`. Compare adapter code separately from integration helpers and engine dependencies. Both branches must keep shared source, recipes, demo markup, and shared tests identical.
+
+Build the same demo entry points with the same markup and recipes. Treat CSS size and timing as whole-engine measurements, including each engine's reset and theme implementation; do not label those figures as adapter overhead. Verify computed styles for compound buttons, nav states, input groups, descendant slots, and utility overrides before claiming rendered parity. Build success alone does not establish visual parity.

@@ -20,7 +20,7 @@ describe('recipe: Dropdown', () => {
     expect(dropdown.shortcuts).toMatchSnapshot()
   })
 
-  it('renders slots and alignment through real Tailwind', async () => {
+  it('renders slots and alignment through the selected engine', async () => {
     const css = await generateRecipeCSS(
       [dropdown],
       'dropdown dropdown__trigger dropdown__menu dropdown__item dropdown__divider dropdown-align-end',

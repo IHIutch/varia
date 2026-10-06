@@ -57,7 +57,22 @@ export function validateExpansion(
     )
   }
   // Tailwind has no variant groups. Rejecting them keeps definitions portable.
-  if (/:\(/.test(expansion)) {
+  let bracketDepth = 0
+  let hasVariantGroup = false
+  for (let index = 0; index < expansion.length; index++) {
+    const char = expansion[index]
+    if (char === '\\') {
+      index++
+      continue
+    }
+    if (char === '[')
+      bracketDepth++
+    else if (char === ']')
+      bracketDepth--
+    else if (char === ':' && expansion[index + 1] === '(' && bracketDepth === 0)
+      hasVariantGroup = true
+  }
+  if (hasVariantGroup) {
     throw new Error(
       `Variant group in "${context.className}" (component "${context.component}") — write each utility with its own variant, such as "hover:a hover:b" instead of "hover:(a b)".`,
     )

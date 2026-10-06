@@ -6,6 +6,7 @@ export interface CssRule {
   /** Varia layers as `varia.base`; the engine's utility layer as `utilities`. */
   layer: string
   media: string[]
+  supports: string[]
   selector: string
   decls: Record<string, string>
 }
@@ -38,6 +39,7 @@ export function cssRules(css: string): CssRule[] {
     if (atRules.some(at => at.name.endsWith('keyframes')))
       return
     const media = [...new Set(atRules.filter(at => at.name === 'media' && at.params !== '(hover: hover)').map(at => at.params))]
+    const supports = atRules.filter(at => at.name === 'supports').map(at => at.params)
     const decls: Record<string, string> = {}
     rule.each((node) => {
       if (node.type !== 'decl')
@@ -47,7 +49,7 @@ export function cssRules(css: string): CssRule[] {
       decls[node.prop] = `${value.replace(/^0\./, '.')}${node.important ? ' !important' : ''}`
     })
     for (const selector of rule.selectors)
-      out.push({ layer: normalizeLayer(layerPath(atRules).join('.')), media, selector: selector.replace(/\s*([>+~])\s*/g, '$1'), decls })
+      out.push({ layer: normalizeLayer(layerPath(atRules).join('.')), media, supports, selector: selector.replace(/\s*([>+~])\s*/g, '$1'), decls })
   })
   return out
 }

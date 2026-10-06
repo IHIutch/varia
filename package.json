@@ -14,9 +14,7 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "example:dev": "pnpm --filter @varia/example dev",
-    "example:dev:unocss": "pnpm --filter @varia/example dev:unocss",
-    "example:build": "pnpm --filter @varia/example build",
-    "example:build:unocss": "pnpm --filter @varia/example build:unocss"
+    "example:build": "pnpm --filter @varia/example build"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^8.2.0",

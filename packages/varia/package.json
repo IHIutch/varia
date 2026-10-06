@@ -2,7 +2,7 @@
   "name": "varia",
   "type": "module",
   "version": "0.0.0",
-  "description": "Build-time component variants for Tailwind CSS and UnoCSS",
+  "description": "Build-time component variants",
   "license": "MIT",
   "exports": {
     ".": {
@@ -11,15 +11,6 @@
     },
     "./types": {
       "types": "./dist/types.d.mts"
-    },
-    "./tailwind": {
-      "types": "./dist/tailwind.d.mts",
-      "import": "./dist/tailwind.mjs"
-    },
-    "./tailwind.css": "./dist/tailwind.css",
-    "./unocss": {
-      "types": "./dist/unocss.d.mts",
-      "import": "./dist/unocss.mjs"
     }
   },
   "main": "./dist/index.mjs",
@@ -36,27 +27,8 @@
     "test:watch": "pnpm run build && vitest",
     "typecheck": "tsc --noEmit"
   },
-  "peerDependencies": {
-    "@unocss/core": ">=66.0.0",
-    "tailwindcss": "^4.3.3"
-  },
-  "peerDependenciesMeta": {
-    "@unocss/core": {
-      "optional": true
-    },
-    "tailwindcss": {
-      "optional": true
-    }
-  },
   "devDependencies": {
-    "@tailwindcss/node": "^4.3.3",
-    "@unocss/config": "^66.10.5",
-    "@unocss/core": "^66.10.5",
-    "@unocss/preset-wind4": "^66.10.5",
-    "@unocss/transformer-directives": "^66.10.5",
-    "magic-string": "^1.4.3",
     "postcss": "^8.5.14",
-    "tailwindcss": "^4.3.3",
     "tsdown": "^0.22.0",
     "vitest": "^4.1.5"
   }

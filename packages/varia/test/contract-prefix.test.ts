@@ -1,6 +1,4 @@
-// Contract cases that configure a utility prefix. UnoCSS stores a preset's
-// prefix on the utility preset's shared rule objects, so prefixed generators
-// run in their own file to keep that state away from the main contract suite.
+// Prefix cases run separately to isolate engine preset configuration state.
 
 import { mkdtemp, readFile, rm } from 'node:fs/promises'
 import { tmpdir } from 'node:os'

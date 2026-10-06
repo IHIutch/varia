@@ -1,4 +1,4 @@
-import type { TailwindVariaOptions } from '../src/tailwind.js'
+import type { Registration } from './_adapters.js'
 import { existsSync, readFileSync, statSync } from 'node:fs'
 import { mkdtemp, rm } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
@@ -7,10 +7,10 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { defineComponent } from '../src/index.js'
 import * as manifest from '../src/manifest.js'
 import { DEFAULT_MANIFEST_PATH, generateManifestContent } from '../src/manifest.js'
-import { generator } from './_tailwind.js'
+import { adapter } from './_engine.js'
 
-async function register(options: TailwindVariaOptions) {
-  await generator(options.components, '', { manifest: {}, ...options })
+async function register(options: Registration) {
+  await adapter.register([{ manifest: {}, ...options }])
 }
 
 let testDir: string
@@ -23,7 +23,7 @@ afterEach(async () => {
   await rm(testDir, { recursive: true, force: true })
 })
 
-describe('manifest emission via tailwindVaria', () => {
+describe('manifest emission via the selected adapter', () => {
   it('writes manifest to a custom path with all class names from components', async () => {
     const path = join(testDir, 'manifest.d.ts')
     const button = defineComponent('btn', {

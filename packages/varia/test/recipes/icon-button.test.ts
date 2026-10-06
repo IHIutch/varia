@@ -46,7 +46,7 @@ describe('recipe: IconButton', () => {
     expect(css).not.toMatch(/\.icon-btn-s-lg\.icon-btn-square\s*\{/)
   })
 
-  it('base + size + square produces working CSS through real Tailwind', async () => {
+  it('base + size + square produces working CSS through the selected engine', async () => {
     const css = await generateRecipeCSS([iconButton], 'icon-btn icon-btn-s-md icon-btn-square')
     // Base styles present:
     expect(css).toMatch(/display:\s*inline-flex/)

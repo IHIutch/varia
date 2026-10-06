@@ -2,7 +2,7 @@
 
 On-demand CSS with the ergonomics of regular CSS classes.
 
-Varia lets you define component styles with utility classes, then use readable classes such as `btn btn-c-primary btn-s-lg` in your markup. Tailwind CSS generates the CSS at build time; Varia adds no styling runtime to your application.
+Varia lets you define component styles with utility classes, then use readable classes such as `btn btn-c-primary btn-s-lg` in your markup. The selected utility engine generates the CSS at build time; Varia adds no styling runtime to your application.
 
 ```ts
 import { defineComponent } from 'varia'
@@ -26,7 +26,7 @@ export default defineComponent('btn', {
 <button class="btn btn-c-primary btn-s-lg">Save</button>
 ```
 
-Register the definition with `tailwindVaria` in a Tailwind v4 plugin module. Tailwind scans your source files and emits CSS for the component and variant classes it finds. A slot-keyed variant emits its slot rules when its variant class is used. A compound emits when the class for its first `when` condition is used; the combined selector checks the remaining conditions in the browser. Unused components and activation classes produce no component CSS.
+Register definitions through the adapter on the selected branch. The engine scans your source files and emits CSS for component and variant classes it finds. A slot-keyed variant emits its slot rules when its variant class is used. A compound emits when the class for its first `when` condition is used; the combined selector checks the remaining conditions in the browser. Unused components and activation classes produce no component CSS.
 
 ## Why Varia
 
@@ -47,9 +47,9 @@ Use Node.js 22 or newer and pnpm.
 pnpm install
 ```
 
-Run `pnpm build` followed by `pnpm example:dev` for the Tailwind kitchen-sink demo, or `pnpm example:dev:unocss` for the same demo with UnoCSS. `pnpm example:build` and `pnpm example:build:unocss` create production builds.
+`comparison-base` contains the shared library, recipes, demo markup, and test contract. It has no engine integration. Select `tailwind-mvp` or `unocss-minimal` to run the complete suite and demo.
 
-This branch holds the Tailwind adapter and a minimal UnoCSS adapter to the same contract (`packages/varia/test/contract.test.ts`) for comparison.
+Both implementation branches use `pnpm build`, `pnpm test`, `pnpm example:dev`, and `pnpm example:build`. See [the comparison contract](COMPARISON.md) for setup, required behavior, and verification.
 
 ```sh
 pnpm build

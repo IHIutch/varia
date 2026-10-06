@@ -6,9 +6,7 @@
   "description": "Kitchen-sink demo app for varia",
   "scripts": {
     "dev": "vite",
-    "dev:unocss": "vite --mode unocss",
     "build": "vite build",
-    "build:unocss": "vite build --mode unocss",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit"
   },
@@ -16,11 +14,6 @@
     "varia": "workspace:*"
   },
   "devDependencies": {
-    "@tailwindcss/vite": "^4.3.3",
-    "@unocss/core": "^66.10.5",
-    "@unocss/preset-wind4": "^66.10.5",
-    "@unocss/vite": "^66.10.5",
-    "tailwindcss": "^4.3.3",
     "vite": "^8.0.11"
   }
 }

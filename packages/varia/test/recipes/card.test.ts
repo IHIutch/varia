@@ -8,7 +8,7 @@ describe('recipe: Card', () => {
     expect(card.manifest.classNames).toEqual(['card'])
   })
 
-  it('a base-only component does not throw and produces working CSS through real Tailwind', async () => {
+  it('a base-only component does not throw and produces working CSS through the selected engine', async () => {
     const css = await generateRecipeCSS([card], 'card')
 
     expect(css).toContain('display:block')
