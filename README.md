@@ -26,7 +26,7 @@ export default defineComponent('btn', {
 <button class="btn btn-c-primary btn-s-lg">Save</button>
 ```
 
-Register the definition with `presetVaria` in your UnoCSS config. UnoCSS scans your source files and emits CSS for the component and variant shortcuts it finds. Unused shortcuts stay out of the stylesheet. Compound variants and variants that target named parts currently emit CSS for every registered rule, even if unused.
+Register the definition with `presetVaria` in your UnoCSS config. UnoCSS scans your source files and emits CSS for the component and variant classes it finds. A slot-keyed variant emits its slot rules when its variant class is used. A compound emits when the class for its first `when` condition is used; the combined selector checks the remaining conditions in the browser. Unused components and activation classes produce no component CSS.
 
 ## Why Varia
 

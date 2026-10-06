@@ -144,7 +144,7 @@ describe('compound variants: end-to-end through real UnoCSS', () => {
     expect(css).toMatch(/\.btn-s-xs\.btn-square\s*\{[^}]*padding/)
   })
 
-  it('compound rules emit independent of which specific combination the consumer references (preflights are unconditional)', async () => {
+  it('emits compounds only for referenced first-condition classes', async () => {
     const btn = defineComponent('btn', {
       base: 'inline-flex',
       variants: {
@@ -158,12 +158,11 @@ describe('compound variants: end-to-end through real UnoCSS', () => {
       ],
     })
 
-    // Consumer references only s-xs + square — but all three compound rules
-    // should be present in the output.
+    // Each size is the first condition and activates its own compound.
     const css = await generate(btn, 'btn btn-s-xs btn-square')
     expect(css).toMatch(/\.btn-s-xs\.btn-square\s*\{/)
-    expect(css).toMatch(/\.btn-s-sm\.btn-square\s*\{/)
-    expect(css).toMatch(/\.btn-s-md\.btn-square\s*\{/)
+    expect(css).not.toMatch(/\.btn-s-sm\.btn-square\s*\{/)
+    expect(css).not.toMatch(/\.btn-s-md\.btn-square\s*\{/)
   })
 
   it('multi-condition compound combines all axes into the selector', async () => {

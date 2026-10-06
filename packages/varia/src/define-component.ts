@@ -10,12 +10,14 @@ import type {
   VariantDefinition,
   VariantValue,
 } from './internal/types.js'
+import type { ComponentPreflight } from './internal/usage.js'
 import {
   booleanTrueClassName,
   multiValueClassName,
   slotClassName,
 } from './internal/naming.js'
 import { emitResolvedCSS, resolveUtilities } from './internal/resolve-utilities.js'
+import { usageTrigger } from './internal/usage.js'
 import {
   toClassString,
   validateAssembledClassName,
@@ -101,7 +103,7 @@ export function defineComponent(name: string, config: ComponentConfig): DefinedC
     }
   }
 
-  // 3. Compound variants: cross-axis rules emitted as preflights. Validation
+  // 3. Compound variants: cross-axis style descriptors. Validation
   //    runs against the axis registry built above.
   if (config.compoundVariants) {
     for (const compound of config.compoundVariants) {
@@ -204,6 +206,7 @@ function processVariant(args: {
   if (kind === 'boolean-slot-keyed') {
     const className = booleanTrueClassName(componentName, variantKey)
     validateAssembledClassName(className, { component: componentName, variantKey })
+    validateSlotValue(componentName, variantKey, className, variantDef as SlotKeyedValue)
     classNames.push(className)
     preflights.push(
       slotKeyedVariantPreflight({
@@ -243,6 +246,7 @@ function processVariant(args: {
           )
         }
       }
+      validateSlotValue(componentName, variantKey, className, value, valueKey)
       classNames.push(className)
       preflights.push(
         slotKeyedVariantPreflight({
@@ -263,19 +267,38 @@ function processVariant(args: {
   axisRegistry.set(variantKey, { kind: 'multi-value', values: valueSet })
 }
 
+function validateSlotValue(
+  componentName: string,
+  variantKey: string,
+  className: string,
+  value: SlotKeyedValue,
+  valueKey?: string,
+): void {
+  const where = `Variant "${variantKey}"${valueKey === undefined ? '' : ` value "${valueKey}"`} on component "${componentName}"`
+  if (Object.keys(value).length === 0)
+    throw new Error(`${where} has an empty slot map — provide at least one slot expansion.`)
+  for (const [slot, classes] of Object.entries(value)) {
+    if (typeof classes !== 'string' && !(Array.isArray(classes) && classes.every(c => typeof c === 'string'))) {
+      throw new Error(`${where} slot "${slot}" must be a string or an array of strings.`)
+    }
+    validateExpansion(toClassString(classes), { className, component: componentName })
+  }
+}
+
 /**
- * Build a preflight that resolves the utility strings for each slot and emits
- * descendant-selector CSS rules. The preflight runs at preset resolution time
- * and has access to the generator via context.
+ * Build a style descriptor that resolves each slot's utilities and emits
+ * descendant-selector CSS. presetVaria activates it through the variant class
+ * and resolves utilities against the current generator.
  */
 function slotKeyedVariantPreflight(args: {
   componentName: string
   variantClass: string
   slotKeyedValue: SlotKeyedValue
-}): Preflight<object> {
+}): ComponentPreflight {
   const { componentName, variantClass, slotKeyedValue } = args
 
   return {
+    [usageTrigger]: variantClass,
     getCSS: async (context) => {
       const uno = context.generator
       const out: string[] = []
@@ -287,12 +310,11 @@ function slotKeyedVariantPreflight(args: {
 
         const resolved = await resolveUtilities(classes, uno)
         const slotClass = slotClassName(componentName, slotName)
-        // The root slot's class IS the component name, so a chained selector
-        // (variant+root on the same element) is the correct shape; non-root
-        // slots are descendants.
+        // Repeat the root variant class to beat its base shortcut without
+        // requiring the base class. Non-root slots already have two classes.
         const selector
           = slotName === 'root'
-            ? `.${variantClass}`
+            ? `.${variantClass}.${variantClass}`
             : `.${variantClass} .${slotClass}`
 
         out.push(emitResolvedCSS(selector, resolved))
@@ -379,16 +401,22 @@ function compoundSelector(componentName: string, when: CompoundVariantWhen): str
     }
     return `.${multiValueClassName(componentName, axis, String(value))}`
   })
-  return classes.join('')
+  // A one-condition compound must also outrank its ordinary variant shortcut.
+  return classes.length === 1 ? classes[0]! + classes[0]! : classes.join('')
 }
 
 function compoundPreflight(
   componentName: string,
   compound: CompoundVariantRule,
-): Preflight<object> {
+): ComponentPreflight {
   const selector = compoundSelector(componentName, compound.when)
   const classes = toClassString(compound.class)
+  const [axis, value] = Object.entries(compound.when)[0]!
+  const trigger = value === true
+    ? booleanTrueClassName(componentName, axis)
+    : multiValueClassName(componentName, axis, value)
   return {
+    [usageTrigger]: trigger,
     getCSS: async (context) => {
       const uno = context.generator
       const resolved = await resolveUtilities(classes, uno)

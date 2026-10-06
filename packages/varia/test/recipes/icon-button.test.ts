@@ -25,7 +25,7 @@ describe('recipe: IconButton', () => {
   })
 
   it('emits exactly the expected padding for each square size', async () => {
-    const css = await generateRecipeCSS([iconButton], 'icon-btn icon-btn-s-sm icon-btn-square')
+    const css = await generateRecipeCSS([iconButton], 'icon-btn icon-btn-s-xs icon-btn-s-sm icon-btn-s-md icon-btn-s-lg icon-btn-square')
     const rules = Array.from(css.matchAll(/(\.icon-btn-s-(?:xs|sm|md|lg)\.icon-btn-square)\s*\{([^}]*)\}/g))
       .map(([, selector, body]) => [selector, body])
       .sort(([a], [b]) => a!.localeCompare(b!))
@@ -38,14 +38,12 @@ describe('recipe: IconButton', () => {
     expect(css).toMatch(/--spacing:\s*0\.25rem;/)
   })
 
-  it('every declared compound emits its CSS rule (preflights bypass tree-shaking)', async () => {
-    // Consumer references only the s-xs + square combination, but all four
-    // compound rules should still appear because preflights are unconditional.
+  it('omits compounds for unused sizes', async () => {
     const css = await generateRecipeCSS([iconButton], 'icon-btn icon-btn-s-xs icon-btn-square')
     expect(css).toMatch(/\.icon-btn-s-xs\.icon-btn-square\s*\{/)
-    expect(css).toMatch(/\.icon-btn-s-sm\.icon-btn-square\s*\{/)
-    expect(css).toMatch(/\.icon-btn-s-md\.icon-btn-square\s*\{/)
-    expect(css).toMatch(/\.icon-btn-s-lg\.icon-btn-square\s*\{/)
+    expect(css).not.toMatch(/\.icon-btn-s-sm\.icon-btn-square\s*\{/)
+    expect(css).not.toMatch(/\.icon-btn-s-md\.icon-btn-square\s*\{/)
+    expect(css).not.toMatch(/\.icon-btn-s-lg\.icon-btn-square\s*\{/)
   })
 
   it('base + size + square produces working CSS through real UnoCSS', async () => {

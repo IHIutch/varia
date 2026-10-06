@@ -207,7 +207,7 @@ describe('defineComponent: end-to-end through real UnoCSS', () => {
     expect(css).toMatch(/\.card-elevated\s*\{/)
   })
 
-  it('slot-keyed variant emits descendant-selector CSS via preflight', async () => {
+  it('slot-keyed variant emits descendant-selector CSS when its class is used', async () => {
     const card = defineComponent('card', {
       slots: {
         root: 'rounded-lg bg-white',
@@ -225,7 +225,7 @@ describe('defineComponent: end-to-end through real UnoCSS', () => {
 
     const css = await generate(card, 'card card-accent card__header card__title')
 
-    // Root variant: single class
+    // Root variant repeats its class for specificity.
     expect(css).toMatch(/\.card-accent\s*\{[^}]*box-shadow/)
     // Header: descendant selector
     expect(css).toMatch(/\.card-accent\s+\.card__header\s*\{[^}]*background-color/)
@@ -233,7 +233,7 @@ describe('defineComponent: end-to-end through real UnoCSS', () => {
     expect(css).toMatch(/\.card-accent\s+\.card__title\s*\{[^}]*color/)
   })
 
-  it('slot-keyed variant rules are present even when descendants are not referenced (preflight bypasses tree-shaking)', async () => {
+  it('an active slot variant includes descendant rules even when descendant classes are not scanned', async () => {
     const card = defineComponent('card', {
       slots: { root: 'rounded-lg', title: 'font-semibold' },
       variants: {
@@ -243,7 +243,7 @@ describe('defineComponent: end-to-end through real UnoCSS', () => {
 
     // Consumer references only card and card-accent — NOT card__title.
     const css = await generate(card, 'card card-accent')
-    // The descendant rule should still emit (preflights are unconditional).
+    // The variant class activates all its slot rules.
     expect(css).toMatch(/\.card-accent\s+\.card__title\s*\{/)
   })
 

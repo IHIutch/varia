@@ -119,6 +119,6 @@ To change the recipe:
 
 The required CSS depends on both color and style. A solid primary button uses a blue background, a solid danger button uses red, and an outline primary button uses a transparent background. Compound rules describe those combinations.
 
-All 20 compound rules ship even if a page uses only two combinations. They use preflights rather than on-demand shortcuts. Consider the resulting CSS size before expanding the matrix.
+The color condition comes first in each compound's `when` clause. Using `btn-c-primary` emits the four style compounds for primary; unused colors emit no compound rules. Rules for that color ship together, and their selectors check which style class is present. Consider the resulting CSS size before expanding the matrix.
 
 The [Icon button recipe](/recipes/icon-button) combines size and an icon-only flag to adjust padding.

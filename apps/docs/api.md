@@ -110,7 +110,7 @@ variants: {
 // Emits: .card-accent .card__header { ... }, .card-accent .card__title { ... }
 ```
 
-When every key is a declared slot name, the variant targets those slots. Varia emits preflight rules with descendant selectors for non-root slots and a variant selector for the root. Mixing slot names and value names throws.
+When every key is a declared slot name, the variant targets those slots. Varia emits rules with descendant selectors for non-root slots and a variant selector for the root when the variant class is used. Mixing slot names and value names throws.
 
 #### Multi-value slot-keyed variant (slot components only)
 
@@ -161,7 +161,7 @@ Varia validates the assembled class name against `/^[a-z][a-z0-9-]*$/`. Values c
 import { presetVaria } from 'varia/preset'
 ```
 
-Returns a UnoCSS preset containing the registered shortcuts and preflights. Calling `presetVaria` also writes the TypeScript manifest unless `manifest` is `false`.
+Returns a UnoCSS preset containing shortcuts and rules that activate component styles on demand. Calling `presetVaria` also writes the TypeScript manifest unless `manifest` is `false`.
 
 ### Options
 
@@ -180,6 +180,8 @@ interface PresetVariaOptions {
 ### Manifest emission
 
 `presetVaria` writes a TypeScript declaration containing a `VariaClasses` union of all registered class names. The default path is `node_modules/.varia/manifest.d.ts`.
+
+When UnoCSS resolves a configuration with multiple Varia presets, it combines their classes into one manifest for each output path. Reloading the configuration removes classes from presets that are no longer registered. Presets using different paths write separate manifests.
 
 - Varia recreates the file on the next UnoCSS run if you delete `node_modules`.
 - The file uses the existing `node_modules` gitignore entry.
@@ -212,13 +214,20 @@ Under pnpm's default symlinked layout, `varia/types` may need additional configu
 
 ## How emission works
 
-Varia emits compound and slot-keyed rules as UnoCSS preflights. Preflights bypass the source scan, so every registered rule ships even if templates never reference its classes.
+Varia activates selector-based styles through UnoCSS shortcuts and internal rules. Unused components produce no component CSS or utility dependencies during a fresh generation.
+
+- A slot-keyed variant activates when its variant class is scanned or safelisted. All its slot rules emit together, including descendants whose classes may live in a separate template.
+- A compound activates when the class for its first `when` condition is scanned or safelisted. For `{ when: { s: 'xs', square: true } }`, `btn-s-xs` activates the rule; its combined selector still requires `btn-square` on the same element.
+
+Compound filtering is conservative. Rules sharing the same first condition ship together even if some remaining conditions are unused. Put the axis that should control emission first in `when`. Varia does not infer class co-occurrence from templates or add a consumer-facing compound class.
 
 - A non-root slot uses a descendant selector, such as `.modal-size-md .modal__container { ... }`.
-- A root slot uses the variant selector, such as `.card-accent { ... }`. Put the variant class on the root element.
+- A root slot repeats the variant selector, such as `.card-accent.card-accent { ... }`, so its styles override the base. Put the variant class on the root element once.
 - A compound uses a combined selector, such as `.btn-s-xs.btn-square { ... }`.
 
-Shortcut CSS is generated on demand. Compound and slot-keyed rules currently emit unconditionally; checking one class name alone would not establish whether a combination or descendant selector is used.
+Slot and compound rules use UnoCSS's configured `shortcutsLayer`, including when `outputToCssLayers` is enabled. A compound with only one condition repeats its class selector to override the ordinary variant. Utilities within these rules follow UnoCSS's ordering, so responsive breakpoints and shorthand overrides behave as they do in shortcuts.
+
+Palette variables, properties, and keyframes referenced by active rules resolve before UnoCSS emits its dependency preflights. Ordinary user-authored preflights remain unconditional.
 
 ## Validation errors
 
@@ -234,6 +243,9 @@ Shortcut CSS is generated on demand. Compound and slot-keyed rules currently emi
 | Nothing to emit | `defineComponent('btn', {})` | `Component "btn" has no \`base\`/\`slots\` and no \`variants\`...` |
 | Invalid slot name | `slots: { Header: '...' }` | `Invalid slot name "Header" on component "card" — slot names must match...` |
 | Empty / whitespace expansion | `c: { primary: '   ' }` | `Empty expansion for "btn-c-primary"...` |
+| Empty slot expansion | `accent: { header: '   ' }` | `Empty expansion for "card-accent"...` |
+| Empty slot map | `tone: { solid: {} }` | `Variant "tone" value "solid" on component "card" has an empty slot map...` |
+| Invalid slot expansion shape | `accent: { header: { header: 'block' } }` | `Variant "accent" on component "card" slot "header" must be a string or an array of strings.` |
 | Variant with zero values | `c: {}` | `Variant "c" on component "btn" has no values...` |
 | Mixed-key variant (some slot names, some not) | `variants: { v: { root: '...', primary: '...' } }` | `Variant "v" on component "card" has an invalid shape...` |
 | Slot-keyed value references a non-existent slot | `variants: { v: { solid: { missing: '...' } } }` | `Variant "v" value "solid" on component "card" references slot "missing"...` |
@@ -255,7 +267,7 @@ Passing the same component reference twice also triggers the duplicate-name erro
 
 ## `DefinedComponent` return value
 
-Pass the returned value to `presetVaria`. Tools can read these fields to inspect shortcuts, class names, and preflights.
+Pass the returned value to `presetVaria`. Tools can read these fields to inspect shortcuts, class names, and selector-style descriptors. The `preflights` field retains its existing shape; `presetVaria` activates descriptors produced by `defineComponent` on demand.
 
 ```ts
 interface DefinedComponent {

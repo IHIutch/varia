@@ -76,7 +76,7 @@ Each compound emits a combined selector such as `.icon-btn-s-md.icon-btn-square`
 </button>
 ```
 
-Write `icon-btn-s-md icon-btn-square` on the button. UnoCSS generates each shortcut, and the preflight adds a combined rule that overrides the size variant's padding.
+Write `icon-btn-s-md icon-btn-square` on the button. UnoCSS generates each shortcut, and the size class activates a combined rule that overrides padding when `icon-btn-square` is also present. Unused sizes emit no compound rules.
 
 ## The CSS varia emits
 

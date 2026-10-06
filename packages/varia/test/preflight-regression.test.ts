@@ -157,7 +157,7 @@ function themedComponent(name: string, kind: 'compound' | 'slot', utilities: str
 }
 
 function activeSelector(name: string, kind: 'compound' | 'slot') {
-  return kind === 'compound' ? `.${name}-active` : `.${name}-active .${name}__body`
+  return kind === 'compound' ? `.${name}-active.${name}-active` : `.${name}-active .${name}__body`
 }
 
 describe('all generated class names are unique', () => {

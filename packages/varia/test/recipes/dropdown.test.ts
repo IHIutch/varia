@@ -29,7 +29,7 @@ describe('recipe: Dropdown', () => {
     expect(css).toContain('.dropdown__menu')
     expect(css).toContain('.dropdown__item')
     expect(css).toContain('.dropdown__divider')
-    expect(css).toMatch(/\.dropdown-align-start \.dropdown__menu\{[^}]*left:/)
+    expect(css).not.toMatch(/\.dropdown-align-start \.dropdown__menu\{[^}]*left:/)
     expect(css).toMatch(/\.dropdown-align-end \.dropdown__menu\{[^}]*right:/)
   })
 

@@ -50,14 +50,14 @@ describe('recipe: Button', () => {
     expect(css).toContain('transition')
   })
 
-  it('generates shortcuts on demand while emitting all compound rules', async () => {
+  it('omits shortcuts and compounds for unused colors', async () => {
     const css = await generateRecipeCSS(
       [button],
       'btn btn-c-primary btn-style-solid',
     )
     expect(css).toContain('btn')
     expect(css).not.toContain('.btn-c-danger:focus-visible{')
-    expect(css).toContain('.btn-c-danger.btn-style-solid{')
+    expect(css).not.toContain('.btn-c-danger.btn-style-solid{')
     expect(css).not.toMatch(/(?:^|\n)\.btn-style-outline\{/)
   })
 })

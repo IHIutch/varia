@@ -29,7 +29,7 @@ features:
   - title: Optional TypeScript checking
     details: A generated <code>VariaClasses</code> union lets you type-check class strings in TS projects, or build custom lint rules.
   - title: On-demand shortcut CSS
-    details: UnoCSS generates component and variant shortcut CSS when it finds their classes in your source. Compound and slot-keyed rules currently ship for every registered definition.
+    details: UnoCSS generates styles when it finds component and variant classes in your source. Slot rules activate with their variant class; compounds activate with their first condition class.
 ---
 
 ## Define once, use ordinary classes

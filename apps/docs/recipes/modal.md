@@ -130,7 +130,7 @@ Each size emits a descendant rule:
 .modal-size-xl .modal__container { max-width: var(--container-2xl); }
 ```
 
-The size class goes on the root. Varia emits a preflight rule that targets the descendant `modal__container`.
+The size class goes on the root. When it is scanned or safelisted, Varia emits a rule that targets the descendant `modal__container`.
 
 ## Consumption
 

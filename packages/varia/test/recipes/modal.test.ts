@@ -49,7 +49,7 @@ describe('recipe: Modal', () => {
     expect(css).toMatch(/\.modal-size-md\s+\.modal__container\s*\{[^}]*max-width/)
   })
 
-  it('descendant-selector rules survive when only the root + variant class are referenced (preflights bypass tree-shaking)', async () => {
+  it('an active size variant preserves descendant rules when only root and variant classes are scanned', async () => {
     const css = await generateRecipeCSS([modal], 'modal modal-size-lg')
     expect(css).toMatch(/\.modal-size-lg\s+\.modal__container\s*\{[^}]*max-width/)
   })

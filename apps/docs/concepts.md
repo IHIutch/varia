@@ -40,7 +40,7 @@ The [Comparison page](/comparison) covers this trade-off against four peer libra
 
 For shortcuts, UnoCSS emits CSS for classes it discovers through its configured source scan or safelist. An unused `btn-c-purple` shortcut can exist in the manifest without shipping CSS.
 
-Compound variants and slot-keyed variants use UnoCSS preflights instead. Their rules currently ship for every registered component, whether their classes appear in templates or not. The selectors determine when those styles apply in the browser. See [How emission works](/api#how-emission-works) for details.
+Slot-keyed variants emit their slot rules when the variant class is scanned or safelisted. Compounds emit when the class for their first `when` condition is scanned or safelisted. Their full selectors determine when those styles apply in the browser. Unused activation classes produce no component CSS. See [How emission works](/api#how-emission-works) for details.
 
 The build still needs a JavaScript tooling environment and a UnoCSS integration. The generated stylesheet can be consumed by any template language.
 

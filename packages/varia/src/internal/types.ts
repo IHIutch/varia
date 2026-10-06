@@ -91,9 +91,10 @@ export interface DefinedComponent {
   shortcuts: Shortcut[]
   manifest: ComponentManifest
   /**
-   * UnoCSS preflights contributed by this component. Populated when the
-   * component declares slot-keyed variants or compound variants — both emit
-   * CSS via preflights rather than shortcuts.
+   * Selector-style descriptors for slot-keyed and compound variants.
+   * presetVaria resolves descriptors from defineComponent on demand through
+   * their activation shortcuts. Ordinary user-authored preflights remain
+   * unconditional.
    */
   preflights?: Preflight<object>[]
 }
