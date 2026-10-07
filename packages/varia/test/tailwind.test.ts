@@ -13,7 +13,7 @@ describe('tailwind integration', () => {
     })
     // A CSS prefix is invisible to plugins, so it must be repeated in the options.
     const plugin = tailwindVaria({ components: [card], manifest: false, prefix: source === 'css' ? 'tw' : undefined })
-    const compiler = await compile(`${theme}\n${layers}\n${source === 'css' ? '@theme prefix(tw) {}' : ''}\n${source === 'config' ? '@config "config";' : '@plugin "varia";'}\n@layer utilities { @tailwind utilities; }`, {
+    const compiler = await compile(`${theme}\n${layers}\n${source === 'css' ? '@theme prefix(tw) {}' : ''}\n${source === 'config' ? '@config "config";' : '@plugin "variacss";'}\n@layer utilities { @tailwind utilities; }`, {
       loadModule: async (_id, base) => ({ path: '', base, module: source === 'config' ? { prefix: 'tw', plugins: [plugin] } : plugin }),
     })
     const css = flatten(compiler.build(['tw:card', 'tw:card-accent', 'tw:card-active', 'tw:md:card']))
@@ -27,7 +27,7 @@ describe('tailwind integration', () => {
   it('applies component classes from reference stylesheets without emitting them', async () => {
     const btn = defineComponent('btn', { base: 'block', variants: { active: 'opacity-50' } })
     const reference = await compile('@reference "reference.css"; .target { @apply btn-active; }', {
-      loadStylesheet: async (_id, base) => ({ path: '', base, content: `${theme}\n${layers}\n@plugin "varia"; @layer utilities { @tailwind utilities; }` }),
+      loadStylesheet: async (_id, base) => ({ path: '', base, content: `${theme}\n${layers}\n@plugin "variacss"; @layer utilities { @tailwind utilities; }` }),
       loadModule: async (_id, base) => ({ path: '', base, module: tailwindVaria({ components: [btn], manifest: false }) }),
     })
     const css = flatten(reference.build(['btn']))

@@ -1,4 +1,4 @@
-import type { DefinedComponent } from 'varia'
+import type { DefinedComponent } from 'variacss'
 import accordion from '../../recipes/accordion.config.js'
 import alert from '../../recipes/alert.config.js'
 import avatar from '../../recipes/avatar.config.js'

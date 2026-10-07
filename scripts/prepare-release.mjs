@@ -16,7 +16,7 @@ try {
   const packageRoot = join(root, 'packages/varia')
   execFileSync('npm', ['pack', '--pack-destination', temporary], { cwd: packageRoot, stdio: 'inherit' })
   const { version } = JSON.parse(await readFile(join(packageRoot, 'package.json'), 'utf8'))
-  const filename = `varia-${version}.tgz`
+  const filename = `variacss-${version}.tgz`
   const archive = join(temporary, filename)
   const env = { VARIA_RELEASE_ARCHIVE: archive }
   // The unit suite includes the clean-install smoke test of this archive.

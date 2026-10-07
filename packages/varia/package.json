@@ -1,9 +1,25 @@
 {
-  "name": "varia",
+  "name": "variacss",
   "type": "module",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "Build-time component variants",
+  "author": "Jonathan Hutchison",
   "license": "MIT",
+  "homepage": "https://github.com/IHIutch/varia#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/IHIutch/varia.git",
+    "directory": "packages/varia"
+  },
+  "bugs": {
+    "url": "https://github.com/IHIutch/varia/issues"
+  },
+  "keywords": [
+    "tailwindcss",
+    "css",
+    "variants",
+    "components"
+  ],
   "exports": {
     ".": {
       "types": "./dist/index.d.mts",
@@ -21,13 +37,15 @@
   "main": "./dist/index.mjs",
   "types": "./dist/index.d.mts",
   "files": [
+    "API.md",
+    "CHANGELOG.md",
     "dist"
   ],
   "engines": {
     "node": ">=26.0.0"
   },
   "scripts": {
-    "prepack": "pnpm run build",
+    "prepack": "pnpm run build && cp ../../README.md ../../API.md ../../LICENSE ../../CHANGELOG.md .",
     "build": "tsdown && cp -f stub/types.d.mts dist/types.d.mts",
     "test": "pnpm run build && vitest run",
     "test:watch": "pnpm run build && vitest",
@@ -50,7 +68,7 @@
     "postcss": "^8.5.14",
     "tailwindcss": "^4.3.3",
     "tsdown": "^0.22.0",
-    "vite": "^8.0.11",
+    "vite": "8.0.16",
     "vitest": "^5.0.3"
   }
 }

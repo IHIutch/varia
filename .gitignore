@@ -11,3 +11,9 @@ examples/**/.screenshot-*.png
 # Vitest visual comparison artifacts
 **/.vitest/
 **/.vitest-attachments/
+
+# Package documentation copied by prepack
+/packages/varia/README.md
+/packages/varia/API.md
+/packages/varia/LICENSE
+/packages/varia/CHANGELOG.md

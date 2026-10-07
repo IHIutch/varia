@@ -30,8 +30,8 @@ ${union}
 export type VariaClasses = VariaClassNames
 
 // Include this file in the consuming project's tsconfig.
-import 'varia/types'
-declare module 'varia/types' {
+import 'variacss/types'
+declare module 'variacss/types' {
   interface VariaClassRegistry {
     classes: VariaClassNames
   }
