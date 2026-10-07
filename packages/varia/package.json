@@ -32,7 +32,8 @@
     "test:watch": "pnpm run build && vitest",
     "typecheck": "tsc --noEmit",
     "test:visual": "pnpm run build && vitest run --config vitest.browser.config.ts",
-    "test:reload": "pnpm run build && vitest run --config vitest.reload.config.ts"
+    "test:reload": "pnpm run build && vitest run --config vitest.reload.config.ts",
+    "test:editor": "pnpm run build && vitest run --config vitest.editor.config.ts"
   },
   "peerDependencies": {
     "tailwindcss": "^4.3.3"
@@ -43,6 +44,7 @@
     }
   },
   "devDependencies": {
+    "@tailwindcss/language-server": "0.16.0",
     "@tailwindcss/node": "^4.3.3",
     "@vitest/browser-playwright": "4.1.5",
     "playwright": "1.61.1",
@@ -50,6 +52,7 @@
     "tailwindcss": "^4.3.3",
     "tsdown": "^0.22.0",
     "vite": "^8.0.11",
-    "vitest": "^4.1.5"
+    "vitest": "^4.1.5",
+    "vscode-jsonrpc": "8.2.1"
   }
 }

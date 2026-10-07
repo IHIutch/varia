@@ -1,4 +1,9 @@
 {
+  "editor.quickSuggestions": { "strings": "on" },
+  "tailwindCSS.classFunctions": ["clsx"],
+  "tailwindCSS.experimental.configFile": {
+    "examples/kitchen-sink/styles.css": "examples/kitchen-sink/**"
+  },
   "js/ts.tsdk.path": "node_modules/typescript/lib",
   // Disable the default formatter, use eslint instead
   "prettier.enable": false,

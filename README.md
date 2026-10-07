@@ -56,15 +56,16 @@ pnpm typecheck
 pnpm lint
 pnpm test:visual
 pnpm test:reload
+pnpm test:editor
 ```
 
 The library lives in `packages/varia`, example style definitions in `recipes`, and the demo in `examples/kitchen-sink`.
 
-## Responsive grid and typed classes
+## Editor autocomplete
 
-The example's `/grid.html` uses row/column recipes with responsive gutters and widths, authored through a strict `cn(...classes: VariaClasses[])` joiner. The `varia/types` union contains registered recipe names and their configured responsive forms. It excludes atomic utilities and other engine variant grammar.
+Use Tailwind CSS IntelliSense for Varia classes in ordinary markup and existing helpers such as `clsx`. The example's responsive grid uses plain class strings and disables manifest generation. See [editor support](API.md#editor-support) for settings, imported-recipe refresh, and troubleshooting. Unknown-class linting in markup is not a native extension rule.
 
-Generate the manifest through Tailwind before typechecking and add `node_modules/.varia/manifest.d.ts` to your tsconfig's `files` array. The generated project declaration augments `varia/types`, so pnpm's normal symlink layout needs no TypeScript resolver workaround. `pnpm typecheck` performs package/example builds first for the workspace demo. See [strict class types](API.md#strict-class-types) for setup, prefixes, and scope.
+The existing `varia/types` export is [optional TypeScript tooling](API.md#strict-class-types); it is not needed for autocomplete.
 
 ## Native Tailwind expansion
 
