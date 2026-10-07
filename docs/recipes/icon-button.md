@@ -4,8 +4,6 @@ Size and square variants. Compounds replace labeled-button padding with equal pa
 
 ## Recipe
 
-Copy this definition and change its import to `variacss`.
-
 <<< ../../recipes/icon-button.config.ts
 
 ## Live preview

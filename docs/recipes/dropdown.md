@@ -4,8 +4,6 @@ Slots for the trigger, menu, items, and divider.
 
 ## Recipe
 
-Copy this definition and change its import to `variacss`.
-
 Put `dropdown-align-start` or `dropdown-align-end` on the root to position its menu through a slot variant. Menu visibility is local to the menu slot:
 
 <<< ../../recipes/dropdown.config.ts

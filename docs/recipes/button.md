@@ -4,8 +4,6 @@ Color (`c`), style, and size (`s`) variants.
 
 ## Recipe
 
-Copy this definition and change its import to `variacss`.
-
 The base defines shared layout, focus, and disabled styles. Color sets the focus ring; style sets shared appearance. Compounds set properties that depend on both:
 
 <<< ../../recipes/button.config.ts

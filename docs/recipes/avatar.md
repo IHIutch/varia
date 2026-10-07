@@ -4,8 +4,6 @@ Size variants and an optional ring, with CSS variables for color overrides.
 
 ## Recipe
 
-Copy this definition and change its import to `variacss`.
-
 <<< ../../recipes/avatar.config.ts
 
 ## Live preview

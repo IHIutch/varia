@@ -4,8 +4,6 @@ A twelve-column flex grid. Register both the row and column definitions.
 
 ## Recipes
 
-Copy these definitions and change their imports to `variacss`.
-
 ::: code-group
 
 <<< ../../recipes/row.config.ts

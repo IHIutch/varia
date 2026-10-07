@@ -4,8 +4,6 @@ Slots for a backdrop, container, header, body, footer, and close button.
 
 ## Recipe
 
-Copy this definition and change its import to `variacss`.
-
 Size targets the descendant container:
 
 <<< ../../recipes/modal.config.ts

@@ -4,8 +4,6 @@ A base-only component.
 
 ## Recipe
 
-Copy this definition and change its import to `variacss`.
-
 <<< ../../recipes/card.config.ts
 
 ## Live preview

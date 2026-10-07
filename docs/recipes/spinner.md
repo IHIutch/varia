@@ -4,8 +4,6 @@ Size and color variants around Tailwind's `animate-spin`.
 
 ## Recipe
 
-Copy this definition and change its import to `variacss`.
-
 <<< ../../recipes/spinner.config.ts
 
 ## Live preview

@@ -4,8 +4,6 @@ State and size variants, with native focus, disabled, placeholder, and read-only
 
 ## Recipe
 
-Copy this definition and change its import to `variacss`.
-
 <<< ../../recipes/form-input.config.ts
 
 ## Live preview
