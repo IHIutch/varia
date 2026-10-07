@@ -75,7 +75,7 @@ export interface ComponentConfig {
   variants?: Record<string, VariantDefinition>
   /**
    * Cross-axis rules. Each compound emits a CSS rule with a combined-class
-   * selector built from the `when` keys in insertion order. See API.md.
+   * selector built from the `when` keys in insertion order.
    */
   compoundVariants?: CompoundVariantRule[]
 }

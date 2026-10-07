@@ -88,7 +88,7 @@ For the rule above, the generated output includes:
 .icon-btn-s-md.icon-btn-square { padding: ... }   /* compound — overrides */
 ```
 
-The combined selector is more specific than either shortcut selector, so its padding takes precedence.
+Compound rules are in `varia.compounds`, which follows the base and variant layers. Native utilities still override normal compound declarations.
 
 ## Why this isn't a multi-value `square` variant
 

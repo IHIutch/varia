@@ -86,3 +86,11 @@ Layers enforce base, variant, and compound precedence. Ordinary utilities outran
 - [Recipes](/recipes/button) covers state styles, slots, and compound variants.
 - [Tailwind options](/tailwind) covers prefixes, source detection, and the demo.
 - [Editor support](/recipes/type-safety) covers native Tailwind suggestions.
+
+## Compatibility
+
+V1 minor and patch releases preserve the documented authoring shapes, class spelling, activation rules, and normal layer precedence. Breaking contract changes require a major release. Supported exports can be deprecated in a minor release with a documented replacement and retained behavior until the next major release. Implementation structures, generated formatting, and exact error text are not compatibility promises. Invalid authoring structures fail during definition or registration. Unknown utilities and unsupported syntax in active expansions fail during Tailwind compilation; unused expansions need not be resolved.
+
+The package is ESM and declares Node.js 26 or newer. Repository type checks use TypeScript 7.0.2. CI runs the minimal release gate on Ubuntu 24.04 with Node 26.9.0. Node 26.0.0 was also checked locally. The verified Tailwind/Vite versions are 4.3.3 and 8.3.2 respectively; the optional Tailwind peer range remains `^4.3.3`. Wider version/OS compatibility is not implied by these checks.
+
+The maintained release checks focus on Varia's behavior and package contents: unit tests, typechecking, lint, the production example build, and one clean install of the actual archive that checks public ESM exports, declaration files, and the layer stylesheet. Tailwind owns editor autocomplete; its behavior does not require a separate ongoing test harness here.

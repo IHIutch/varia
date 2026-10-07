@@ -10,7 +10,7 @@ Utility classes let you style an element directly in markup. Varia lets you coll
 
 A traditional component stylesheet defines selectors such as `.btn` and `.btn-primary` up front. Varia gives consumers similar class ergonomics, but generates component CSS as Tailwind CSS discovers classes in source files. You don't need to ship CSS for every class in your design system.
 
-Slot-keyed variants activate with their variant class; compounds activate with their first condition class. See [How emission works](/api#define-and-register-styles).
+Slot-keyed variants activate with their variant class; compounds activate with their first condition class. See [How emission works](/concepts#slot-activation).
 
 ## Compared with variant libraries
 

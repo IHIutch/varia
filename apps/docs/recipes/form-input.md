@@ -68,4 +68,3 @@ This recipe groups state styles with their base or variant:
 | `form-input-state-default` / `-error` / `-success` | Visual mode |
 | `form-input-s-sm` / `-md` / `-lg` | Size |
 | `form-input-readonly` | Toggles `:read-only` styling |
-

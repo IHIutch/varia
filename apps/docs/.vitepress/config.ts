@@ -33,7 +33,6 @@ export default defineConfig({
     nav: [
       { text: 'Quickstart', link: '/quickstart' },
       { text: 'Concepts', link: '/concepts' },
-      { text: 'API', link: '/api' },
       { text: 'Naming', link: '/naming' },
       { text: 'Theming', link: '/theming' },
       { text: 'Recipes', link: '/recipes/button' },
@@ -48,7 +47,6 @@ export default defineConfig({
             { text: 'Quickstart', link: '/quickstart' },
             { text: 'Tailwind CSS', link: '/tailwind' },
             { text: 'Concepts', link: '/concepts' },
-            { text: 'API reference', link: '/api' },
             { text: 'Naming convention', link: '/naming' },
             { text: 'Theming', link: '/theming' },
             { text: 'Comparison', link: '/comparison' },

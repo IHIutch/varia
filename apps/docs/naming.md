@@ -100,3 +100,22 @@ Use utilities to override styles, native Tailwind IntelliSense to suggest names,
 ## Edge case: identifier conflicts
 
 Duplicate shortcuts cause `tailwindVaria` to throw. A collision with a built-in Tailwind utility can produce both definitions. See [Identifier conflicts](/troubleshooting#identifier-conflicts) for examples.
+
+## Responsive compound conditions
+
+`compoundVariants` apply utilities to the activation element when all `when` conditions match there. They create no additional class. Conditions reference declared axes: boolean axes accept only `true`; multi-value axes accept one declared string value. False conditions, arrays of values, unknown axes/values, and an empty `when` are rejected. Compound `class` accepts a nonempty `ClassInput`, not a slot map.
+
+The first `when` entry, in JavaScript property iteration order, activates CSS generation. Remaining entries become exact class conditions. For `{ when: { size: 'lg', busy: true }, class: 'p-8' }`, scanning `card-size-lg` emits `.card-size-lg.card-busy`, even when `card-busy` was not scanned. Scanning only `card-busy` does not emit the compound.
+
+Tailwind can modify the first condition class. Remaining conditions must retain their bare spelling, including the configured prefix. Varia does not infer effective values at a viewport size or combine independently modified conditions.
+
+| Classes for the compound above | Compound behavior |
+| --- | --- |
+| `card-size-lg card-busy` | Applies whenever both classes are present |
+| `md:card-size-lg card-busy` | Applies at `md` and above |
+| `hover:card-size-lg card-busy` | Applies while the activation element is hovered |
+| `card-size-lg md:card-busy` | Does not match unless bare `card-busy` is also present |
+| `md:card-size-lg md:card-busy` | Does not match, even above `md` |
+| `md:card-size-lg lg:card-busy` | Does not combine the breakpoint conditions |
+
+If `busy` must be modified, put it first in `when` and keep `card-size-lg` bare. That order is semantically significant. For independently responsive axes, express responsive rules in the expansion or author explicit CSS. Individual variant CSS still works for modified classes in every row above.

@@ -10,8 +10,8 @@ hero:
       text: Quickstart
       link: /quickstart
     - theme: alt
-      text: API reference
-      link: /api
+      text: Tailwind guide
+      link: /tailwind
 
 features:
   - title: Regular CSS class ergonomics
