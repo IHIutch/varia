@@ -1,99 +1,143 @@
-import { execSync } from 'node:child_process'
-import { readFileSync } from 'node:fs'
-import { cp, mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises'
+import { execFileSync } from 'node:child_process'
+import { cp, mkdir, mkdtemp, realpath, rm, symlink, writeFile } from 'node:fs/promises'
+import { createRequire } from 'node:module'
 import { tmpdir } from 'node:os'
-import { join } from 'node:path'
-import { afterAll, beforeAll, describe, expect, it } from 'vitest'
+import { dirname, join } from 'node:path'
+import { afterEach, describe, expect, it } from 'vitest'
+import col from '../../../recipes/col.config.js'
+import row from '../../../recipes/row.config.js'
+import { adapter } from './_engine.js'
 
-describe('varia/types subpath stub', () => {
-  it('built dist/types.d.mts re-exports from the manifest at the published-layout path', () => {
-    const stub = readFileSync('dist/types.d.mts', 'utf-8')
-    expect(stub).toContain('export type { VariaClasses } from \'../../.varia/manifest.js\'')
-  })
-
-  it('package.json exports map has ./types entry pointing at dist/types.d.mts', () => {
-    const pkg = JSON.parse(readFileSync('package.json', 'utf-8'))
-    expect(pkg.exports['./types']).toEqual({ types: './dist/types.d.mts' })
-  })
+const require = createRequire(import.meta.url)
+const tsc = require.resolve('typescript/bin/tsc')
+const fixtures: string[] = []
+afterEach(async () => {
+  await Promise.all(fixtures.splice(0).map(fixture => rm(fixture, { recursive: true, force: true })))
 })
 
-describe('varia/types in a flat node_modules fixture (npm-style layout)', () => {
-  let fixture: string
+async function downstream(prefix?: string) {
+  const fixture = await realpath(await mkdtemp(join(tmpdir(), 'varia-downstream-')))
+  fixtures.push(fixture)
+  const store = join(fixture, 'node_modules/.pnpm/varia@0.0.0/node_modules/varia')
+  await mkdir(store, { recursive: true })
+  await cp('dist', join(store, 'dist'), { recursive: true })
+  await cp('package.json', join(store, 'package.json'))
+  await symlink(store, join(fixture, 'node_modules/varia'), 'dir')
+  await symlink(dirname(require.resolve('tailwindcss/package.json')), join(fixture, 'node_modules/tailwindcss'), 'dir')
+  const path = join(fixture, 'node_modules/.varia/manifest.d.ts')
+  await adapter.register([{ components: [row, col], prefix, manifest: { path } }])
+  await writeFile(join(fixture, 'tsconfig.json'), JSON.stringify({
+    compilerOptions: { target: 'ES2022', module: 'ESNext', moduleResolution: 'bundler', strict: true, noEmit: true, ignoreDeprecations: '6.0' },
+    files: ['node_modules/.varia/manifest.d.ts'],
+    include: ['consumer.ts'],
+    exclude: ['node_modules'],
+  }))
+  const cls = prefix ? adapter.prefixed(prefix).cls : (value: string) => value
+  // Tailwind's prefix is before variants; UnoCSS's is on the utility itself.
+  const responsive = (breakpoint: string, value: string) => prefix && adapter.name === 'tailwind'
+    ? `${prefix}:${breakpoint}:${value}`
+    : `${breakpoint}:${cls(value)}`
+  const source = `import type { VariaClasses } from 'varia/types'
+import type { DefinedComponent } from 'varia'
+import type { TailwindVariaOptions } from 'varia/tailwind'
+// @ts-expect-error generated structure types are private in the built package
+type PrivateStyle = import('varia').ComponentStyle
+// @ts-expect-error definitions must come from the factory
+const fabricated: DefinedComponent = { name: 'fake', shortcuts: [], manifest: { name: 'fake', classNames: [] } }
+const registered: TailwindVariaOptions = { components: [] as DefinedComponent[] }
+export function cn(...classes: VariaClasses[]): string { return classes.join(' ') }
+cn('${cls('row')}', '${cls('row-g-3')}')
+cn('${cls('col')}', '${responsive('md', 'col-span-6')}', '${responsive('lg', 'col-span-4')}')
+// @ts-expect-error invalid recipe
+cn('${cls('col-span-13')}')
+// @ts-expect-error unknown responsive modifier
+cn('${responsive('tablet', 'col-span-6')}')
+// @ts-expect-error atomic utilities are outside the strict contract
+cn('${cls('w-full')}')
+// @ts-expect-error states are outside the strict contract
+cn('${prefix ? `${prefix}:hover:col` : 'hover:col'}')
+// @ts-expect-error important modifiers are outside the strict contract
+cn('${cls('col')}!')
+// @ts-expect-error stacked modifiers are outside the strict contract
+cn('${prefix ? `${prefix}:md:hover:col` : 'md:hover:col'}')
+// @ts-expect-error arbitrary variants are outside the strict contract
+cn('${prefix ? `${prefix}:[&>div]:col` : '[&>div]:col'}')
+// @ts-expect-error each argument must be one class
+cn('${cls('row')} ${cls('col')}')
+`
+  await writeFile(join(fixture, 'consumer.ts'), source)
+  const typecheck = () => {
+    try {
+      return execFileSync(process.execPath, [tsc, '--noEmit'], { cwd: fixture, stdio: 'pipe' })
+    }
+    catch (error) {
+      throw new Error(String((error as { stdout: unknown }).stdout))
+    }
+  }
+  return { fixture, path, cls, responsive, typecheck, source }
+}
 
-  beforeAll(async () => {
-    fixture = await mkdtemp(join(tmpdir(), 'varia-types-flat-'))
-
-    const variaDir = join(fixture, 'node_modules', 'varia')
-    const manifestDir = join(fixture, 'node_modules', '.varia')
-
-    await mkdir(variaDir, { recursive: true })
-    await mkdir(manifestDir, { recursive: true })
-
-    await cp('dist', join(variaDir, 'dist'), { recursive: true })
-    await cp('package.json', join(variaDir, 'package.json'))
-
-    await writeFile(
-      join(manifestDir, 'manifest.d.ts'),
-      `// Auto-generated by varia. Do not edit.\nexport type VariaClasses = 'btn' | 'btn-c-primary'\n`,
-    )
-
-    await writeFile(
-      join(fixture, 'consumer.ts'),
-      `import type { VariaClasses } from 'varia/types'\n`
-      + `const valid: VariaClasses = 'btn-c-primary'\n`
-      + `// @ts-expect-error — invalid class should fail typecheck\n`
-      + `const invalid: VariaClasses = 'not-a-real-class'\n`
-      + `export { valid, invalid }\n`,
-    )
-
-    await writeFile(
-      join(fixture, 'tsconfig.json'),
-      JSON.stringify(
-        {
-          compilerOptions: {
-            target: 'ES2022',
-            module: 'ESNext',
-            moduleResolution: 'bundler',
-            strict: true,
-            noEmit: true,
-            skipLibCheck: true,
-            ignoreDeprecations: '6.0',
-          },
-          include: ['consumer.ts'],
-        },
-        null,
-        2,
-      ),
-    )
+describe('strict typed cn in a downstream pnpm layout', () => {
+  it('rejects every class without the project augmentation', async () => {
+    const { fixture, typecheck } = await downstream()
+    await writeFile(join(fixture, 'tsconfig.json'), JSON.stringify({
+      compilerOptions: { target: 'ES2022', module: 'ESNext', moduleResolution: 'bundler', strict: true, noEmit: true, ignoreDeprecations: '6.0' },
+      files: ['consumer.ts'],
+    }))
+    await writeFile(join(fixture, 'consumer.ts'), `import type { VariaClasses } from 'varia/types'
+export function cn(...classes: VariaClasses[]): string { return classes.join(' ') }
+// @ts-expect-error no generated registry means VariaClasses is never
+cn('row')
+// @ts-expect-error no generated registry means VariaClasses is never
+cn('md:col-span-6')
+`)
+    expect(typecheck).not.toThrow()
   })
 
-  afterAll(async () => {
-    if (fixture)
-      await rm(fixture, { recursive: true, force: true })
+  it.each([undefined, 'tw'])('resolves generated responsive types with prefix %s', async (prefix) => {
+    const { fixture, typecheck, cls, responsive } = await downstream(prefix)
+    expect(typecheck).not.toThrow()
+    const css = await adapter.scan(fixture, prefix)
+    const selector = (value: string) => `.${value.replaceAll(':', '\\:')}`
+    expect(css).toContain(selector(cls('row-g-3')))
+    expect(css).toContain(selector(responsive('md', 'col-span-6')))
+    expect(css).toContain(selector(responsive('lg', 'col-span-4')))
+    expect(css).not.toContain(selector(cls('col-span-12')))
+    expect(css).not.toContain(selector(responsive('tablet', 'col-span-6')))
   })
 
-  const tscPath = join(process.cwd(), 'node_modules', '.bin', 'tsc')
-  const runFixtureTypecheck = () =>
-    execSync(`${tscPath} --noEmit`, { cwd: fixture, stdio: 'pipe' })
-
-  it('resolves varia/types and produces no type errors against a real manifest', () => {
-    expect(runFixtureTypecheck).not.toThrow()
+  it('uses configured breakpoint names and removes them after configuration reload', async () => {
+    const { fixture, path, typecheck } = await downstream()
+    await adapter.register([{ components: [col], manifest: { path }, breakpoints: { wide: '80rem' } }])
+    await writeFile(join(fixture, 'consumer.ts'), `import type { VariaClasses } from 'varia/types'
+export function cn(...classes: VariaClasses[]): string { return classes.join(' ') }
+cn('col', 'wide:col-span-6')
+// @ts-expect-error unconfigured breakpoint
+cn('huge:col-span-6')
+`)
+    expect(typecheck).not.toThrow()
+    await adapter.register([{ components: [col], manifest: { path } }])
+    await writeFile(join(fixture, 'consumer.ts'), `import type { VariaClasses } from 'varia/types'
+// @ts-expect-error removed breakpoint
+const removed: VariaClasses = 'wide:col-span-6'
+const valid: VariaClasses = 'md:col-span-6'
+`)
+    expect(typecheck).not.toThrow()
   })
 
-  it('manifest update flows through: changing the manifest changes resolved type', async () => {
-    const manifestPath = join(fixture, 'node_modules', '.varia', 'manifest.d.ts')
-    await writeFile(
-      manifestPath,
-      `export type VariaClasses = 'card' | 'card-c-primary'\n`,
-    )
-
-    await writeFile(
-      join(fixture, 'consumer.ts'),
-      `import type { VariaClasses } from 'varia/types'\n`
-      + `const valid: VariaClasses = 'card-c-primary'\n`
-      + `export { valid }\n`,
-    )
-
-    expect(runFixtureTypecheck).not.toThrow()
+  it('replaces stale types after recipe reload and rejects the removed class', async () => {
+    const { fixture, path, typecheck } = await downstream()
+    await adapter.register([{ components: [row], manifest: { path } }])
+    await writeFile(join(fixture, 'consumer.ts'), `import type { VariaClasses } from 'varia/types'
+export function cn(...classes: VariaClasses[]): string { return classes.join(' ') }
+cn('row', 'md:row-g-3')
+// @ts-expect-error removed recipe class
+cn('col')
+// @ts-expect-error removed responsive recipe class
+cn('md:col-span-6')
+`)
+    expect(typecheck).not.toThrow()
+    await writeFile(join(fixture, 'consumer.ts'), `import type { VariaClasses } from 'varia/types'; const invalid: VariaClasses = 'col';`)
+    expect(typecheck).toThrow()
   })
 })

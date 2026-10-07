@@ -5,6 +5,7 @@ export interface Registration {
   components: DefinedComponent[]
   manifest?: false | { path?: string }
   prefix?: string
+  breakpoints?: Record<string, string>
 }
 
 export interface GenerateOptions {
@@ -16,6 +17,7 @@ export interface GenerateOptions {
 /** One CSS engine behind the shared contract. */
 export interface Adapter {
   name: string
+  scan: (fixture: string, prefix?: string, authoredCss?: string) => Promise<string>
   packaged: () => Promise<{ css: string, sources: string[] }>
   generate: (components: DefinedComponent[], classes: string[], options?: GenerateOptions) => Promise<string>
   /** Compile user CSS that applies component classes. */

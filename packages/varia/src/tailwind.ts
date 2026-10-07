@@ -2,10 +2,12 @@ import type { PluginAPI } from 'tailwindcss/plugin'
 import type { DefinedComponent } from './internal/types.js'
 import { resolve } from 'node:path'
 import { validateComponents } from './internal/validate-components.js'
-import { DEFAULT_MANIFEST_PATH, emitManifest } from './manifest.js'
+import { DEFAULT_MANIFEST_PATH, emitManifest, responsiveClasses } from './manifest.js'
 
 export interface TailwindVariaOptions {
+  /** Outputs of defineComponent. Generated structures are not extension points. */
   components: DefinedComponent[]
+  /** Defaults to node_modules/.varia/manifest.d.ts relative to process cwd. */
   manifest?: false | { path?: string }
   /** Match a CSS prefix(tw), or configure the prefix through this plugin. */
   prefix?: string
@@ -77,7 +79,11 @@ export function tailwindVaria(options: TailwindVariaOptions): { handler: (api: P
           ...component,
           manifest: {
             ...component.manifest,
-            classNames: component.manifest.classNames.map(name => effectivePrefix ? `${effectivePrefix}:${name}` : name),
+            classNames: responsiveClasses(
+              component.manifest.classNames.map(name => effectivePrefix ? `${effectivePrefix}:${name}` : name),
+              Object.keys(api.theme('screens', {}) as Record<string, unknown>),
+              effectivePrefix,
+            ),
           },
         })))
         registered.manifests.set(path, definitions)

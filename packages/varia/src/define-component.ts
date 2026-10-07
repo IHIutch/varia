@@ -113,7 +113,7 @@ export function defineComponent(name: string, config: ComponentConfig): DefinedC
     shortcuts,
     manifest: { name, classNames },
     styles: styles.length > 0 ? styles : undefined,
-  }
+  } as DefinedComponent
 }
 
 // --- slot + variant internals -----------------------------------------------

@@ -10,7 +10,7 @@
     "build": "pnpm --filter varia build",
     "test": "pnpm --filter varia test",
     "test:watch": "pnpm --filter varia test:watch",
-    "typecheck": "pnpm -r typecheck",
+    "typecheck": "pnpm build && pnpm example:build && pnpm -r typecheck",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "example:dev": "pnpm --filter @varia/example dev",

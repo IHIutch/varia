@@ -12,10 +12,6 @@
     "./types": {
       "types": "./dist/types.d.mts"
     },
-    "./adapter": {
-      "types": "./dist/adapter.d.mts",
-      "import": "./dist/adapter.mjs"
-    },
     "./tailwind": {
       "types": "./dist/tailwind.d.mts",
       "import": "./dist/tailwind.mjs"

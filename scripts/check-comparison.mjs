@@ -1,4 +1,7 @@
 import { execFileSync } from 'node:child_process'
+import { existsSync, readFileSync } from 'node:fs'
+import { resolve } from 'node:path'
+import process from 'node:process'
 
 const baseline = 'comparison-base'
 const branches = ['tailwind-mvp', 'unocss-minimal']
@@ -41,3 +44,24 @@ for (const branch of branches) {
 if (git('merge-base', ...branches) !== git('rev-parse', baseline))
   throw new Error('The implementation branches must share comparison-base as their merge base.')
 console.log('Comparison branches match the common baseline.')
+
+const arguments_ = process.argv.slice(2).filter(value => value !== '--')
+if (arguments_.length) {
+  if (arguments_.length !== 3 || arguments_[0] !== '--worktrees')
+    throw new Error('Usage: comparison:check [--worktrees <tailwind directory> <unocss directory>]')
+  const directories = arguments_.slice(1).map(directory => resolve(directory))
+  const files = new Set(directories.flatMap(directory => git('-C', directory, 'ls-files', '-co', '--exclude-standard').split('\n')))
+  const drift = [...files].filter(file => file && !allowed.has(file)).filter((file) => {
+    const paths = directories.map(directory => resolve(directory, file))
+    return !paths.every(path => existsSync(path)) || !readFileSync(paths[0]).equals(readFileSync(paths[1]))
+  })
+  if (drift.length)
+    throw new Error(`Working trees differ outside engine integration:\n${drift.join('\n')}`)
+  for (const [index, directory] of directories.entries()) {
+    const ownEngine = index === 0 ? 'tailwind' : 'unocss'
+    const otherEngine = index === 0 ? 'unocss' : 'tailwind'
+    if (!existsSync(resolve(directory, `packages/varia/src/${ownEngine}.ts`)) || existsSync(resolve(directory, `packages/varia/src/${otherEngine}.ts`)))
+      throw new Error(`${directory} must contain only its ${ownEngine} adapter.`)
+  }
+  console.log('Working trees: current shared files match, including untracked fixtures.')
+}

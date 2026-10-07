@@ -28,6 +28,7 @@ export default defineConfig({
     rollupOptions: {
       input: {
         index: resolve(here, 'index.html'),
+        grid: resolve(here, 'grid.html'),
         components: resolve(here, 'components.html'),
         navVaria: resolve(here, 'nav-comparison.html'),
         navBootstrap: resolve(here, 'nav-bootstrap.html'),

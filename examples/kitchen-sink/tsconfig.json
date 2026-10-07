@@ -13,6 +13,7 @@
     "skipLibCheck": true,
     "ignoreDeprecations": "6.0"
   },
+  "files": ["node_modules/.varia/manifest.d.ts"],
   "include": ["**/*.ts", "vite.config.ts"],
   "exclude": ["node_modules", "dist"]
 }

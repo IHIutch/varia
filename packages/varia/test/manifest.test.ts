@@ -50,7 +50,9 @@ describe('manifest emission via the selected adapter', () => {
 
     // Verify the observation point with normal emission at the real default.
     await register({ components })
-    expect(emit).toHaveBeenCalledExactlyOnceWith(components, resolve(DEFAULT_MANIFEST_PATH))
+    expect(emit).toHaveBeenCalledOnce()
+    expect(emit.mock.calls[0]![1]).toBe(resolve(DEFAULT_MANIFEST_PATH))
+    expect(emit.mock.calls[0]![0][0]!.manifest.classNames).toContain('btn')
     emit.mockClear()
 
     await register({ components, manifest: false })

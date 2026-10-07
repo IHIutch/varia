@@ -51,7 +51,10 @@ export type VariantDefinition
 export type CompoundVariantWhen = Record<string, string | true>
 
 export interface CompoundVariantRule {
-  /** Conditions: every key/value must be present on the same element. */
+  /**
+   * Conditions on the same element. The first key activates CSS generation and
+   * accepts usage-site modifiers; remaining conditions match bare variant classes.
+   */
   when: CompoundVariantWhen
   /** Utility class string applied when the conditions match. */
   class: ClassInput
@@ -72,7 +75,7 @@ export interface ComponentConfig {
   variants?: Record<string, VariantDefinition>
   /**
    * Cross-axis rules. Each compound emits a CSS rule with a combined-class
-   * selector built from the `when` keys. See ADR-0002 for the design.
+   * selector built from the `when` keys in insertion order. See API.md.
    */
   compoundVariants?: CompoundVariantRule[]
 }
@@ -91,10 +94,26 @@ export interface ComponentStyle {
   rules: { selector: string, utilities: string }[]
 }
 
+/**
+ * Factory output for tailwindVaria. Pass through unchanged; its generated
+ * members are implementation details, not a supported authoring interface.
+ */
 export interface DefinedComponent {
+  /**
+   * Factory marker shared by source and built declarations. It has no runtime
+   * representation and must not be used for runtime validation.
+   * @internal
+   */
+  readonly __variaDefinition: 'DefinedComponent'
+  /** @internal */
   name: string
+  /** @internal */
   shortcuts: Shortcut[]
+  /** @internal */
   manifest: ComponentManifest
-  /** Slot and compound styles, resolved by Tailwind on demand. */
+  /**
+   * Slot and compound styles, resolved by Tailwind on demand.
+   * @internal
+   */
   styles?: ComponentStyle[]
 }
