@@ -1,4 +1,4 @@
-# Compatibility and versioning
+# Compatibility
 
 V1 minor and patch releases preserve the documented authoring shapes, class spelling, activation rules, and normal layer precedence. Breaking contract changes require a major release. Supported exports can be deprecated in a minor release with a documented replacement and retained behavior until the next major release. Implementation structures, generated formatting, and exact error text are not compatibility promises. Invalid authoring structures fail during definition or registration. Unknown utilities and unsupported syntax in active expansions fail during Tailwind compilation; unused expansions need not be resolved.
 

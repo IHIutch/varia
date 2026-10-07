@@ -1,4 +1,4 @@
-# Change variants at a breakpoint and combine conditions
+# Responsive variants
 
 Use this guide to change a component's size responsively or apply a rule when two variants are active together. Start with [a working integration](/tailwind).
 

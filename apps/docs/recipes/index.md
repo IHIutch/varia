@@ -1,4 +1,4 @@
-# Style recipes
+# Recipes
 
 These recipes provide adaptable style definitions, markup, and live previews. Your application supplies behavior, semantics, focus management, and accessibility.
 

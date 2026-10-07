@@ -1,4 +1,4 @@
-# Integrate Varia with Tailwind
+# Tailwind CSS
 
 The `tailwindVaria` plugin registers Varia definitions with Tailwind CSS v4.3.3 or newer. It uses Tailwind's public JavaScript plugin interface and `@apply`; no separate Varia scanner or styling runtime is required.
 

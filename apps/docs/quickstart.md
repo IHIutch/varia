@@ -1,4 +1,4 @@
-# Your first component style
+# Quickstart
 
 In this tutorial you will build a button, then add a size variant and see the button change. You will use Vite, Tailwind, and Varia in a standalone project.
 

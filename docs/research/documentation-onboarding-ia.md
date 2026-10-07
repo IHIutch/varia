@@ -155,3 +155,11 @@ The first improvement should be one complete consumer tutorial, validated in a c
 ## Integration into the current site
 
 The VitePress site in `apps/docs` is the consumer documentation. The current public package is `variacss`, requires Node.js 26, and uses native Tailwind editor support rather than generated class declarations. The integrated tutorial and guides follow those current interfaces. The review above records the older checkout evaluated during the initial research.
+
+## Page naming reconsidered
+
+The earlier proposed names over-explain routine topics. Bootstrap uses short topic labels such as "Options", "Breakpoints", and "Vite". Its "Introduction" sidebar entry opens a page titled "Get started with Bootstrap", and "Vite" opens "Bootstrap and Vite". Navigation labels can therefore be shorter than article titles. [Bootstrap introduction](https://getbootstrap.com/docs/5.3/getting-started/introduction/), [Bootstrap and Vite](https://getbootstrap.com/docs/5.3/getting-started/vite/)
+
+Astro's main guide uses topic names such as "Installation", "Components", "Layouts", and "Editor setup". It uses task phrases for specific recipes, including "Analyze bundle size" and "Add an RSS feed". Its tutorial navigation uses "Introduction" and short unit topics while the article describes the project being built. [Astro navigation](https://docs.astro.build/en/getting-started/), [Astro tutorial](https://docs.astro.build/en/tutorial/0-introduction/)
+
+For Varia, restore concise names: Quickstart, Tailwind CSS, Slots, Responsive variants, Overrides, Theming, Editor support, Concepts, Comparison, Definitions, Naming convention, Options, Compatibility, Recipes, and Contributing. Keep explanatory detail in the opening paragraph. Use longer task names only when they distinguish a specific recipe. Diátaxis defines a page's purpose; it does not require every navigation entry to state that purpose as a sentence. These naming recommendations are an inference from the reviewed sites, not a prescribed naming rule from either project.

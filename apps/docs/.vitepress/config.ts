@@ -31,8 +31,8 @@ export default defineConfig({
 
   themeConfig: {
     nav: [
-      { text: 'Get started', link: '/quickstart' },
-      { text: 'Guides', link: '/documentation#complete-a-task' },
+      { text: 'Quickstart', link: '/quickstart' },
+      { text: 'Guides', link: '/documentation#guides' },
       { text: 'Concepts', link: '/concepts' },
       { text: 'Reference', link: '/reference/definitions' },
       { text: 'Recipes', link: '/recipes/' },
@@ -41,44 +41,44 @@ export default defineConfig({
     sidebar: {
       '/': [
         {
-          text: 'Get started',
+          text: 'Getting started',
           items: [
-            { text: 'Documentation overview', link: '/documentation' },
-            { text: 'Your first component style', link: '/quickstart' },
+            { text: 'Overview', link: '/documentation' },
+            { text: 'Quickstart', link: '/quickstart' },
           ],
         },
         {
-          text: 'How-to guides',
+          text: 'Guides',
           items: [
-            { text: 'Integrate with Tailwind', link: '/tailwind' },
-            { text: 'Style child elements', link: '/guides/style-child-elements' },
-            { text: 'Responsive variants and compounds', link: '/guides/responsive-variants' },
-            { text: 'Override styles and configure prefixes', link: '/guides/override-styles' },
-            { text: 'Customize the theme', link: '/theming' },
-            { text: 'Set up editor support', link: '/recipes/type-safety' },
+            { text: 'Tailwind CSS', link: '/tailwind' },
+            { text: 'Slots', link: '/guides/style-child-elements' },
+            { text: 'Responsive variants', link: '/guides/responsive-variants' },
+            { text: 'Overrides', link: '/guides/override-styles' },
+            { text: 'Theming', link: '/theming' },
+            { text: 'Editor support', link: '/recipes/type-safety' },
             { text: 'Troubleshooting', link: '/troubleshooting' },
           ],
         },
         {
           text: 'Concepts',
           items: [
-            { text: 'The styling model', link: '/concepts' },
-            { text: 'Compare approaches', link: '/comparison' },
+            { text: 'Concepts', link: '/concepts' },
+            { text: 'Comparison', link: '/comparison' },
           ],
         },
         {
           text: 'Reference',
           items: [
-            { text: 'Definition shapes and imports', link: '/reference/definitions' },
-            { text: 'Class naming and compounds', link: '/naming' },
-            { text: 'Integration options', link: '/tailwind#options' },
-            { text: 'Compatibility and versioning', link: '/reference/compatibility' },
+            { text: 'Definitions', link: '/reference/definitions' },
+            { text: 'Naming convention', link: '/naming' },
+            { text: 'Options', link: '/tailwind#options' },
+            { text: 'Compatibility', link: '/reference/compatibility' },
           ],
         },
         {
           text: 'Recipes',
           items: [
-            { text: 'Recipe overview', link: '/recipes/' },
+            { text: 'Overview', link: '/recipes/' },
             { text: 'Button', link: '/recipes/button' },
             { text: 'Card', link: '/recipes/card' },
             { text: 'Form input', link: '/recipes/form-input' },
@@ -91,8 +91,8 @@ export default defineConfig({
           ],
         },
         {
-          text: 'Contribute',
-          items: [{ text: 'Repository setup and checks', link: '/contribute' }],
+          text: 'Contributing',
+          items: [{ text: 'Contributing', link: '/contribute' }],
         },
       ],
     },

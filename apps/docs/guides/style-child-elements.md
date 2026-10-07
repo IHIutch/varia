@@ -1,4 +1,4 @@
-# Style a component's child elements
+# Slots
 
 Use slots when a component style covers several elements. Start with [a working Tailwind integration](/tailwind). The example below styles a panel and changes its title color through an ancestor class.
 

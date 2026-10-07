@@ -46,10 +46,10 @@ npm install variacss
 
 Use Node.js 26 or newer and a Tailwind 4 integration. The complete Vite walkthrough uses Tailwind 4.3.3 and Vite 8.3.2.
 
-- [Build your first component style](https://github.com/IHIutch/varia/blob/main/apps/docs/quickstart.md) with a complete standalone Vite walkthrough.
-- [Integrate with an existing Tailwind project](https://github.com/IHIutch/varia/blob/main/apps/docs/tailwind.md).
-- [Understand the styling model](https://github.com/IHIutch/varia/blob/main/apps/docs/concepts.md).
-- [Browse the documentation](https://github.com/IHIutch/varia/blob/main/apps/docs/documentation.md) for task guides, reference, and recipes with live previews.
+- [Quickstart](https://github.com/IHIutch/varia/blob/main/apps/docs/quickstart.md) with a complete standalone Vite walkthrough.
+- [Tailwind CSS](https://github.com/IHIutch/varia/blob/main/apps/docs/tailwind.md).
+- [Concepts](https://github.com/IHIutch/varia/blob/main/apps/docs/concepts.md).
+- [Documentation](https://github.com/IHIutch/varia/blob/main/apps/docs/documentation.md) for task guides, reference, and recipes with live previews.
 
 ## Work on this repository
 

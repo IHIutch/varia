@@ -1,4 +1,4 @@
-# The styling model
+# Concepts
 
 Varia separates style authoring from the markup that uses those styles. A definition names a component's base utilities, variants, and optional slots or compounds. `tailwindVaria` registers that definition with Tailwind. Your templates select styles through ordinary CSS classes.
 

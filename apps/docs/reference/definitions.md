@@ -1,4 +1,4 @@
-# Definition reference
+# Definitions
 
 Use this page to look up authoring shapes, slot matching, and public imports. For a complete task, follow [the slot guide](/guides/style-child-elements); for a learning sequence, follow [the tutorial](/quickstart).
 

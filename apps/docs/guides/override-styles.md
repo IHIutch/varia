@@ -1,4 +1,4 @@
-# Override component styles and configure a prefix
+# Overrides
 
 Start with [a working integration](/tailwind). Use a native utility for a one-off style change; use a prefix when your project needs a namespace for Tailwind and Varia classes.
 
