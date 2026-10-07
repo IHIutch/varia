@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.1 (2026-10-07)
+
+- Fix documentation links in the README.
+- Simplify internal component handling. Generated CSS is unchanged.
+
 ## 1.0.0 (2026-10-07)
 
 Varia turns Tailwind utilities into reusable component classes. CSS is generated only for the classes you use.
