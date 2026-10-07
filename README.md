@@ -56,13 +56,12 @@ pnpm typecheck
 pnpm lint
 pnpm test:visual
 pnpm test:reload
-pnpm test:editor
 pnpm release:prepare
 ```
 
 The library lives in `packages/varia`, example style definitions in `recipes`, and the demo in `examples/kitchen-sink`.
 
-`pnpm release:prepare` verifies an actual packed archive in clean standalone and monorepo consumers before writing it to `.release/`. See [release preparation and compatibility](API.md#release-preparation) for the version/OS matrix and release gates.
+`pnpm release:prepare` runs unit tests, typecheck, lint, and the production example build, including a clean-install smoke test of the actual archive. It writes the verified archive to `.release/`. See [release preparation](API.md#release-preparation).
 
 ## Editor autocomplete
 

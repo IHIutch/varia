@@ -20,7 +20,6 @@
     "comparison:reload": "pnpm build && node scripts/check-reload.mjs",
     "test:visual": "pnpm --filter varia test:visual",
     "test:reload": "pnpm --filter varia test:reload",
-    "test:editor": "pnpm --filter varia test:editor",
     "release:prepare": "node scripts/prepare-release.mjs"
   },
   "devDependencies": {

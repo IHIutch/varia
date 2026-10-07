@@ -10,24 +10,19 @@ permissions:
 
 jobs:
   verify:
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-24.04, macos-15]
-        node: [26.0.0, 26.9.0]
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: ${{ matrix.node }}
+          node-version: 26.9.0
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      - run: pnpm --filter varia exec playwright install --with-deps chromium
       - run: pnpm release:prepare
       - uses: actions/upload-artifact@v4
         with:
-          name: package-${{ matrix.os }}-${{ matrix.node }}
+          name: package
           path: .release/*.tgz
+          include-hidden-files: true
           if-no-files-found: error

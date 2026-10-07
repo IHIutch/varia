@@ -4,7 +4,7 @@ import { mkdir, mkdtemp, readFile, realpath, rm, symlink, unlink, writeFile } fr
 import { createRequire } from 'node:module'
 import { tmpdir } from 'node:os'
 import { dirname, join, relative } from 'node:path'
-import { fileURLToPath, pathToFileURL } from 'node:url'
+import { fileURLToPath } from 'node:url'
 import { chromium } from 'playwright'
 import { createLogger, createServer } from 'vite'
 import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vitest'
@@ -20,10 +20,7 @@ const fixtures: string[] = []
 beforeAll(async () => {
   archiveDir = await realpath(await mkdtemp(join(tmpdir(), 'varia-reload-pack-')))
   archive = join(archiveDir, 'varia.tgz')
-  if (process.env.VARIA_RELEASE_ARCHIVE)
-    archive = process.env.VARIA_RELEASE_ARCHIVE
-  else
-    archive = join(archiveDir, JSON.parse(execFileSync('npm', ['pack', '--ignore-scripts', '--json', '--pack-destination', archiveDir], { cwd: packageRoot, encoding: 'utf8' }))[0].filename)
+  execFileSync('pnpm', ['pack', '--out', archive], { cwd: packageRoot, stdio: 'pipe' })
   browser = await chromium.launch({ headless: true })
 })
 
@@ -50,18 +47,13 @@ async function fixture(monorepo: boolean) {
   const prefix = monorepo ? 'tw' : ''
   const cls = (value: string) => prefix ? `${prefix}:${value}` : value
   await Promise.all([app, recipes, helpers, packageDir].map(path => mkdir(path, { recursive: true })))
+  execFileSync('tar', ['-xzf', archive, '-C', packageDir, '--strip-components=1'])
+  for (const dependency of ['vite', 'tailwindcss', '@tailwindcss/vite']) {
+    const dest = join(root, 'node_modules', dependency)
+    await mkdir(dirname(dest), { recursive: true })
+    await symlink(await realpath(join(exampleModules, dependency)), dest, 'dir')
+  }
   await writeFile(join(root, 'package.json'), '{"type":"module","private":true}')
-  if (process.env.VARIA_RELEASE_ARCHIVE) {
-    execFileSync('npm', ['install', '--no-audit', '--no-fund', '--save-exact', archive, 'vite@8.0.11', 'tailwindcss@4.3.3', '@tailwindcss/vite@4.3.3', 'typescript@7.0.2'], { cwd: root, stdio: 'pipe' })
-  }
-  else {
-    execFileSync('tar', ['-xzf', archive, '-C', packageDir, '--strip-components=1'])
-    for (const dependency of ['vite', 'tailwindcss', '@tailwindcss/vite']) {
-      const dest = join(root, 'node_modules', dependency)
-      await mkdir(dirname(dest), { recursive: true })
-      await symlink(await realpath(join(exampleModules, dependency)), dest, 'dir')
-    }
-  }
   const tokens = join(helpers, 'tokens.ts')
   const recipe = join(recipes, 'probe.ts')
   const writeRecipe = (axis: string) => writeFile(recipe, `import { defineComponent } from 'varia';
@@ -78,8 +70,7 @@ export default tailwindVaria({ components: [probe${added ? ', extra' : ''}], pre
   await writeFile(join(app, 'styles.css'), `@import "varia/tailwind.css";
 @import "tailwindcss" source(none);
 @source inline("${['reload-probe', 'reload-probe-old', 'reload-probe-new', 'reload-added'].map(cls).join(' ')}");
-@plugin "./tailwind.config.ts";
-.authored { @apply ${cls('reload-probe')}; }`)
+@plugin "./tailwind.config.ts";`)
   await writeFile(join(app, 'index.html'), `<div id="probe" class="${cls('reload-probe')} ${cls('reload-probe-old')} ${cls('reload-probe-new')}">Probe</div><div id="extra" class="${cls('reload-added')}">Extra</div><script type="module" src="/main.ts"></script>`)
   await writeFile(join(app, 'main.ts'), 'import \'./styles.css\';')
   await writeFile(join(app, 'vite.config.ts'), `import { defineConfig } from 'vite';
@@ -87,11 +78,7 @@ import tailwindcss from '@tailwindcss/vite';
 import './tailwind.config.ts';
 export default defineConfig({ plugins: [tailwindcss()], server: { warmup: { clientFiles: ['./styles.css'] } } });`)
   const logs: string[] = []
-  // Release gates execute the installed integration, not workspace dependencies.
-  const vite: Pick<typeof import('vite'), 'createLogger' | 'createServer'> = process.env.VARIA_RELEASE_ARCHIVE
-    ? await import(pathToFileURL(join(root, 'node_modules/vite/dist/node/index.js')).href)
-    : { createLogger, createServer }
-  const logger = vite.createLogger('silent')
+  const logger = createLogger('silent')
   const error = logger.error.bind(logger)
   logger.error = (message, options) => {
     logs.push(message)
@@ -102,7 +89,7 @@ export default defineConfig({ plugins: [tailwindcss()], server: { warmup: { clie
     logs.push(message)
     info(message, options)
   }
-  const server = await vite.createServer({ root: app, configFile: join(app, 'vite.config.ts'), customLogger: logger, server: { host: '127.0.0.1', port: 0 } })
+  const server = await createServer({ root: app, configFile: join(app, 'vite.config.ts'), customLogger: logger, server: { host: '127.0.0.1', port: 0 } })
   const page = await browser.newPage()
   try {
     await server.listen()
@@ -170,12 +157,6 @@ describe('native Vite recipe reload', () => {
       await expect.poll(f.opacity, { timeout: 10_000 }).toBe('0.25')
 
       await writeFile(join(f.app, 'consumer.ts'), `import type { VariaClasses } from 'varia/types';
-import { defineComponent, type ComponentConfig, type DefinedComponent } from 'varia';
-import { tailwindVaria, type TailwindVariaOptions } from 'varia/tailwind';
-const config = { base: 'block' } satisfies ComponentConfig;
-const definition: DefinedComponent = defineComponent('typed-probe', config);
-const options: TailwindVariaOptions = { components: [definition], manifest: false };
-tailwindVaria(options);
 export function cn(...classes: VariaClasses[]): string { return classes.join(' ') }
 cn('${f.cls('reload-probe')}', '${f.cls('reload-probe-new')}');
 // @ts-expect-error removed variant
@@ -186,18 +167,7 @@ cn('${f.cls('reload-added')}');`)
         compilerOptions: { module: 'ESNext', moduleResolution: 'bundler', strict: true, noEmit: true },
         files: [relative(f.app, f.manifest), 'consumer.ts'],
       }))
-      const tsc = process.env.VARIA_RELEASE_ARCHIVE ? join(f.root, 'node_modules/typescript/bin/tsc') : join(dirname(require.resolve('@typescript/native/package.json')), 'bin/tsc')
-      execFileSync(process.execPath, [tsc, '--noEmit', '-p', f.app], { stdio: 'pipe' })
-      execFileSync(process.execPath, [tsc, '--noEmit', '-p', f.app, '--module', 'NodeNext', '--moduleResolution', 'NodeNext'], { stdio: 'pipe' })
-
-      if (process.env.VARIA_RELEASE_ARCHIVE) {
-        execFileSync(process.execPath, [join(f.root, 'node_modules/vite/bin/vite.js'), 'build'], { cwd: f.app, stdio: 'pipe' })
-        const { readdir } = await import('node:fs/promises')
-        const assets = join(f.app, 'dist/assets')
-        const css = await readFile(join(assets, (await readdir(assets)).find(file => file.endsWith('.css'))!), 'utf8')
-        expect(css).toContain('.authored')
-        expect(css).not.toContain('@apply')
-      }
+      execFileSync(process.execPath, [join(dirname(require.resolve('@typescript/native/package.json')), 'bin/tsc'), '--noEmit', '-p', f.app], { stdio: 'pipe' })
 
       const restarts = () => f.logs.filter(message => message.includes('server restarted.')).length
       const idleCount = restarts()

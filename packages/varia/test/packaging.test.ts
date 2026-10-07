@@ -1,5 +1,5 @@
 import { execFileSync } from 'node:child_process'
-import { mkdir, mkdtemp, readFile, rm } from 'node:fs/promises'
+import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -9,12 +9,12 @@ it('loads public package exports without an engine and rejects the comparison al
   const dir = await mkdtemp(join(tmpdir(), 'varia-isolated-'))
   try {
     const packageDir = join(dir, 'node_modules/varia')
-    await mkdir(packageDir, { recursive: true })
     const archive = process.env.VARIA_RELEASE_ARCHIVE ?? join(dir, JSON.parse(execFileSync('npm', ['pack', '--ignore-scripts', '--json', '--pack-destination', dir], {
       cwd: fileURLToPath(new URL('../', import.meta.url)),
       encoding: 'utf8',
     }))[0].filename)
-    execFileSync('tar', ['-xzf', archive, '-C', packageDir, '--strip-components=1'])
+    await writeFile(join(dir, 'package.json'), '{"private":true,"type":"module"}')
+    execFileSync('npm', ['install', '--ignore-scripts', '--omit=optional', '--no-audit', '--no-fund', archive], { cwd: dir, stdio: 'pipe' })
     const metadata = JSON.parse(await readFile(join(packageDir, 'package.json'), 'utf8'))
     for (const entry of Object.values(metadata.exports) as (string | Record<string, string>)[]) {
       for (const path of typeof entry === 'string' ? [entry] : Object.values(entry))
