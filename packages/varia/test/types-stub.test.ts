@@ -18,11 +18,11 @@ afterEach(async () => {
 async function downstream(prefix?: string) {
   const fixture = await realpath(await mkdtemp(join(tmpdir(), 'varia-downstream-')))
   fixtures.push(fixture)
-  const store = join(fixture, 'node_modules/.pnpm/varia@0.0.0/node_modules/varia')
+  const store = join(fixture, 'node_modules/.pnpm/variacss@1.0.0/node_modules/variacss')
   await mkdir(store, { recursive: true })
   await cp('dist', join(store, 'dist'), { recursive: true })
   await cp('package.json', join(store, 'package.json'))
-  await symlink(store, join(fixture, 'node_modules/varia'), 'dir')
+  await symlink(store, join(fixture, 'node_modules/variacss'), 'dir')
   await symlink(dirname(require.resolve('tailwindcss/package.json')), join(fixture, 'node_modules/tailwindcss'), 'dir')
   const path = join(fixture, 'node_modules/.varia/manifest.d.ts')
   await adapter.register([{ components: [row, col], prefix, manifest: { path } }])
@@ -37,11 +37,11 @@ async function downstream(prefix?: string) {
   const responsive = (breakpoint: string, value: string) => prefix && adapter.name === 'tailwind'
     ? `${prefix}:${breakpoint}:${value}`
     : `${breakpoint}:${cls(value)}`
-  const source = `import type { VariaClasses } from 'varia/types'
-import type { DefinedComponent } from 'varia'
-import type { TailwindVariaOptions } from 'varia/tailwind'
+  const source = `import type { VariaClasses } from 'variacss/types'
+import type { DefinedComponent } from 'variacss'
+import type { TailwindVariaOptions } from 'variacss/tailwind'
 // @ts-expect-error generated structure types are private in the built package
-type PrivateStyle = import('varia').ComponentStyle
+type PrivateStyle = import('variacss').ComponentStyle
 // @ts-expect-error definitions must come from the factory
 const fabricated: DefinedComponent = { name: 'fake', shortcuts: [], manifest: { name: 'fake', classNames: [] } }
 const registered: TailwindVariaOptions = { components: [] as DefinedComponent[] }
@@ -84,7 +84,7 @@ describe('strict typed cn in a downstream pnpm layout', () => {
       compilerOptions: { target: 'ES2022', module: 'ESNext', moduleResolution: 'bundler', strict: true, noEmit: true },
       files: ['consumer.ts'],
     }))
-    await writeFile(join(fixture, 'consumer.ts'), `import type { VariaClasses } from 'varia/types'
+    await writeFile(join(fixture, 'consumer.ts'), `import type { VariaClasses } from 'variacss/types'
 export function cn(...classes: VariaClasses[]): string { return classes.join(' ') }
 // @ts-expect-error no generated registry means VariaClasses is never
 cn('row')
@@ -109,7 +109,7 @@ cn('md:col-span-6')
   it('uses configured breakpoint names and removes them after configuration reload', async () => {
     const { fixture, path, typecheck } = await downstream()
     await adapter.register([{ components: [col], manifest: { path }, breakpoints: { wide: '80rem' } }])
-    await writeFile(join(fixture, 'consumer.ts'), `import type { VariaClasses } from 'varia/types'
+    await writeFile(join(fixture, 'consumer.ts'), `import type { VariaClasses } from 'variacss/types'
 export function cn(...classes: VariaClasses[]): string { return classes.join(' ') }
 cn('col', 'wide:col-span-6')
 // @ts-expect-error unconfigured breakpoint
@@ -117,7 +117,7 @@ cn('huge:col-span-6')
 `)
     expect(typecheck).not.toThrow()
     await adapter.register([{ components: [col], manifest: { path } }])
-    await writeFile(join(fixture, 'consumer.ts'), `import type { VariaClasses } from 'varia/types'
+    await writeFile(join(fixture, 'consumer.ts'), `import type { VariaClasses } from 'variacss/types'
 // @ts-expect-error removed breakpoint
 const removed: VariaClasses = 'wide:col-span-6'
 const valid: VariaClasses = 'md:col-span-6'
@@ -128,7 +128,7 @@ const valid: VariaClasses = 'md:col-span-6'
   it('replaces stale types after recipe reload and rejects the removed class', async () => {
     const { fixture, path, typecheck } = await downstream()
     await adapter.register([{ components: [row], manifest: { path } }])
-    await writeFile(join(fixture, 'consumer.ts'), `import type { VariaClasses } from 'varia/types'
+    await writeFile(join(fixture, 'consumer.ts'), `import type { VariaClasses } from 'variacss/types'
 export function cn(...classes: VariaClasses[]): string { return classes.join(' ') }
 cn('row', 'md:row-g-3')
 // @ts-expect-error removed recipe class
@@ -137,7 +137,7 @@ cn('col')
 cn('md:col-span-6')
 `)
     expect(typecheck).not.toThrow()
-    await writeFile(join(fixture, 'consumer.ts'), `import type { VariaClasses } from 'varia/types'; const invalid: VariaClasses = 'col';`)
+    await writeFile(join(fixture, 'consumer.ts'), `import type { VariaClasses } from 'variacss/types'; const invalid: VariaClasses = 'col';`)
     expect(typecheck).toThrow()
   })
 })

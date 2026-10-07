@@ -6,20 +6,20 @@ This is the contract for the Tailwind implementation of Varia. It takes preceden
 
 | Import | Supported interface |
 | --- | --- |
-| `varia` | `defineComponent` and the authoring types listed below |
-| `varia/tailwind` | `tailwindVaria` and `TailwindVariaOptions` |
-| `varia/types` | Type-only `VariaClasses`; `VariaClassRegistry` is reserved for generated augmentation |
-| `varia/tailwind.css` | Stylesheet establishing cascade order |
+| `variacss` | `defineComponent` and the authoring types listed below |
+| `variacss/tailwind` | `tailwindVaria` and `TailwindVariaOptions` |
+| `variacss/types` | Type-only `VariaClasses`; `VariaClassRegistry` is reserved for generated augmentation |
+| `variacss/tailwind.css` | Stylesheet establishing cascade order |
 
 The root authoring types are `ClassInput`, `ComponentConfig`, `CompoundVariantRule`, `CompoundVariantWhen`, `DefinedComponent`, `SlotKeyedValue`, `VariantDefinition`, and `VariantValue`. `DefinedComponent` is factory output for registration. Pass it unchanged to `tailwindVaria`; do not construct, mutate, serialize, or extend its generated structure. Its `shortcuts`, `styles`, and `manifest` members are implementation details. Their layout and generated CSS formatting can change without a major release. The type requires factory output; `Shortcut`, `ComponentStyle`, and `ComponentManifest` are private types.
 
-`varia/adapter` and its `createAdapter` alias belonged to the pre-release comparison and are removed before v1. Use the named Tailwind integration. Source files, `dist` paths, manifest-writing functions, and test helpers are not public imports. There is no styling runtime or JavaScript value export from `varia/types`.
+`varia/adapter` and its `createAdapter` alias belonged to the pre-release comparison and are removed before v1. Use the named Tailwind integration. Source files, `dist` paths, manifest-writing functions, and test helpers are not public imports. There is no styling runtime or JavaScript value export from `variacss/types`.
 
 ## Define and register styles
 
 ```ts
-import { defineComponent } from 'varia'
-import { tailwindVaria } from 'varia/tailwind'
+import { defineComponent } from 'variacss'
+import { tailwindVaria } from 'variacss/tailwind'
 
 const card = defineComponent('card', {
   slots: {
@@ -44,7 +44,7 @@ export default tailwindVaria({ components: [card] })
 Load that configuration with Tailwind's native plugin loader. Import the layer stylesheet before Tailwind:
 
 ```css
-@import "varia/tailwind.css";
+@import "variacss/tailwind.css";
 @import "tailwindcss";
 @plugin "./tailwind.config.ts";
 ```
@@ -181,10 +181,10 @@ A one-time integration check against Tailwind CSS IntelliSense/language server 0
 
 ## Strict class types
 
-`varia/types` remains optional tooling for consumers who want TypeScript to validate a bounded Varia vocabulary. It is independent of native editor autocomplete:
+`variacss/types` remains optional tooling for consumers who want TypeScript to validate a bounded Varia vocabulary. It is independent of native editor autocomplete:
 
 ```ts
-import type { VariaClasses } from 'varia/types'
+import type { VariaClasses } from 'variacss/types'
 
 const classes = ['card', 'md:card-size-lg'] satisfies VariaClasses[]
 ```
@@ -203,7 +203,7 @@ Install `typescript@7.0.2` as a development dependency for this optional check. 
 
 Run `npm run build` before `npx tsc`, or use a script containing `vite build && tsc`. The installation example has `card-accent`, not `card-size-lg`; use `['card', 'md:card-accent']` for its typed values. No joiner is required.
 
-The generated file augments `varia/types`, so normal pnpm symlink resolution needs no hoisting or `preserveSymlinks`. Without augmentation `VariaClasses` is `never`. A missing file in `files` also produces a TypeScript missing-file error. Generate and include it before typechecking these values.
+The generated file augments `variacss/types`, so normal pnpm symlink resolution needs no hoisting or `preserveSymlinks`. Without augmentation `VariaClasses` is `never`. A missing file in `files` also produces a TypeScript missing-file error. Generate and include it before typechecking these values.
 
 `manifest: false` disables writing. `manifest: { path }` changes the destination; relative paths resolve against process cwd, not the config directory. Default output is `node_modules/.varia/manifest.d.ts` under process cwd. Include custom destinations explicitly in `files`. Registrations targeting the same destination within one resolved configuration aggregate classes. A newly resolved configuration replaces stale declarations there.
 
@@ -236,7 +236,7 @@ The supported boundary is static local imports reachable from the configuration,
 
 ## Monorepo setup
 
-Install Varia, Tailwind, and the Vite plugin in the consuming app. Import shared recipe sources from the app's registration configuration, and import that configuration in the app's `vite.config.ts`. Vite's bundled config loader tracks static local imports outside the app root as well. The shared module must resolve its `varia` import through an explicit workspace dependency.
+Install Varia, Tailwind, and the Vite plugin in the consuming app. Import shared recipe sources from the app's registration configuration, and import that configuration in the app's `vite.config.ts`. Vite's bundled config loader tracks static local imports outside the app root as well. The shared module must resolve its `variacss` import through an explicit workspace dependency.
 
 With `source(none)`, add `@source` paths for every app/shared directory containing markup or class strings. Paths are relative to the stylesheet, for example `@source "../../../packages/ui/src";` from `apps/web/src/styles.css`. Registering recipe definitions does not tell Tailwind where their consumers live. Keep source scanning and recipe imports configured separately.
 
@@ -250,7 +250,7 @@ For optional types, give each app a separate absolute `manifest.path`, include i
 | Duplicate component/shortcut/class | Rename the conflicting definition or register it once. The error identifies the conflicting names/owners, including across plugin registrations. |
 | Empty expansion, ambiguous variant map, or unknown slot/compound condition | Supply a nonempty utility string; separate declared slot keys from value keys; reference existing slots and variant values. The authoring error identifies the component/variant or condition. See the definition shapes above. |
 | Variant group rejected | Replace `hover:(bg-blue-600 text-white)` with `hover:bg-blue-600 hover:text-white`. |
-| Required layer stylesheet missing | Import `varia/tailwind.css` before `tailwindcss` in the CSS entry. The plugin's check detects a missing marker; it cannot reliably detect reversed imports. Keep the documented order. |
+| Required layer stylesheet missing | Import `variacss/tailwind.css` before `tailwindcss` in the CSS entry. The plugin's check detects a missing marker; it cannot reliably detect reversed imports. Keep the documented order. |
 | Invalid prefix or missing prefixed CSS | `prefix` must contain lowercase ASCII letters only. Match CSS `prefix(tw)` with `tailwindVaria({ prefix: 'tw', ... })` and use `tw:card` / `tw:md:card-size-lg` in markup. |
 | Tailwind cannot apply an unknown utility | Fix the spelling, define it with native `@utility`, or restore the required theme token. Only active expansions are resolved; unused invalid utilities may remain undetected. Tailwind reports utility-resolution errors directly. |
 | CSS/class missing with no build error | Register the definition, include literal class names in scanned sources, and check `@source` paths. Dynamic concatenation is not scanned. Types/registration alone do not emit CSS. |
@@ -284,8 +284,8 @@ Repository `tsc` and downstream typing checks use TypeScript 7.0.2. The `@typesc
 
 Run `pnpm install --frozen-lockfile`, then `pnpm release:prepare`. It builds and packs the package, runs the unit suite against that archive (including a clean npm-install smoke test), typechecks, lints, and builds the production example. CI runs the same command and retains the verified archive as an artifact.
 
-The package's `prepack` hook builds JavaScript, declarations, and the layer stylesheet before an ordinary npm/pnpm pack. Release preparation packs once, tests that archive, and copies it into `.release/` only after all checks succeed. Missing exports/output, install/build/type errors, and failed tests stop preparation. A failed run removes any previous local release artifact. Publish only the verified archive after CI passes. The package metadata is prepared for 1.0.0 under the MIT license. Prepack copies the README, API contract, changelog, and license into the archive. Version 1.0.0 is prepared in this repository; merging changes does not publish it. The registry name `varia` belongs to an unrelated package and cannot be used for this release. Until a public name is chosen and configured, use the local archive installation and do not publish it.
+The package's `prepack` hook builds JavaScript, declarations, and the layer stylesheet before an ordinary npm/pnpm pack. Release preparation packs once, tests that archive, and copies it into `.release/` only after all checks succeed. Missing exports/output, install/build/type errors, and failed tests stop preparation. A failed run removes any previous local release artifact. Publish only the verified archive after CI passes. The package metadata is prepared for 1.0.0 under the MIT license. Prepack copies the README, API contract, changelog, and license into the archive. Version 1.0.0 is prepared in this repository; merging changes does not publish it. The public package name is `variacss`; the brand remains Varia. Before publication, install the verified local archive.
 
-After a public package name has been chosen and the imports/docs/metadata updated for it, update the package version and changelog together, merge the reviewed change, and run release preparation from that commit with a clean checkout. Check the archive's version and contents with `tar -tzf .release/varia-1.0.0.tgz` and `npm publish .release/varia-1.0.0.tgz --dry-run`. After the verified commit and registry access are approved for publication, publish that exact archive with `npm publish .release/varia-1.0.0.tgz --access public`, then create the matching `v1.0.0` git tag and GitHub release with the changelog. Adjust the versioned filename/tag for subsequent releases. Publishing an existing tarball preserves the tested contents. Release preparation itself does not publish or create tags.
+For a release, update the package version and changelog together, merge the reviewed change, and run release preparation from that commit with a clean checkout. Check the archive's version and contents with `tar -tzf .release/variacss-1.0.0.tgz` and `npm publish .release/variacss-1.0.0.tgz --dry-run`. After the verified commit and registry access are approved for publication, publish that exact archive with `npm publish .release/variacss-1.0.0.tgz --access public`, then create the matching `v1.0.0` git tag and GitHub release with the changelog. Adjust the versioned filename/tag for subsequent releases. Publishing an existing tarball preserves the tested contents. Release preparation itself does not publish or create tags.
 
 Run `pnpm test`, `pnpm typecheck`, `pnpm lint`, `pnpm example:build`, `pnpm test:visual`, `pnpm test:reload`, and `pnpm comparison:reload`. The last command verifies native Vite recipe reload in the example. Comparison-only branch parity checks are historical and are not a v1 release gate.

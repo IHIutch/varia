@@ -8,9 +8,9 @@ import { adapter } from './_engine.js'
 it('preserves downstream authored CSS and compiles native @apply in a real Vite build', async () => {
   const fixture = await realpath(await mkdtemp(join(tmpdir(), 'varia-css-consumer-')))
   try {
-    await mkdir(join(fixture, 'node_modules/varia'), { recursive: true })
-    await cp(new URL('../dist/', import.meta.url), join(fixture, 'node_modules/varia/dist'), { recursive: true })
-    await cp(new URL('../package.json', import.meta.url), join(fixture, 'node_modules/varia/package.json'))
+    await mkdir(join(fixture, 'node_modules/variacss'), { recursive: true })
+    await cp(new URL('../dist/', import.meta.url), join(fixture, 'node_modules/variacss/dist'), { recursive: true })
+    await cp(new URL('../package.json', import.meta.url), join(fixture, 'node_modules/variacss/package.json'))
     await writeFile(join(fixture, 'consumer.ts'), 'export const classes = \'row col\';')
     const css = await adapter.scan(fixture, undefined, '.authored { @apply row; color: rgb(1 2 3); } .untouched { opacity: 0.123; }')
     expect(css).not.toContain('@apply')

@@ -27,11 +27,11 @@ export const adapter: Adapter = {
     const recipes = new URL('../../../recipes/', import.meta.url).pathname
     await writeFile(join(fixture, 'package.json'), '{"type":"module"}')
     await writeFile(join(fixture, 'index.html'), '<script type="module" src="/consumer.ts"></script>')
-    await writeFile(join(fixture, 'engine.config.ts'), `import { tailwindVaria } from 'varia/tailwind';
+    await writeFile(join(fixture, 'engine.config.ts'), `import { tailwindVaria } from 'variacss/tailwind';
 import row from '${recipes}row.config.ts'; import col from '${recipes}col.config.ts';
 export default tailwindVaria({ components: [row, col], manifest: false, prefix: ${JSON.stringify(prefix)} });`)
     // Resolve the engine stylesheet from the downstream project's dependencies.
-    await writeFile(join(fixture, 'styles.css'), `@import "varia/tailwind.css";
+    await writeFile(join(fixture, 'styles.css'), `@import "variacss/tailwind.css";
 @import "${require.resolve('tailwindcss/index.css')}" source(none);
 @source "./consumer.ts"; @plugin "./engine.config.ts";
 ${authoredCss}`)
@@ -44,7 +44,7 @@ ${authoredCss}`)
   async packaged() {
     const sources: string[] = []
     const base = new URL('./fixtures/', import.meta.url).pathname
-    const compiler = await compileNode('@import "varia/tailwind.css"; @import "tailwindcss"; @plugin "./engine.config.ts";', { base, onDependency: path => sources.push(path) })
+    const compiler = await compileNode('@import "variacss/tailwind.css"; @import "tailwindcss"; @plugin "./engine.config.ts";', { base, onDependency: path => sources.push(path) })
     return { css: flatten(compiler.build(['fixture', 'fixture-active'])), sources }
   },
   async generate(components, classes, { prefix, custom } = {}) {

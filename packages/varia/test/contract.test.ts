@@ -170,7 +170,7 @@ describe.each(adapters)('$name adapter', (adapter) => {
 
   it('fails when the precedence setup is missing', async () => {
     const btn = defineComponent('btn', { base: 'block' })
-    await expect(adapter.registerWithoutLayers([btn])).rejects.toThrow(/varia\/tailwind\.css|outputToCssLayers/)
+    await expect(adapter.registerWithoutLayers([btn])).rejects.toThrow(/variacss\/tailwind\.css|outputToCssLayers/)
   })
 
   it('aggregates manifests per build and replaces stale classes on reload', async () => {

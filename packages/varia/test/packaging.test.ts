@@ -8,7 +8,7 @@ import { expect, it } from 'vitest'
 it('loads public package exports without an engine and rejects the comparison alias', async () => {
   const dir = await mkdtemp(join(tmpdir(), 'varia-isolated-'))
   try {
-    const packageDir = join(dir, 'node_modules/varia')
+    const packageDir = join(dir, 'node_modules/variacss')
     const archive = process.env.VARIA_RELEASE_ARCHIVE ?? join(dir, JSON.parse(execFileSync('npm', ['pack', '--json', '--pack-destination', dir], {
       cwd: fileURLToPath(new URL('../', import.meta.url)),
       encoding: 'utf8',
@@ -25,15 +25,15 @@ it('loads public package exports without an engine and rejects the comparison al
       expect((await readFile(join(packageDir, document), 'utf8')).length).toBeGreaterThan(0)
     expect(await readFile(join(packageDir, 'dist/tailwind.css'), 'utf8')).toContain('@layer theme, base, components, utilities;')
     const script = `
-      import { defineComponent } from 'varia';
-      import { tailwindVaria } from 'varia/tailwind';
+      import { defineComponent } from 'variacss';
+      import { tailwindVaria } from 'variacss/tailwind';
       import assert from 'node:assert/strict';
       import { existsSync } from 'node:fs';
       import { fileURLToPath } from 'node:url';
       assert.equal(typeof defineComponent, 'function');
-      assert.equal(existsSync(fileURLToPath(import.meta.resolve('varia/tailwind.css'))), true);
-      await assert.rejects(import('varia/adapter'), { code: 'ERR_PACKAGE_PATH_NOT_EXPORTED' });
-      await assert.rejects(import('varia/types'), { code: 'ERR_PACKAGE_PATH_NOT_EXPORTED' });
+      assert.equal(existsSync(fileURLToPath(import.meta.resolve('variacss/tailwind.css'))), true);
+      await assert.rejects(import('variacss/adapter'), { code: 'ERR_PACKAGE_PATH_NOT_EXPORTED' });
+      await assert.rejects(import('variacss/types'), { code: 'ERR_PACKAGE_PATH_NOT_EXPORTED' });
       const component = defineComponent('card', {
         slots: { root: 'block', body: 'block' },
         variants: { active: { body: 'opacity-50' } },

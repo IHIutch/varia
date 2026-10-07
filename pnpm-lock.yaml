@@ -26,7 +26,7 @@ importers:
 
   examples/kitchen-sink:
     dependencies:
-      varia:
+      variacss:
         specifier: workspace:*
         version: link:../../packages/varia
     devDependencies:
@@ -3495,7 +3495,7 @@ snapshots:
       '@vue/shared': 3.5.34
       entities: 7.0.1
       estree-walker: 2.0.2
-      source-map-js: 1.2.1
+      source-map-js: 1.2.2
 
   '@vue/compiler-dom@3.5.34':
     dependencies:
@@ -3511,8 +3511,8 @@ snapshots:
       '@vue/shared': 3.5.34
       estree-walker: 2.0.2
       magic-string: 0.30.21
-      postcss: 8.5.14
-      source-map-js: 1.2.1
+      postcss: 8.5.29
+      source-map-js: 1.2.2
 
   '@vue/compiler-ssr@3.5.34':
     dependencies:

@@ -1,4 +1,4 @@
-@import "varia/tailwind.css";
+@import "variacss/tailwind.css";
 @import "tailwindcss" source(none);
 @source "./*.html";
 @source "./grid.ts";

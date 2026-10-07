@@ -5,7 +5,7 @@ On-demand CSS with the ergonomics of regular CSS classes.
 Varia lets you define component styles with utility classes, then use readable classes such as `btn btn-c-primary btn-s-lg` in your markup. Tailwind generates the CSS at build time; Varia adds no styling runtime to your application.
 
 ```ts
-import { defineComponent } from 'varia'
+import { defineComponent } from 'variacss'
 
 export default defineComponent('btn', {
   base: 'inline-flex items-center rounded font-medium',
@@ -26,7 +26,7 @@ export default defineComponent('btn', {
 <button class="btn btn-c-primary btn-s-lg">Save</button>
 ```
 
-Register definitions with `tailwindVaria` from `varia/tailwind`. Tailwind scans your source files and emits CSS for component and variant classes it finds. A slot-keyed variant emits its slot rules when its variant class is used. A compound emits when the class for its first `when` condition is used; the combined selector checks the remaining conditions in the browser. Unused components and activation classes produce no component CSS. See [the v1 public contract](API.md) for supported exports, definition shapes, responsive compounds, nested slots, types, and compatibility expectations.
+Register definitions with `tailwindVaria` from `variacss/tailwind`. Tailwind scans your source files and emits CSS for component and variant classes it finds. A slot-keyed variant emits its slot rules when its variant class is used. A compound emits when the class for its first `when` condition is used; the combined selector checks the remaining conditions in the browser. Unused components and activation classes produce no component CSS. See [the v1 public contract](API.md) for supported exports, definition shapes, responsive compounds, nested slots, types, and compatibility expectations.
 
 ## Why Varia
 
@@ -41,21 +41,23 @@ Varia is a tool for authoring component styles. The [recipes](https://github.com
 
 ## Install with Tailwind and Vite
 
-Use Node.js 26 or newer. This example uses Tailwind 4.3.3 and Vite 8.0.16. Build the archive with `pnpm release:prepare` in this checkout first, then replace the absolute archive path below with its actual location. The unscoped npm name `varia` belongs to another package; the public publication name for this library is pending.
+Use Node.js 26 or newer. This example uses Tailwind 4.3.3 and Vite 8.0.16. The npm package name is `variacss`. Version 1.0.0 is prepared in this repository and has not been published yet.
 
 ```sh
 mkdir varia-app
 cd varia-app
 npm init -y
 npm pkg set type=module scripts.dev=vite scripts.build="vite build"
-npm install /absolute/path/to/varia/.release/varia-1.0.0.tgz tailwindcss@4.3.3
+npm install variacss@1.0.0 tailwindcss@4.3.3
 npm install -D vite@8.0.16 @tailwindcss/vite@4.3.3
 ```
+
+Before publication, replace `variacss@1.0.0` with the absolute path to `.release/variacss-1.0.0.tgz`, produced by `pnpm release:prepare` in this checkout.
 
 Create `recipes.ts` using only public exports:
 
 ```ts
-import { defineComponent } from 'varia'
+import { defineComponent } from 'variacss'
 
 export const components = [
   defineComponent('card', {
@@ -73,7 +75,7 @@ export const components = [
 Create `tailwind.config.ts`:
 
 ```ts
-import { tailwindVaria } from 'varia/tailwind'
+import { tailwindVaria } from 'variacss/tailwind'
 import { components } from './recipes.js'
 
 export default tailwindVaria({ components, manifest: false })
@@ -82,7 +84,7 @@ export default tailwindVaria({ components, manifest: false })
 Create `styles.css`. Import order establishes component and utility precedence; source paths resolve relative to this stylesheet:
 
 ```css
-@import "varia/tailwind.css";
+@import "variacss/tailwind.css";
 @import "tailwindcss" source(none);
 @source "./index.html";
 @plugin "./tailwind.config.ts";
@@ -157,7 +159,7 @@ The library lives in `packages/varia`, example style definitions in `recipes`, a
 
 Use Tailwind CSS IntelliSense for Varia classes in ordinary markup and existing helpers such as `clsx`. The example's responsive grid uses plain class strings and disables manifest generation. See [editor support](API.md#editor-support) for settings, imported-recipe refresh, and troubleshooting. Unknown-class linting in markup is not a native extension rule.
 
-The existing `varia/types` export is [optional TypeScript tooling](API.md#strict-class-types); it is not needed for autocomplete.
+The existing `variacss/types` export is [optional TypeScript tooling](API.md#strict-class-types); it is not needed for autocomplete.
 
 ## Native Tailwind expansion
 

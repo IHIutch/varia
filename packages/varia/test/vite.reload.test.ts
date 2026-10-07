@@ -42,7 +42,7 @@ async function fixture(monorepo: boolean) {
   const app = monorepo ? join(root, 'apps/web') : root
   const recipes = monorepo ? join(root, 'packages/design/recipes') : join(root, 'recipes')
   const helpers = monorepo ? join(root, 'packages/design/helpers') : join(root, 'helpers')
-  const packageDir = join(root, 'node_modules/varia')
+  const packageDir = join(root, 'node_modules/variacss')
   const manifest = join(recipes, 'varia.d.ts')
   const prefix = monorepo ? 'tw' : ''
   const cls = (value: string) => prefix ? `${prefix}:${value}` : value
@@ -56,18 +56,18 @@ async function fixture(monorepo: boolean) {
   await writeFile(join(root, 'package.json'), '{"type":"module","private":true}')
   const tokens = join(helpers, 'tokens.ts')
   const recipe = join(recipes, 'probe.ts')
-  const writeRecipe = (axis: string) => writeFile(recipe, `import { defineComponent } from 'varia';
+  const writeRecipe = (axis: string) => writeFile(recipe, `import { defineComponent } from 'variacss';
 import { base } from ${JSON.stringify(importPath(recipes, tokens))};
 export default defineComponent('reload-probe', { base, variants: { ${axis}: 'block' } });`)
   await writeFile(tokens, 'export const base = \'opacity-50\';')
   await writeRecipe('old')
   const config = join(app, 'tailwind.config.ts')
-  const writeConfig = (added = false) => writeFile(config, `import { tailwindVaria } from 'varia/tailwind';
+  const writeConfig = (added = false) => writeFile(config, `import { tailwindVaria } from 'variacss/tailwind';
 import probe from ${JSON.stringify(importPath(app, recipe))};
 ${added ? `import extra from ${JSON.stringify(importPath(app, join(recipes, 'extra.ts')))};` : ''}
 export default tailwindVaria({ components: [probe${added ? ', extra' : ''}], prefix: ${JSON.stringify(prefix || undefined)}, manifest: { path: ${JSON.stringify(manifest)} } });`)
   await writeConfig()
-  await writeFile(join(app, 'styles.css'), `@import "varia/tailwind.css";
+  await writeFile(join(app, 'styles.css'), `@import "variacss/tailwind.css";
 @import "tailwindcss" source(none);
 @source inline("${['reload-probe', 'reload-probe-old', 'reload-probe-new', 'reload-added'].map(cls).join(' ')}");
 @plugin "./tailwind.config.ts";`)
@@ -129,7 +129,7 @@ describe('native Vite recipe reload', () => {
       expect(await f.union()).not.toContain(`'${f.cls('reload-probe-old')}'`)
 
       const extra = join(f.recipes, 'extra.ts')
-      await writeFile(extra, `import { defineComponent } from 'varia'; export default defineComponent('reload-added', { base: 'opacity-25' });`)
+      await writeFile(extra, `import { defineComponent } from 'variacss'; export default defineComponent('reload-added', { base: 'opacity-25' });`)
       await f.writeConfig(true)
       await expect.poll(f.union, { timeout: 10_000 }).toContain(`'${f.cls('reload-added')}'`)
       await expect.poll(() => f.page.locator('#extra').evaluate(element => getComputedStyle(element).opacity), { timeout: 10_000 }).toBe('0.25')
@@ -156,7 +156,7 @@ describe('native Vite recipe reload', () => {
       await writeFile(f.tokens, 'export const base = \'opacity-25\';')
       await expect.poll(f.opacity, { timeout: 10_000 }).toBe('0.25')
 
-      await writeFile(join(f.app, 'consumer.ts'), `import type { VariaClasses } from 'varia/types';
+      await writeFile(join(f.app, 'consumer.ts'), `import type { VariaClasses } from 'variacss/types';
 export function cn(...classes: VariaClasses[]): string { return classes.join(' ') }
 cn('${f.cls('reload-probe')}', '${f.cls('reload-probe-new')}');
 // @ts-expect-error removed variant
