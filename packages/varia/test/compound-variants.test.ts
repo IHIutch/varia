@@ -86,16 +86,16 @@ describe('compound variants: emission shape', () => {
     expect(shortcutNames).not.toContain('btn-compound-1')
   })
 
-  it('compound class is NOT in the manifest (not a class consumers write)', () => {
+  it('compound class is NOT in the class names (not a class consumers write)', () => {
     const btn = defineComponent('btn', {
       base: 'inline-flex',
       variants: { s: { sm: 'p-2' }, square: 'aspect-square' },
       compoundVariants: [{ when: { s: 'sm', square: true }, class: 'p-1' }],
     })
 
-    expect(btn.manifest.classNames).not.toContain('btn-s-sm-square')
-    expect(btn.manifest.classNames).toContain('btn-s-sm')
-    expect(btn.manifest.classNames).toContain('btn-square')
+    expect(btn.classNames).not.toContain('btn-s-sm-square')
+    expect(btn.classNames).toContain('btn-s-sm')
+    expect(btn.classNames).toContain('btn-square')
   })
 
   it('emits a style descriptor for each compound', () => {

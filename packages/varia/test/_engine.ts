@@ -15,7 +15,7 @@ function tailwindCss(plugins: number, extra = ''): string {
 
 async function tailwindCompile(registrations: Registration[], extra = '', css = tailwindCss(registrations.length, extra)): ReturnType<typeof compile> {
   return compile(css, {
-    loadModule: async (id, base) => ({ path: '', base, module: tailwindVaria({ manifest: false, ...registrations[Number(id)]! }) }),
+    loadModule: async (id, base) => ({ path: '', base, module: tailwindVaria({ ...registrations[Number(id)]! }) }),
   })
 }
 
@@ -29,7 +29,7 @@ export const adapter: Adapter = {
     await writeFile(join(fixture, 'index.html'), '<script type="module" src="/consumer.ts"></script>')
     await writeFile(join(fixture, 'engine.config.ts'), `import { tailwindVaria } from 'variacss/tailwind';
 import row from '${recipes}row.config.ts'; import col from '${recipes}col.config.ts';
-export default tailwindVaria({ components: [row, col], manifest: false, prefix: ${JSON.stringify(prefix)} });`)
+export default tailwindVaria({ components: [row, col], prefix: ${JSON.stringify(prefix)} });`)
     // Resolve the engine stylesheet from the downstream project's dependencies.
     await writeFile(join(fixture, 'styles.css'), `@import "variacss/tailwind.css";
 @import "${require.resolve('tailwindcss/index.css')}" source(none);
@@ -54,9 +54,7 @@ ${authoredCss}`)
   async apply(components, css) {
     return flatten((await tailwindCompile([{ components }], '', `${tailwindCss(1)}\n${css}`)).build([]))
   },
-  register: registrations => tailwindCompile(registrations, registrations[0]?.breakpoints
-    ? `@theme { ${Object.entries(registrations[0].breakpoints).map(([name, value]) => `--breakpoint-${name}: ${value};`).join(' ')} }`
-    : ''),
+  register: registrations => tailwindCompile(registrations),
   registerWithoutLayers: components => tailwindCompile([{ components }], '', `${theme}\n@plugin "0";\n@layer utilities { @tailwind utilities; }`),
   important: name => `${name}!`,
   prefixed: prefix => ({

@@ -3,7 +3,7 @@ import type {
   DefinedComponent,
   VariantDefinition,
 } from '../src/index.js'
-import type { ComponentManifest, Shortcut } from '../src/internal/types.js'
+import type { Shortcut } from '../src/internal/types.js'
 import { describe, expectTypeOf, it } from 'vitest'
 import { defineComponent } from '../src/index.js'
 
@@ -12,12 +12,10 @@ describe('public types', () => {
     // @ts-expect-error generated structure types are private
     type PrivateShortcut = import('../src/index.js').Shortcut
     // @ts-expect-error generated structure types are private
-    type PrivateManifest = import('../src/index.js').ComponentManifest
-    // @ts-expect-error generated structure types are private
     type PrivateStyle = import('../src/index.js').ComponentStyle
     // @ts-expect-error hand-authored generated structures are not definitions
-    const _fabricated: DefinedComponent = { name: 'btn', shortcuts: [], manifest: { name: 'btn', classNames: [] } }
-    expectTypeOf<[PrivateShortcut, PrivateManifest, PrivateStyle, typeof _fabricated]>().toBeObject()
+    const _fabricated: DefinedComponent = { name: 'btn', shortcuts: [], classNames: [] }
+    expectTypeOf<[PrivateShortcut, PrivateStyle, typeof _fabricated]>().toBeObject()
   })
   it('defineComponent returns DefinedComponent', () => {
     const result = defineComponent('btn', { base: 'inline-block' })
@@ -28,7 +26,7 @@ describe('public types', () => {
     expectTypeOf<DefinedComponent>().toMatchTypeOf<{
       name: string
       shortcuts: Shortcut[]
-      manifest: ComponentManifest
+      classNames: string[]
     }>()
   })
 

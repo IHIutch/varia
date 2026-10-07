@@ -21,7 +21,7 @@ export const components = [...recipes, defineComponent('probe', {
 })]
 
 export const classes = [
-  ...components.flatMap(component => component.manifest.classNames),
+  ...components.flatMap(component => component.classNames),
   'hover:probe-active',
   'md:probe-active',
   'md:col-span-6',

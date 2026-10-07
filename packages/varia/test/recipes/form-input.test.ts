@@ -7,8 +7,8 @@ describe('recipe: Form input', () => {
     expect(formInput.shortcuts).toMatchSnapshot()
   })
 
-  it('exposes every expected class name in the manifest', () => {
-    expect(formInput.manifest.classNames).toMatchSnapshot()
+  it('records every expected class name', () => {
+    expect(formInput.classNames).toMatchSnapshot()
   })
 
   it('focus/disabled/invalid/placeholder pseudo-classes survive through the selected engine', async () => {

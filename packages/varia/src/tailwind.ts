@@ -1,25 +1,20 @@
 import type { PluginAPI } from 'tailwindcss/plugin'
 import type { DefinedComponent } from './internal/types.js'
-import { resolve } from 'node:path'
 import { validateComponents } from './internal/validate-components.js'
-import { DEFAULT_MANIFEST_PATH, emitManifest, responsiveClasses } from './manifest.js'
 
 export interface TailwindVariaOptions {
   /** Outputs of defineComponent. Generated structures are not extension points. */
   components: DefinedComponent[]
-  /** Defaults to node_modules/.varia/manifest.d.ts relative to process cwd. */
-  manifest?: false | { path?: string }
   /** Match a CSS prefix(tw), or configure the prefix through this plugin. */
   prefix?: string
 }
 
 interface Css { [key: string]: string | Css | Css[] }
-interface Registrations { components: DefinedComponent[], manifests: Map<string, DefinedComponent[]> }
-const registrations = new WeakMap<object, Registrations>()
+const registrations = new WeakMap<object, DefinedComponent[]>()
 
 /** Register Varia classes with Tailwind v4's public JavaScript plugin interface. */
 export function tailwindVaria(options: TailwindVariaOptions): { handler: (api: PluginAPI) => void, config?: { prefix: string } } {
-  const { components, manifest = {}, prefix } = options
+  const { components, prefix } = options
   validateComponents(components, 'tailwindVaria')
   if (prefix !== undefined && !/^[a-z]+$/.test(prefix))
     throw new Error('tailwindVaria prefix must contain lowercase ASCII letters only.')
@@ -47,11 +42,11 @@ export function tailwindVaria(options: TailwindVariaOptions): { handler: (api: P
       const config = api.config() as object
       let registered = registrations.get(config)
       if (!registered) {
-        registered = { components: [], manifests: new Map() }
+        registered = []
         registrations.set(config, registered)
       }
-      validateComponents([...registered.components, ...components], 'tailwindVaria')
-      registered.components.push(...components)
+      validateComponents([...registered, ...components], 'tailwindVaria')
+      registered.push(...components)
 
       const utilities: Record<string, Css[]> = {}
       const append = (name: string, layer: 'base' | 'variants' | 'compounds', css: Css): void => {
@@ -71,24 +66,6 @@ export function tailwindVaria(options: TailwindVariaOptions): { handler: (api: P
         }
       }
       api.addUtilities(utilities)
-
-      if (manifest !== false) {
-        const path = resolve(manifest.path ?? DEFAULT_MANIFEST_PATH)
-        const definitions = registered.manifests.get(path) ?? []
-        definitions.push(...components.map(component => ({
-          ...component,
-          manifest: {
-            ...component.manifest,
-            classNames: responsiveClasses(
-              component.manifest.classNames.map(name => effectivePrefix ? `${effectivePrefix}:${name}` : name),
-              Object.keys(api.theme('screens', {}) as Record<string, unknown>),
-              effectivePrefix,
-            ),
-          },
-        })))
-        registered.manifests.set(path, definitions)
-        emitManifest(definitions, path)
-      }
     },
   }
 }

@@ -7,8 +7,8 @@ describe('recipe: Button', () => {
     expect(button.shortcuts).toMatchSnapshot()
   })
 
-  it('exposes every expected class name in the manifest', () => {
-    expect(button.manifest.classNames).toMatchSnapshot()
+  it('records every expected class name', () => {
+    expect(button.classNames).toMatchSnapshot()
   })
 
   it('has three orthogonal axes (c, style, s) — no per-cell color×shape variants', () => {

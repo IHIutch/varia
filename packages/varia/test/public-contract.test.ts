@@ -42,7 +42,7 @@ it('reserves declared slot names when classifying variant values', () => {
     slots: { root: 'block', title: 'block' },
     variants: { tone: { root: 'opacity-50' }, size: { sm: { title: 'opacity-75' }, lg: 'p-4' } },
   })
-  expect(card.manifest.classNames).toEqual(['contract-card', 'contract-card__title', 'contract-card-tone', 'contract-card-size-sm', 'contract-card-size-lg'])
+  expect(card.classNames).toEqual(['contract-card', 'contract-card__title', 'contract-card-tone', 'contract-card-size-sm', 'contract-card-size-lg'])
   expect(() => defineComponent('ambiguous', {
     slots: { root: 'block' },
     variants: { tone: { root: 'block', primary: 'block' } },

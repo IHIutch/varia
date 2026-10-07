@@ -25,12 +25,12 @@ describe('defineComponent: basic slot declaration', () => {
     ])
   })
 
-  it('manifest includes every slot class name', () => {
+  it('class names include every slot class name', () => {
     const card = defineComponent('card', {
       slots: { root: 'block', header: 'p-4' },
     })
-    expect(card.manifest.classNames).toContain('card')
-    expect(card.manifest.classNames).toContain('card__header')
+    expect(card.classNames).toContain('card')
+    expect(card.classNames).toContain('card__header')
   })
 
   it('throws if no slots are declared', () => {
@@ -105,7 +105,7 @@ describe('defineComponent: slot-keyed variants emit style descriptors', () => {
 
     const shortcutNames = card.shortcuts.map(([n]) => n)
     expect(shortcutNames).not.toContain('card-accent') // not a shortcut
-    expect(card.manifest.classNames).toContain('card-accent') // but in the manifest
+    expect(card.classNames).toContain('card-accent') // but in the class names
     expect(card.styles).toBeDefined()
     expect(card.styles!.length).toBeGreaterThan(0)
   })
@@ -121,8 +121,8 @@ describe('defineComponent: slot-keyed variants emit style descriptors', () => {
       },
     })
 
-    expect(card.manifest.classNames).toContain('card-variant-solid')
-    expect(card.manifest.classNames).toContain('card-variant-outline')
+    expect(card.classNames).toContain('card-variant-solid')
+    expect(card.classNames).toContain('card-variant-outline')
     expect(card.styles!.length).toBe(2)
   })
 
@@ -140,7 +140,7 @@ describe('defineComponent: slot-keyed variants emit style descriptors', () => {
     const shortcutNames = card.shortcuts.map(([n]) => n)
     expect(shortcutNames).toContain('card-variant-solid')
     expect(shortcutNames).not.toContain('card-variant-accent')
-    expect(card.manifest.classNames).toContain('card-variant-accent')
+    expect(card.classNames).toContain('card-variant-accent')
     expect(card.styles!.length).toBe(1)
   })
 
@@ -327,7 +327,7 @@ describe('defineComponent: array class inputs', () => {
     })
 
     // Slot-keyed boolean variant: class name is registered, CSS comes from a style descriptor.
-    expect(result.manifest.classNames).toContain('card-accent')
+    expect(result.classNames).toContain('card-accent')
     expect(result.styles).toBeDefined()
     expect(result.styles!.length).toBeGreaterThan(0)
   })

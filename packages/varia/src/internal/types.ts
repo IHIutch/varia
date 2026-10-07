@@ -82,11 +82,6 @@ export interface ComponentConfig {
 
 export type Shortcut = [className: string, expansion: string]
 
-export interface ComponentManifest {
-  name: string
-  classNames: string[]
-}
-
 /** Utility strings and selectors relative to an activation class. */
 export interface ComponentStyle {
   trigger: string
@@ -110,7 +105,7 @@ export interface DefinedComponent {
   /** @internal */
   shortcuts: Shortcut[]
   /** @internal */
-  manifest: ComponentManifest
+  classNames: string[]
   /**
    * Slot and compound styles, resolved by Tailwind on demand.
    * @internal

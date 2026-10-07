@@ -1,15 +1,12 @@
 // Prefix cases run separately to isolate engine preset configuration state.
 
-import { mkdtemp, readFile, rm } from 'node:fs/promises'
-import { tmpdir } from 'node:os'
-import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import { defineComponent } from '../src/index.js'
 import { adapters } from './_adapters.js'
 import { cssRules } from './_css.js'
 
 describe.each(adapters)('$name adapter', (adapter) => {
-  it('prefixes component classes, descendants, compounds, and manifests', async () => {
+  it('prefixes component classes, descendants, and compounds', async () => {
     const card = defineComponent('card', {
       slots: { root: 'block', title: 'block' },
       variants: { accent: { title: 'opacity-50 hover:opacity-75 -mt-1' }, active: 'opacity-25' },
@@ -25,15 +22,5 @@ describe.each(adapters)('$name adapter', (adapter) => {
     expect(selectors).toContain(`${tw.activation('card-active')}${tw.other('card-accent')}`)
     expect(selectors).not.toContain('.card')
     expect(selectors).not.toContain('.card-accent .card__title')
-
-    const dir = await mkdtemp(join(tmpdir(), `varia-${adapter.name}-prefix-`))
-    try {
-      const path = join(dir, 'manifest.d.ts')
-      await adapter.register([{ components: [card], manifest: { path }, prefix: 'tw' }])
-      expect(await readFile(path, 'utf8')).toContain(`'${tw.cls('card-accent')}'`)
-    }
-    finally {
-      await rm(dir, { recursive: true, force: true })
-    }
   })
 })

@@ -5,7 +5,7 @@ import { generateRecipeCSS } from './_helpers.js'
 describe('recipe: Card', () => {
   it('emits a single base shortcut and no variant shortcuts', () => {
     expect(card.shortcuts).toMatchSnapshot()
-    expect(card.manifest.classNames).toEqual(['card'])
+    expect(card.classNames).toEqual(['card'])
   })
 
   it('a base-only component does not throw and produces working CSS through the selected engine', async () => {

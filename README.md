@@ -26,7 +26,7 @@ export default defineComponent('btn', {
 <button class="btn btn-c-primary btn-s-lg">Save</button>
 ```
 
-Register definitions with `tailwindVaria` from `variacss/tailwind`. Tailwind scans your source files and emits CSS for component and variant classes it finds. A slot-keyed variant emits its slot rules when its variant class is used. A compound emits when the class for its first `when` condition is used; the combined selector checks the remaining conditions in the browser. Unused components and activation classes produce no component CSS. See [the v1 public contract](API.md) for supported exports, definition shapes, responsive compounds, nested slots, types, and compatibility expectations.
+Register definitions with `tailwindVaria` from `variacss/tailwind`. Tailwind scans your source files and emits CSS for component and variant classes it finds. A slot-keyed variant emits its slot rules when its variant class is used. A compound emits when the class for its first `when` condition is used; the combined selector checks the remaining conditions in the browser. Unused components and activation classes produce no component CSS. See [the v1 public contract](API.md) for supported exports, definition shapes, responsive compounds, nested slots, and compatibility expectations.
 
 ## Why Varia
 
@@ -35,7 +35,6 @@ Register definitions with `tailwindVaria` from `variacss/tailwind`. Tailwind sca
 - Generate component CSS on demand rather than shipping a complete component stylesheet.
 - Use the same classes in HTML, JSX, Rails ERB, Phoenix HEEx, Liquid, or other templates.
 - Describe multi-element components with slots and combinations of variants with compound rules.
-- Generate optional TypeScript class types for checking component class strings.
 
 Varia is a tool for authoring component styles. The [recipes](https://github.com/IHIutch/varia/tree/main/recipes) are examples you can adapt for your own design system. Interactive behavior, markup, and accessibility remain part of your application or component framework.
 
@@ -78,7 +77,7 @@ Create `tailwind.config.ts`:
 import { tailwindVaria } from 'variacss/tailwind'
 import { components } from './recipes.js'
 
-export default tailwindVaria({ components, manifest: false })
+export default tailwindVaria({ components })
 ```
 
 Create `styles.css`. Import order establishes component and utility precedence; source paths resolve relative to this stylesheet:
@@ -129,7 +128,7 @@ Create `index.html`:
 
 Run `npm run dev`, edit a recipe, and confirm the page refreshes. Run `npm run build` to produce `dist/`. Keep component classes literal so Tailwind can discover them. Slot variants target matching descendants, including nested instances. The `md:` column variant uses Tailwind's default breakpoint. Native utilities override normal component declarations; class attribute order does not determine precedence.
 
-See [API.md](API.md) for variants, compounds, prefixes, source scanning, optional types, monorepos, diagnostics, and compatibility. Native editor autocomplete needs no manifest or helper; follow [editor setup](API.md#editor-support) for automatic imported-recipe suggestion refresh.
+See [API.md](API.md) for variants, compounds, prefixes, source scanning, monorepos, diagnostics, and compatibility. Native editor autocomplete needs no helper; follow [editor setup](API.md#editor-support) for automatic imported-recipe suggestion refresh.
 
 ## Work on this repository
 
@@ -139,7 +138,7 @@ Use Node.js 26 and pnpm 10.25.0. Typechecking uses TypeScript 7.
 pnpm install
 ```
 
-This checkout contains the Tailwind implementation, including the grid and strict class-type extensions. Use `pnpm build`, `pnpm test`, `pnpm example:dev`, and `pnpm example:build`. The [engine comparison](https://github.com/IHIutch/varia/blob/main/COMPARISON.md) records earlier branch experiments; [API.md](API.md) defines current behavior.
+This checkout contains the Tailwind implementation, including the responsive grid recipes. Use `pnpm build`, `pnpm test`, `pnpm example:dev`, and `pnpm example:build`. The [engine comparison](https://github.com/IHIutch/varia/blob/main/COMPARISON.md) records earlier branch experiments; [API.md](API.md) defines current behavior.
 
 ```sh
 pnpm build
@@ -157,9 +156,8 @@ The library lives in `packages/varia`, example style definitions in `recipes`, a
 
 ## Editor autocomplete
 
-Use Tailwind CSS IntelliSense for Varia classes in ordinary markup and existing helpers such as `clsx`. The example's responsive grid uses plain class strings and disables manifest generation. See [editor support](API.md#editor-support) for settings, imported-recipe refresh, and troubleshooting. Unknown-class linting in markup is not a native extension rule.
+Use Tailwind CSS IntelliSense for Varia classes in ordinary markup and existing helpers such as `clsx`. The example's responsive grid uses plain class strings. See [editor support](API.md#editor-support) for settings, imported-recipe refresh, and troubleshooting. Unknown-class linting in markup is not a native extension rule.
 
-The existing `variacss/types` export is [optional TypeScript tooling](API.md#strict-class-types); it is not needed for autocomplete.
 
 ## Native Tailwind expansion
 
@@ -167,6 +165,6 @@ Recipes may use Tailwind's themes, custom utilities, arbitrary values, and indiv
 
 ## Development reload
 
-With `@tailwindcss/vite`, import your recipe registration config in `vite.config.ts` and set `server.warmup.clientFiles` to your CSS entry. Vite watches imported recipes and shared helpers, restarts after edits, and recovers when invalid edits in a running session are fixed. Warmup regenerates types before a browser opens.
+With `@tailwindcss/vite`, import your recipe registration config in `vite.config.ts` and set `server.warmup.clientFiles` to your CSS entry. Vite watches imported recipes and shared helpers, restarts after edits, and recovers when invalid edits in a running session are fixed. Warmup compiles CSS before a browser opens.
 
 See [Vite development reload](API.md#vite-development-reload) for the full configuration and supported paths.

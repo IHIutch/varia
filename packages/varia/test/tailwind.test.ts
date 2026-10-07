@@ -12,7 +12,7 @@ describe('tailwind integration', () => {
       compoundVariants: [{ when: { active: true, accent: true }, class: 'bg-blue-600' }],
     })
     // A CSS prefix is invisible to plugins, so it must be repeated in the options.
-    const plugin = tailwindVaria({ components: [card], manifest: false, prefix: source === 'css' ? 'tw' : undefined })
+    const plugin = tailwindVaria({ components: [card], prefix: source === 'css' ? 'tw' : undefined })
     const compiler = await compile(`${theme}\n${layers}\n${source === 'css' ? '@theme prefix(tw) {}' : ''}\n${source === 'config' ? '@config "config";' : '@plugin "variacss";'}\n@layer utilities { @tailwind utilities; }`, {
       loadModule: async (_id, base) => ({ path: '', base, module: source === 'config' ? { prefix: 'tw', plugins: [plugin] } : plugin }),
     })
@@ -28,7 +28,7 @@ describe('tailwind integration', () => {
     const btn = defineComponent('btn', { base: 'block', variants: { active: 'opacity-50' } })
     const reference = await compile('@reference "reference.css"; .target { @apply btn-active; }', {
       loadStylesheet: async (_id, base) => ({ path: '', base, content: `${theme}\n${layers}\n@plugin "variacss"; @layer utilities { @tailwind utilities; }` }),
-      loadModule: async (_id, base) => ({ path: '', base, module: tailwindVaria({ components: [btn], manifest: false }) }),
+      loadModule: async (_id, base) => ({ path: '', base, module: tailwindVaria({ components: [btn] }) }),
     })
     const css = flatten(reference.build(['btn']))
     expect(css).toContain('.target {')

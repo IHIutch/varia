@@ -57,7 +57,7 @@ exports[`recipe: Button > emits the expected shortcut tuples 1`] = `
 ]
 `;
 
-exports[`recipe: Button > exposes every expected class name in the manifest 1`] = `
+exports[`recipe: Button > records every expected class name 1`] = `
 [
   "btn",
   "btn-c-primary",

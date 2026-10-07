@@ -1,7 +1,6 @@
 import type { Browser } from 'playwright'
 import { execFileSync } from 'node:child_process'
-import { mkdir, mkdtemp, readFile, realpath, rm, symlink, unlink, writeFile } from 'node:fs/promises'
-import { createRequire } from 'node:module'
+import { mkdir, mkdtemp, realpath, rm, symlink, unlink, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { dirname, join, relative } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -9,7 +8,6 @@ import { chromium } from 'playwright'
 import { createLogger, createServer } from 'vite'
 import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vitest'
 
-const require = createRequire(import.meta.url)
 const exampleModules = fileURLToPath(new URL('../../../examples/kitchen-sink/node_modules/', import.meta.url))
 const packageRoot = fileURLToPath(new URL('../', import.meta.url))
 let archiveDir: string
@@ -43,7 +41,6 @@ async function fixture(monorepo: boolean) {
   const recipes = monorepo ? join(root, 'packages/design/recipes') : join(root, 'recipes')
   const helpers = monorepo ? join(root, 'packages/design/helpers') : join(root, 'helpers')
   const packageDir = join(root, 'node_modules/variacss')
-  const manifest = join(recipes, 'varia.d.ts')
   const prefix = monorepo ? 'tw' : ''
   const cls = (value: string) => prefix ? `${prefix}:${value}` : value
   await Promise.all([app, recipes, helpers, packageDir].map(path => mkdir(path, { recursive: true })))
@@ -65,7 +62,7 @@ export default defineComponent('reload-probe', { base, variants: { ${axis}: 'blo
   const writeConfig = (added = false) => writeFile(config, `import { tailwindVaria } from 'variacss/tailwind';
 import probe from ${JSON.stringify(importPath(app, recipe))};
 ${added ? `import extra from ${JSON.stringify(importPath(app, join(recipes, 'extra.ts')))};` : ''}
-export default tailwindVaria({ components: [probe${added ? ', extra' : ''}], prefix: ${JSON.stringify(prefix || undefined)}, manifest: { path: ${JSON.stringify(manifest)} } });`)
+export default tailwindVaria({ components: [probe${added ? ', extra' : ''}], prefix: ${JSON.stringify(prefix || undefined)} });`)
   await writeConfig()
   await writeFile(join(app, 'styles.css'), `@import "variacss/tailwind.css";
 @import "tailwindcss" source(none);
@@ -94,13 +91,10 @@ export default defineConfig({ plugins: [tailwindcss()], server: { warmup: { clie
   try {
     await server.listen()
     const origin = server.resolvedUrls!.local[0]!
-    const union = () => readFile(manifest, 'utf8').catch(() => '')
-    // No browser request should be needed to generate declarations.
-    await expect.poll(union, { timeout: 10_000 }).toContain(`'${cls('reload-probe-old')}'`)
     await page.goto(origin)
     const opacity = () => page.locator('#probe').evaluate(element => getComputedStyle(element).opacity)
     await expect.poll(opacity, { timeout: 10_000 }).toBe('0.5')
-    return { root, app, recipes, tokens, manifest, cls, server, origin, page, logs, union, opacity, writeRecipe, writeConfig }
+    return { root, app, recipes, tokens, cls, server, origin, page, logs, opacity, writeRecipe, writeConfig }
   }
   catch (error) {
     await page.close()
@@ -125,18 +119,16 @@ describe('native Vite recipe reload', () => {
       await writeFile(f.tokens, 'export const base = \'opacity-75\';')
       await expect.poll(f.opacity, { timeout: 10_000 }).toBe('0.75')
       await f.writeRecipe('new')
-      await expect.poll(f.union, { timeout: 10_000 }).toContain(`'${f.cls('reload-probe-new')}'`)
-      expect(await f.union()).not.toContain(`'${f.cls('reload-probe-old')}'`)
+      await expect.poll(() => servedCss(f.origin), { timeout: 10_000 }).toContain(`.${f.cls('reload-probe-new').replaceAll(':', '\\:')}`)
+      expect(await servedCss(f.origin)).not.toContain(`.${f.cls('reload-probe-old').replaceAll(':', '\\:')}`)
 
       const extra = join(f.recipes, 'extra.ts')
       await writeFile(extra, `import { defineComponent } from 'variacss'; export default defineComponent('reload-added', { base: 'opacity-25' });`)
       await f.writeConfig(true)
-      await expect.poll(f.union, { timeout: 10_000 }).toContain(`'${f.cls('reload-added')}'`)
       await expect.poll(() => f.page.locator('#extra').evaluate(element => getComputedStyle(element).opacity), { timeout: 10_000 }).toBe('0.25')
 
       await f.writeConfig(false)
       await unlink(extra)
-      await expect.poll(f.union, { timeout: 10_000 }).not.toContain(`'${f.cls('reload-added')}'`)
       await expect.poll(async () => {
         try {
           const css = await servedCss(f.origin)
@@ -145,7 +137,7 @@ describe('native Vite recipe reload', () => {
             && !css.includes(f.cls('reload-probe-old').replaceAll(':', '\\:'))
         }
         catch {
-          // Type generation can finish before the restarted HTTP server listens.
+          // Configuration restarts temporarily close the HTTP connection.
           return false
         }
       }, { timeout: 10_000 }).toBe(true)
@@ -155,19 +147,6 @@ describe('native Vite recipe reload', () => {
       await expect.poll(() => f.logs.join('\n'), { timeout: 10_000 }).toContain('Empty expansion for "reload-probe"')
       await writeFile(f.tokens, 'export const base = \'opacity-25\';')
       await expect.poll(f.opacity, { timeout: 10_000 }).toBe('0.25')
-
-      await writeFile(join(f.app, 'consumer.ts'), `import type { VariaClasses } from 'variacss/types';
-export function cn(...classes: VariaClasses[]): string { return classes.join(' ') }
-cn('${f.cls('reload-probe')}', '${f.cls('reload-probe-new')}');
-// @ts-expect-error removed variant
-cn('${f.cls('reload-probe-old')}');
-// @ts-expect-error deleted recipe
-cn('${f.cls('reload-added')}');`)
-      await writeFile(join(f.app, 'tsconfig.json'), JSON.stringify({
-        compilerOptions: { module: 'ESNext', moduleResolution: 'bundler', strict: true, noEmit: true },
-        files: [relative(f.app, f.manifest), 'consumer.ts'],
-      }))
-      execFileSync(process.execPath, [join(dirname(require.resolve('@typescript/native/package.json')), 'bin/tsc'), '--noEmit', '-p', f.app], { stdio: 'pipe' })
 
       const restarts = () => f.logs.filter(message => message.includes('server restarted.')).length
       const idleCount = restarts()

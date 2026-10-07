@@ -4,7 +4,7 @@ import { generateRecipeCSS } from './_helpers.js'
 
 describe('recipe: IconButton', () => {
   it('emits shortcuts for base + size + square', () => {
-    const names = iconButton.manifest.classNames
+    const names = iconButton.classNames
     expect(names).toContain('icon-btn')
     expect(names).toContain('icon-btn-s-xs')
     expect(names).toContain('icon-btn-s-sm')
@@ -14,7 +14,7 @@ describe('recipe: IconButton', () => {
   })
 
   it('does NOT emit a class for the compound (no consumer-facing shortcut)', () => {
-    const names = iconButton.manifest.classNames
+    const names = iconButton.classNames
     expect(names).not.toContain('icon-btn-s-xs-square')
     expect(names).not.toContain('icon-btn-compound-1')
   })
