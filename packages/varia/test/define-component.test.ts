@@ -33,7 +33,6 @@ describe('defineComponent', () => {
       name: 'btn',
       shortcuts: expect.any(Array),
       manifest: expect.objectContaining({
-        name: 'btn',
         classNames: expect.any(Array),
       }),
     })

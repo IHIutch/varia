@@ -1,4 +1,3 @@
-import type { DefinedComponent } from './internal/types.js'
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { dirname } from 'node:path'
 
@@ -10,14 +9,8 @@ export function responsiveClasses(names: string[], breakpoints: string[], prefix
 
 export const DEFAULT_MANIFEST_PATH = 'node_modules/.varia/manifest.d.ts'
 
-export function generateManifestContent(components: DefinedComponent[]): string {
-  const allClassNames = new Set<string>()
-  for (const component of components) {
-    for (const className of component.manifest.classNames) {
-      allClassNames.add(className)
-    }
-  }
-  const sorted = [...allClassNames].sort()
+export function generateManifestContent(names: string[]): string {
+  const sorted = [...new Set(names)].sort()
   const union
     = sorted.length > 0 ? sorted.map(n => `  | '${n}'`).join('\n') : '  | never'
 
@@ -39,8 +32,8 @@ declare module 'variacss/types' {
 `
 }
 
-export function emitManifest(components: DefinedComponent[], path: string): void {
-  const content = generateManifestContent(components)
+export function emitManifest(names: string[], path: string): void {
+  const content = generateManifestContent(names)
 
   if (existsSync(path)) {
     const existing = readFileSync(path, 'utf-8')

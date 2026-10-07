@@ -4,18 +4,11 @@ import type { DefinedComponent } from './types.js'
 export function validateComponents(components: DefinedComponent[], integration: string): void {
   const names = new Set<string>()
   const classes = new Map<string, string>()
-  const shortcuts = new Map<string, string>()
   for (const component of components) {
     if (names.has(component.name)) {
       throw new Error(`Duplicate component name "${component.name}" in ${integration}. Component names must be unique within an integration.`)
     }
     names.add(component.name)
-    for (const [className] of component.shortcuts) {
-      const owner = shortcuts.get(className)
-      if (owner !== undefined)
-        throw new Error(`Duplicate shortcut "${className}" emitted by both component "${owner}" and component "${component.name}". Each shortcut must come from a single component.`)
-      shortcuts.set(className, component.name)
-    }
     for (const className of component.manifest.classNames) {
       const owner = classes.get(className)
       if (owner !== undefined)

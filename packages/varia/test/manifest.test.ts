@@ -52,7 +52,7 @@ describe('manifest emission via the selected adapter', () => {
     await register({ components })
     expect(emit).toHaveBeenCalledOnce()
     expect(emit.mock.calls[0]![1]).toBe(resolve(DEFAULT_MANIFEST_PATH))
-    expect(emit.mock.calls[0]![0][0]!.manifest.classNames).toContain('btn')
+    expect(emit.mock.calls[0]![0]).toContain('btn')
     emit.mockClear()
 
     await register({ components, manifest: false })
@@ -122,7 +122,7 @@ describe('generateManifestContent', () => {
       variants: { c: { info: 'z' } },
     })
 
-    const content = generateManifestContent([a, b])
+    const content = generateManifestContent([...a.manifest.classNames, ...b.manifest.classNames, ...a.manifest.classNames])
 
     expect(content).toMatchSnapshot()
   })

@@ -14,7 +14,7 @@ export interface TailwindVariaOptions {
 }
 
 interface Css { [key: string]: string | Css | Css[] }
-interface Registrations { components: DefinedComponent[], manifests: Map<string, DefinedComponent[]> }
+interface Registrations { components: DefinedComponent[], manifests: Map<string, string[]> }
 const registrations = new WeakMap<object, Registrations>()
 
 /** Register Varia classes with Tailwind v4's public JavaScript plugin interface. */
@@ -74,20 +74,15 @@ export function tailwindVaria(options: TailwindVariaOptions): { handler: (api: P
 
       if (manifest !== false) {
         const path = resolve(manifest.path ?? DEFAULT_MANIFEST_PATH)
-        const definitions = registered.manifests.get(path) ?? []
-        definitions.push(...components.map(component => ({
-          ...component,
-          manifest: {
-            ...component.manifest,
-            classNames: responsiveClasses(
-              component.manifest.classNames.map(name => effectivePrefix ? `${effectivePrefix}:${name}` : name),
-              Object.keys(api.theme('screens', {}) as Record<string, unknown>),
-              effectivePrefix,
-            ),
-          },
-        })))
-        registered.manifests.set(path, definitions)
-        emitManifest(definitions, path)
+        const names = registered.manifests.get(path) ?? []
+        names.push(...responsiveClasses(
+          components.flatMap(component => component.manifest.classNames)
+            .map(name => effectivePrefix ? `${effectivePrefix}:${name}` : name),
+          Object.keys(api.theme('screens', {}) as Record<string, unknown>),
+          effectivePrefix,
+        ))
+        registered.manifests.set(path, names)
+        emitManifest(names, path)
       }
     },
   }

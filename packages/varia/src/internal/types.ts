@@ -83,7 +83,6 @@ export interface ComponentConfig {
 export type Shortcut = [className: string, expansion: string]
 
 export interface ComponentManifest {
-  name: string
   classNames: string[]
 }
 
