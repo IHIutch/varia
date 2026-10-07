@@ -85,7 +85,7 @@ Diátaxis does not require four top-level navigation tabs or an immediate docume
 
 ## What this means for Varia
 
-Local evidence comes from [README.md](../../README.md) and [the definition reference](../../apps/docs/reference/definitions.md). The README explains the product and shows a definition plus markup. Registration is a paragraph rather than a complete setup. The next substantial instructions install workspace dependencies and run contributor checks. The API contract supplies registration, CSS imports, activation rules, slots, compounds, cascade behavior, generated types, and compatibility bounds.
+Local evidence comes from [README.md](../../README.md) and the former definition reference (`apps/docs/reference/definitions.md`). The README explains the product and shows a definition plus markup. Registration is a paragraph rather than a complete setup. The next substantial instructions install workspace dependencies and run contributor checks. The API contract supplies registration, CSS imports, activation rules, slots, compounds, cascade behavior, generated types, and compatibility bounds.
 
 The missing path is consumer onboarding. Readers see the intended class syntax but cannot complete the whole installation-to-styled-element sequence in the README. The contract also combines introductory examples with details such as first-condition compound activation and descendant slot matching.
 

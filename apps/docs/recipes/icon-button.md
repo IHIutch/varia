@@ -1,6 +1,6 @@
 # Icon button
 
-An icon button with size and square variants. Labeled buttons use more horizontal than vertical padding. Icon-only buttons use equal padding. Compound rules choose the padding for each size when the square variant is present.
+Size and square variants. Compounds replace labeled-button padding with equal padding for icon-only buttons. [Full definition](https://github.com/IHIutch/varia/blob/main/recipes/icon-button.config.ts).
 
 ## Authoring
 
@@ -35,8 +35,6 @@ export default defineComponent('icon-btn', {
 })
 ```
 
-Each compound emits a combined selector such as `.icon-btn-s-md.icon-btn-square`. It applies the padding when both classes are present on the same element, without adding a class name.
-
 ## Live preview
 
 <div class="my-6 space-y-6 vp-raw">
@@ -61,59 +59,15 @@ Each compound emits a combined selector such as `.icon-btn-s-md.icon-btn-square`
 </div>
 </div>
 
-## Consumption
+## Usage
 
 ```html
-<!-- Labeled button: size variant alone -->
 <button class="icon-btn icon-btn-s-md" type="button">
-  <svg>...icon...</svg>
-  Add
+  <svg aria-hidden="true">...</svg> Add
 </button>
-
-<!-- Icon-only button: size + square together -->
 <button class="icon-btn icon-btn-s-md icon-btn-square" type="button" aria-label="Add">
-  <svg>...icon...</svg>
+  <svg aria-hidden="true">...</svg>
 </button>
 ```
 
-Write `icon-btn-s-md icon-btn-square` on the button. Tailwind generates each shortcut, and the size class activates a combined rule that overrides padding when `icon-btn-square` is also present. Unused sizes emit no compound rules.
-
-## The CSS varia emits
-
-For the rule above, the generated output includes:
-
-```css
-.icon-btn-s-md     { padding-inline: ...; padding-block: ...; font-size: ... }
-.icon-btn-square   { aspect-ratio: 1 / 1; }
-.icon-btn-s-md.icon-btn-square { padding: ... }   /* compound — overrides */
-```
-
-Compound rules are in `varia.compounds`, which follows the base and variant layers. Native utilities still override normal compound declarations.
-
-## Why this isn't a multi-value `square` variant
-
-You could define `square: { xs, sm, md, lg }` and replace the compounds with direct shortcuts. Keeping the axes separate has two benefits:
-
-1. Size controls font size and labeled-button padding. Square controls aspect ratio. Separate axes let consumers choose them independently.
-2. Consumers specify the size once. `icon-btn-s-md icon-btn-square` avoids repeating `md` in a second class such as `icon-btn-square-md`.
-
-Use compounds when separate choices affect the same CSS property. Use one multi-value variant when the choices represent a single setting.
-
-## Generated class names
-
-| Class | Purpose |
-|---|---|
-| `icon-btn` | Base styling |
-| `icon-btn-s-xs` / `-sm` / `-md` / `-lg` | Size (font + padding for labeled buttons) |
-| `icon-btn-square` | Force a square aspect ratio (icon-only) |
-
-The recipe generates six class names and four compound rules.
-
-## When to use this pattern
-
-- A button's icon-only mode needs different padding than its labeled mode.
-- A card's `compact` variant needs different gap behavior at each size.
-- A tag's `dismissible` variant needs different right-padding to leave room for the close button.
-- A boolean variant changes styles differently at each size.
-
-Independent axes need no compounds. Color and size can each define their own styles. The [Button recipe](/recipes/button) uses compounds for color and style because those choices interact.
+The size class emits a compound such as `.icon-btn-s-md.icon-btn-square`. Both classes must be on the button. Keeping square separate lets consumers specify size once.

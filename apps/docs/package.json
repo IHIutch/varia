@@ -17,6 +17,7 @@
     "@tailwindcss/vite": "^4.3.3",
     "tailwindcss": "^4.3.3",
     "vite": "8.3.2",
-    "vitepress": "2.0.0-alpha.20"
+    "vitepress": "2.0.0-alpha.20",
+    "vitepress-plugin-group-icons": "^1.7.6"
   }
 }

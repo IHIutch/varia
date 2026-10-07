@@ -1,6 +1,6 @@
 # Card
 
-A container with base styles and no variants. `base` alone is a valid component definition.
+A base-only component. [Full definition](https://github.com/IHIutch/varia/blob/main/recipes/card.config.ts).
 
 ## Authoring
 
@@ -12,8 +12,6 @@ export default defineComponent('card', {
   base: 'block rounded-lg border border-gray-200 bg-white shadow-sm',
 })
 ```
-
-The definition registers one class name, `card`.
 
 ## Live preview
 
@@ -30,7 +28,7 @@ The definition registers one class name, `card`.
 </div>
 :::
 
-## Consumption
+## Usage
 
 ```html
 <article class="card">
@@ -44,13 +42,4 @@ The definition registers one class name, `card`.
 </article>
 ```
 
-The header and body use utilities directly. If you repeat those styles across cards, define `header`, `body`, and `footer` slots. See the [Modal recipe](/recipes/modal).
-
-## When to add variants
-
-Add variants when multiple uses need the same alternatives:
-
-- Repeated background overrides, such as `bg-blue-50` and `bg-amber-50`, can become a color variant.
-- A repeated accent border can become a boolean variant such as `accent`.
-
-See the [Button recipe](/recipes/button) for a component with several variant axes.
+The header and body use utilities. Add slots if those styles repeat across cards.

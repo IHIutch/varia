@@ -1,6 +1,6 @@
 # Spinner
 
-A CSS spinner with size and color variants. It uses Tailwind's `animate-spin` utility.
+Size and color variants around Tailwind's `animate-spin`. [Full definition](https://github.com/IHIutch/varia/blob/main/recipes/spinner.config.ts).
 
 ## Authoring
 
@@ -25,8 +25,6 @@ export default defineComponent('spinner', {
 })
 ```
 
-The spinner is a rotating circle with a transparent right border. Tailwind generates the spin keyframes when it resolves `animate-spin`.
-
 ## Live preview
 
 :::raw
@@ -43,23 +41,12 @@ The spinner is a rotating circle with a transparent right border. Tailwind gener
 </div>
 :::
 
-## Consumption
+## Usage
 
 ```html
 <div role="status" aria-label="Loading">
   <span class="spinner spinner-s-md spinner-c-primary"></span>
 </div>
-
-<button class="btn btn-c-primary btn-style-solid btn-s-md" disabled>
-  <span class="spinner spinner-s-sm spinner-c-muted"></span>
-  Saving...
-</button>
 ```
 
-## Generated class names
-
-| Class | Purpose |
-|---|---|
-| `spinner` | Base + `animate-spin` (keyframes injected by Tailwind) |
-| `spinner-s-sm` / `-md` / `-lg` | Size + border thickness |
-| `spinner-c-primary` / `-muted` / `-danger` | Color (via `currentColor` on the border) |
+The border inherits `currentColor`. Omit the color variant to inherit a parent color. Tailwind supplies the animation keyframes.

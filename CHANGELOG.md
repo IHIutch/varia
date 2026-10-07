@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.0.0 (unreleased)
+## 1.0.0 (2026-10-07)
 
 First stable release of the Tailwind implementation.
 
@@ -11,7 +11,8 @@ First stable release of the Tailwind implementation.
 - Use native Tailwind CSS IntelliSense with ordinary class strings.
 - Let Tailwind validate utility syntax in active expansions.
 - Use native Vite configuration reload for statically imported recipes and shared sources.
-- Provide installation, troubleshooting, compatibility, and archive-based release instructions.
+- Support Tailwind CSS 4.1 and later, with definition files excluded from source scanning during setup.
+- Provide a concise Quickstart, component guides, recipes, troubleshooting, and archive-based release instructions.
 - Restore the VitePress documentation site with v2 and live recipe previews.
 
 The pre-release `varia/adapter` alias, `variacss/types` export, and `manifest` option are removed. Migrate to `variacss/tailwind` and native Tailwind editor suggestions. Generated definition structures are private implementation details. See [documentation](https://github.com/IHIutch/varia/tree/main/apps/docs) for the v1 contract and supported toolchain.

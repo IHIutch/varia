@@ -1,6 +1,7 @@
 import process from 'node:process'
 import tailwindcss from '@tailwindcss/vite'
 import { defineConfig, postcssIsolateStyles } from 'vitepress'
+import { groupIconMdPlugin, groupIconVitePlugin } from 'vitepress-plugin-group-icons'
 import '../tailwind.config.js'
 
 export default defineConfig({
@@ -10,8 +11,14 @@ export default defineConfig({
   lastUpdated: true,
   base: process.env.DOCS_BASE ?? '/',
 
+  markdown: {
+    config(md) {
+      md.use(groupIconMdPlugin)
+    },
+  },
+
   vite: {
-    plugins: [tailwindcss()],
+    plugins: [tailwindcss(), groupIconVitePlugin()],
     server: { warmup: { clientFiles: ['./tailwind.css'] } },
     css: {
       postcss: {
@@ -32,9 +39,7 @@ export default defineConfig({
   themeConfig: {
     nav: [
       { text: 'Quickstart', link: '/quickstart' },
-      { text: 'Guides', link: '/documentation#guides' },
-      { text: 'Concepts', link: '/concepts' },
-      { text: 'Reference', link: '/reference/definitions' },
+      { text: 'Guides', link: '/guides/basic-component' },
       { text: 'Recipes', link: '/recipes/' },
     ],
 
@@ -43,36 +48,20 @@ export default defineConfig({
         {
           text: 'Getting started',
           items: [
-            { text: 'Overview', link: '/documentation' },
             { text: 'Quickstart', link: '/quickstart' },
           ],
         },
         {
           text: 'Guides',
           items: [
-            { text: 'Tailwind CSS', link: '/tailwind' },
-            { text: 'Slots', link: '/guides/style-child-elements' },
+            { text: 'Basic component', link: '/guides/basic-component' },
+            { text: 'Variants', link: '/guides/variants' },
+            { text: 'Slots', link: '/guides/slots' },
+            { text: 'Compound variants', link: '/guides/compound-variants' },
             { text: 'Responsive variants', link: '/guides/responsive-variants' },
-            { text: 'Overrides', link: '/guides/override-styles' },
+            { text: 'Overrides', link: '/guides/overrides' },
             { text: 'Theming', link: '/theming' },
-            { text: 'Editor support', link: '/recipes/type-safety' },
             { text: 'Troubleshooting', link: '/troubleshooting' },
-          ],
-        },
-        {
-          text: 'Concepts',
-          items: [
-            { text: 'Concepts', link: '/concepts' },
-            { text: 'Comparison', link: '/comparison' },
-          ],
-        },
-        {
-          text: 'Reference',
-          items: [
-            { text: 'Definitions', link: '/reference/definitions' },
-            { text: 'Naming convention', link: '/naming' },
-            { text: 'Options', link: '/tailwind#options' },
-            { text: 'Compatibility', link: '/reference/compatibility' },
           ],
         },
         {
@@ -92,7 +81,7 @@ export default defineConfig({
         },
         {
           text: 'Contributing',
-          items: [{ text: 'Contributing', link: '/contribute' }],
+          items: [{ text: 'Contributing', link: '/contributing' }],
         },
       ],
     },

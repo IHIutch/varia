@@ -1,6 +1,6 @@
 # Form input
 
-A form input with focus, disabled, invalid, placeholder, and read-only styles. State utilities can appear in base styles or variant definitions.
+State and size variants, with native focus, disabled, placeholder, and read-only styles. [Full definition](https://github.com/IHIutch/varia/blob/main/recipes/form-input.config.ts).
 
 ## Authoring
 
@@ -26,12 +26,6 @@ export default defineComponent('form-input', {
 })
 ```
 
-This recipe groups state styles with their base or variant:
-
-- `placeholder:text-gray-400` in `base` sets the placeholder color.
-- `form-input-state-error` includes `invalid:border-red-500`, which applies when the input is invalid.
-- `form-input-readonly` includes read-only utilities, which apply when the input has the `readonly` attribute.
-
 ## Live preview
 
 :::raw
@@ -46,25 +40,13 @@ This recipe groups state styles with their base or variant:
 </div>
 :::
 
-## Consumption
+## Usage
 
 ```html
 <input class="form-input form-input-state-default form-input-s-md" />
-
-<input class="form-input form-input-state-error form-input-s-md"
-       aria-invalid="true" />
-
-<input class="form-input form-input-state-default form-input-s-lg form-input-readonly"
+<input class="form-input form-input-state-error form-input-s-md" aria-invalid="true" />
+<input class="form-input form-input-state-default form-input-s-md form-input-readonly"
        readonly value="cannot edit" />
-
-<input class="form-input form-input-state-default form-input-s-md" disabled />
 ```
 
-## Generated class names
-
-| Class | Purpose |
-|---|---|
-| `form-input` | Base input styling, including `:focus`, `:disabled`, `::placeholder` |
-| `form-input-state-default` / `-error` / `-success` | Visual mode |
-| `form-input-s-sm` / `-md` / `-lg` | Size |
-| `form-input-readonly` | Toggles `:read-only` styling |
+The `state` variant controls appearance; your application handles validation. The `readonly` variant enables styles gated by the input's `readonly` attribute.

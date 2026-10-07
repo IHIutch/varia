@@ -1,168 +1,110 @@
 # Quickstart
 
-In this tutorial you will build a button, then add a size variant and see the button change. You will use Vite, Tailwind, and Varia in a standalone project.
+## Install
 
-You need Node.js 26 or newer and npm for this Vite 8 setup. The walkthrough was verified with Node.js 26.8.2.
+::: code-group
 
-## 1. Create a project
-
-In your terminal, run:
-
-```sh
-mkdir varia-first-style
-cd varia-first-style
+```sh [npm]
+npm install variacss tailwindcss
 ```
 
-Create `package.json` with this content:
-
-```json
-{
-  "name": "varia-first-style",
-  "private": true,
-  "type": "module",
-  "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview"
-  }
-}
+```sh [pnpm]
+pnpm add variacss tailwindcss
 ```
 
-Install the package and build tools:
-
-```sh
-npm install variacss
-npm install -D vite@8.3.2 tailwindcss@4.3.3 @tailwindcss/vite@4.3.3
+```sh [Yarn]
+yarn add variacss tailwindcss
 ```
 
-The build-tool versions match the repository's demo. The project will contain these files:
-
-```text
-varia-first-style/
-  package.json
-  vite.config.ts
-  button.config.ts
-  tailwind.config.ts
-  styles.css
-  index.html
+```sh [Bun]
+bun add variacss tailwindcss
 ```
 
-## 2. Define the button
+:::
 
-Create `button.config.ts`:
+## Define and register a component
 
-```ts
+Create `varia.config.ts` beside your CSS entrypoint:
+
+```ts [varia.config.ts]
 import { defineComponent } from 'variacss'
-
-export default defineComponent('demo-btn', {
-  base: 'inline-flex rounded bg-blue-600 px-4 py-2 font-medium text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600',
-})
-```
-
-The component name is `demo-btn`. That is the class you will use in HTML.
-
-## 3. Connect the CSS build
-
-Create `vite.config.ts`:
-
-```ts
-import tailwindcss from '@tailwindcss/vite'
-import { defineConfig } from 'vite'
-import './tailwind.config.js'
-
-export default defineConfig({
-  plugins: [tailwindcss()],
-  server: { warmup: { clientFiles: ['./styles.css'] } },
-})
-```
-
-Create `tailwind.config.ts`:
-
-```ts
 import { tailwindVaria } from 'variacss/tailwind'
-import button from './button.config.js'
 
-export default tailwindVaria({ components: [button] })
-```
-
-Create `styles.css`:
-
-```css
-@import "variacss/tailwind.css";
-@import "tailwindcss" source(none);
-@source "./index.html";
-@plugin "./tailwind.config.ts";
-```
-
-Keep the imports in this order. The first stylesheet establishes the layers used by component styles. The plugin path is relative to `styles.css`.
-
-## 4. See the first result
-
-Create `index.html`:
-
-```html
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>First Varia style</title>
-    <link rel="stylesheet" href="/styles.css">
-  </head>
-  <body class="p-8">
-    <button type="button" class="demo-btn">Save</button>
-  </body>
-</html>
-```
-
-Run:
-
-```sh
-npm run dev
-```
-
-Open the local URL printed by Vite. You should see a blue button with white text, rounded corners, and padding. Press Tab to focus the button and see its focus outline. The button has no save action; this example defines its styles.
-
-If the button looks unstyled, check the stylesheet link, registration, and import order against the files above. [Troubleshooting](/troubleshooting) lists further checks.
-
-## 5. Add a size variant
-
-With the development server running, replace `button.config.ts` with:
-
-```ts
-import { defineComponent } from 'variacss'
-
-export default defineComponent('demo-btn', {
-  base: 'inline-flex rounded bg-blue-600 px-4 py-2 font-medium text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600',
+const button = defineComponent('demo-btn', {
+  base: 'inline-flex rounded bg-blue-600 px-4 py-2 font-medium text-white',
   variants: {
     size: {
       lg: 'px-6 py-3 text-lg',
     },
   },
 })
+
+export default tailwindVaria({ components: [button] })
 ```
 
-Change the button in `index.html` to:
+## Load the plugin
+
+Update your CSS entrypoint, keeping the imports in this order:
+
+```css{1-2} [styles.css]
+@import "variacss/tailwind.css";
+@import "tailwindcss";
+@source not "./**/*.config.ts";
+@plugin "./varia.config.ts";
+```
+
+The first import sets component layer order. `@source not` requires Tailwind 4.1+ and prevents definition files from generating standalone utilities. Paths are relative to this stylesheet; adjust the exclusion if you store definitions elsewhere.
+
+## Use the classes
 
 ```html
 <button type="button" class="demo-btn demo-btn-size-lg">Save</button>
 ```
 
-Vite should restart and refresh the page after the definition changes. The button should have larger padding and text. Remove `demo-btn-size-lg` from the HTML to see the original size return.
+Run your existing development command. The button should be blue with larger padding and text. Remove `demo-btn-size-lg` to return to the base size.
 
-Use the complete class name `demo-btn-size-lg` in your source. Tailwind needs to discover that name to generate its CSS. The registration import in `vite.config.ts` lets Vite track definitions and their local imports. See [development reload](/tailwind#development-reload) for the supported boundaries.
+See [troubleshooting](/troubleshooting) if styles are missing.
 
-## 6. Build the project
+## Editor support
 
-Stop the development server and run:
+Install [Tailwind CSS IntelliSense](https://github.com/tailwindlabs/tailwindcss-intellisense#installation) for VS Code. It loads the plugin from your CSS entrypoint to suggest Varia classes and show their CSS on hover.
 
-```sh
-npm run build
-npm run preview
+## Development reload
+
+With `@tailwindcss/vite` and Vite's default bundled config loader, import your registration module in `vite.config.ts`. Vite will restart when that module or its imported definitions change:
+
+```ts{3} [vite.config.ts]
+import tailwindcss from '@tailwindcss/vite'
+import { defineConfig } from 'vite'
+import './src/varia.config.js'
+
+export default defineConfig({
+  plugins: [tailwindcss()],
+})
 ```
 
-Open the preview URL. The built page should show the same button. You have defined a component style, registered it, loaded its CSS, and activated a variant through an HTML class.
+Adjust the import path to your project and keep the stylesheet's `@plugin` directive.
 
-To continue, [style child elements with slots](/guides/style-child-elements) or [change variants at a breakpoint](/guides/responsive-variants). Read [the styling model](/concepts) for the relationship between definitions, class names, and generated CSS.
+## Source detection
 
-For exact versioning and compatibility limits, see [compatibility](/reference/compatibility).
+Tailwind detects Varia classes just like utilities. Use complete class names when choosing variants dynamically:
+
+```ts
+const sizes = { base: 'demo-btn', lg: 'demo-btn demo-btn-size-lg' }
+```
+
+For custom scan paths and safelisting, see Tailwind's [source detection documentation](https://tailwindcss.com/docs/detecting-classes-in-source-files).
+
+## Options
+
+`tailwindVaria` accepts a `components` array of unchanged `defineComponent` outputs and an optional `prefix`:
+
+```ts
+export default tailwindVaria({ components: [button], prefix: 'tw' })
+```
+
+```html
+<button class="tw:demo-btn tw:md:demo-btn-size-lg">Save</button>
+```
+
+Keep definition utilities unprefixed. Prefixes contain lowercase ASCII letters only. If your stylesheet uses `@import "tailwindcss" prefix(tw)`, also pass the matching `prefix: 'tw'`; the plugin cannot read CSS-declared prefixes. JavaScript-configured prefixes are detected automatically.
