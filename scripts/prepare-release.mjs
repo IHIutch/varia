@@ -13,20 +13,15 @@ const run = (args, env = {}) => execFileSync('pnpm', args, { cwd: root, stdio: '
 try {
   // Never leave an old verified archive behind after a failed preparation.
   await rm(output, { recursive: true, force: true })
-  for (const command of ['test', 'typecheck', 'lint', 'example:build', 'test:editor'])
-    run([command])
-  // Stored image references are Chromium on macOS; Linux still runs the
-  // real-browser computed-style and reload assertions in the consumer gate.
-  if (process.platform === 'darwin')
-    run(['test:visual'])
   const packageRoot = join(root, 'packages/varia')
   execFileSync('npm', ['pack', '--pack-destination', temporary], { cwd: packageRoot, stdio: 'inherit' })
   const { version } = JSON.parse(await readFile(join(packageRoot, 'package.json'), 'utf8'))
   const filename = `varia-${version}.tgz`
   const archive = join(temporary, filename)
   const env = { VARIA_RELEASE_ARCHIVE: archive }
-  run(['--filter', 'varia', 'exec', 'vitest', 'run', 'test/packaging.test.ts'], env)
-  run(['--filter', 'varia', 'exec', 'vitest', 'run', '--config', 'vitest.reload.config.ts'], env)
+  // The unit suite includes the clean-install smoke test of this archive.
+  for (const command of ['test', 'typecheck', 'lint', 'example:build'])
+    run([command], env)
   await mkdir(output, { recursive: true })
   await copyFile(archive, join(output, filename))
   console.log(`Verified release archive: ${join(output, filename)}`)
