@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import avatar from '../../../../recipes/avatar.config.js'
-import { generateRecipeCSS } from './_helpers.js'
+import { generateCSS as generateRecipeCSS } from '../helpers/generate.js'
 
 describe('recipe: Avatar', () => {
   it('emits the expected shortcut tuples', () => {

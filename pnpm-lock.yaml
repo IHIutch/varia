@@ -185,11 +185,11 @@ importers:
         specifier: npm:@typescript/typescript6@^6.0.2
         version: '@typescript/typescript6@6.0.2'
 
-  apps/docs:
+  docs:
     dependencies:
       variacss:
         specifier: workspace:*
-        version: link:../../packages/varia
+        version: link:../packages/varia
     devDependencies:
       '@tailwindcss/vite':
         specifier: ^4.3.3

@@ -4,12 +4,16 @@ export default antfu({
   type: 'lib',
   typescript: true,
   markdown: false,
-  // Ignore generated/built output and design-history docs.
+  // Ignore generated output and visual test artifacts.
   ignores: [
     '**/dist/**',
     '**/node_modules/**',
-    'adr/**',
-    'packages/varia/test/recipes/__snapshots__/**',
+    '**/__snapshots__/**',
+    '**/.vitest/**',
+    '**/.vitest-attachments/**',
+    '**/.vitepress/cache/**',
+    '**/.vitepress/.temp/**',
+    '.release/**',
     'coverage/**',
   ],
 }, {

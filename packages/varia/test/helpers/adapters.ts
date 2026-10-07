@@ -1,5 +1,5 @@
-import type { DefinedComponent } from '../src/index.js'
-import { adapter } from './_engine.js'
+import type { DefinedComponent } from '../../src/index.js'
+import { adapter } from './engine.js'
 
 export interface Registration {
   components: DefinedComponent[]

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import spinner from '../../../../recipes/spinner.config.js'
-import { generateRecipeCSS } from './_helpers.js'
+import { generateCSS as generateRecipeCSS } from '../helpers/generate.js'
 
 describe('recipe: Spinner', () => {
   it('emits the expected shortcut tuples', () => {

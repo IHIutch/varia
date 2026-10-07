@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { defineComponent } from '../src/index.js'
-import { cssRules } from './_css.js'
-import { adapter } from './_engine.js'
+import { cssRules } from './helpers/css.js'
+import { adapter } from './helpers/engine.js'
 
 describe('v1 compound condition contract', () => {
   it.each([undefined, 'tw'])('modifies only the first condition with prefix %s', async (prefix) => {

@@ -8,6 +8,7 @@ export default defineConfig({
   title: 'Varia',
   description: 'On-demand CSS with the ergonomics of regular CSS classes',
   cleanUrls: true,
+  srcExclude: ['research/**', 'history/**'],
   lastUpdated: true,
   base: process.env.DOCS_BASE ?? '/',
 

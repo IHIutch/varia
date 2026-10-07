@@ -1,6 +1,6 @@
 import { expect, it } from 'vitest'
-import { cssRules } from './_css.js'
-import { adapter } from './_engine.js'
+import { cssRules } from './helpers/css.js'
+import { adapter } from './helpers/engine.js'
 
 it('loads the packaged adapter and TypeScript definitions through the engine config loader', async () => {
   const { css, sources } = await adapter.packaged()

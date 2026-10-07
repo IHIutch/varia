@@ -2,7 +2,7 @@ import { compile } from 'tailwindcss'
 import { describe, expect, it } from 'vitest'
 import { defineComponent } from '../src/index.js'
 import { tailwindVaria } from '../src/tailwind.js'
-import { flatten, layers, theme } from './_tailwind.js'
+import { flatten, layers, theme } from './helpers/tailwind.js'
 
 describe('tailwind integration', () => {
   it.each(['css', 'config'] as const)('matches a prefix configured through %s', async (source) => {

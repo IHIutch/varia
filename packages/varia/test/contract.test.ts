@@ -2,10 +2,10 @@
 // against its selected engine, comparing normalized rules rather than raw output.
 
 import { describe, expect, it } from 'vitest'
-import { components as recipes } from '../../../examples/kitchen-sink/recipe-components.js'
+import { components as recipes } from '../../../recipes/index.js'
 import { defineComponent } from '../src/index.js'
-import { adapters } from './_adapters.js'
-import { cssRules, layerOrder } from './_css.js'
+import { adapters } from './helpers/adapters.js'
+import { cssRules, layerOrder } from './helpers/css.js'
 
 const rule = (fields: Record<string, unknown>): unknown => expect.objectContaining(fields)
 const decls = (fields: Record<string, string>): unknown => expect.objectContaining(fields)

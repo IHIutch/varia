@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { defineComponent } from '../src/index.js'
-import { generateCSS } from './_generate.js'
+import { generateCSS } from './helpers/generate.js'
 
 async function generate(component: ReturnType<typeof defineComponent>, classes: string): Promise<string> {
   return generateCSS([component], classes)

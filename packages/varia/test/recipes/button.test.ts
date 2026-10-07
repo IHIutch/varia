@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import button from '../../../../recipes/button.config.js'
-import { generateRecipeCSS } from './_helpers.js'
+import { generateCSS as generateRecipeCSS } from '../helpers/generate.js'
 
 describe('recipe: Button', () => {
   it('emits the expected shortcut tuples', () => {

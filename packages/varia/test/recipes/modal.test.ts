@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import modal from '../../../../recipes/modal.config.js'
-import { generateRecipeCSS } from './_helpers.js'
+import { generateCSS as generateRecipeCSS } from '../helpers/generate.js'
 
 describe('recipe: Modal', () => {
   it('emits a shortcut for every slot (root → bare name, others → BEM)', () => {

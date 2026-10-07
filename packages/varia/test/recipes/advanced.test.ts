@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 import accordion from '../../../../recipes/accordion.config.js'
 import progress from '../../../../recipes/progress.config.js'
 import tooltip from '../../../../recipes/tooltip.config.js'
-import { generateRecipeCSS } from './_helpers.js'
+import { generateCSS as generateRecipeCSS } from '../helpers/generate.js'
 
 describe('advanced recipes', () => {
   it('preserves tooltip reveal attributes and the ancestor hover selector', async () => {

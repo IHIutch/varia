@@ -154,7 +154,7 @@ The first improvement should be one complete consumer tutorial, validated in a c
 
 ## Integration into the current site
 
-The VitePress site in `apps/docs` is the consumer documentation. The current public package is `variacss`, requires Node.js 26, and uses native Tailwind editor support rather than generated class declarations. The integrated tutorial and guides follow those current interfaces. The review above records the older checkout evaluated during the initial research.
+The VitePress site in `docs` is the consumer documentation. The current public package is `variacss`, requires Node.js 26, and uses native Tailwind editor support rather than generated class declarations. The integrated tutorial and guides follow those current interfaces. The review above records the older checkout evaluated during the initial research.
 
 ## Page naming reconsidered
 

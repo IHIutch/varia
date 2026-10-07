@@ -15,4 +15,4 @@ First stable release of the Tailwind implementation.
 - Provide a concise Quickstart, component guides, recipes, troubleshooting, and archive-based release instructions.
 - Restore the VitePress documentation site with v2 and live recipe previews.
 
-The pre-release `varia/adapter` alias, `variacss/types` export, and `manifest` option are removed. Migrate to `variacss/tailwind` and native Tailwind editor suggestions. Generated definition structures are private implementation details. See [documentation](https://github.com/IHIutch/varia/tree/main/apps/docs) for the v1 contract and supported toolchain.
+The pre-release `varia/adapter` alias, `variacss/types` export, and `manifest` option are removed. Migrate to `variacss/tailwind` and native Tailwind editor suggestions. Generated definition structures are private implementation details. See [documentation](https://github.com/IHIutch/varia/tree/main/docs) for the v1 contract and supported toolchain.

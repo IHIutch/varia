@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import dropdown from '../../../../recipes/dropdown.config.js'
-import { generateRecipeCSS } from './_helpers.js'
+import { generateCSS as generateRecipeCSS } from '../helpers/generate.js'
 
 describe('recipe: Dropdown', () => {
   it('exports one component with five slots and two alignment variants', () => {

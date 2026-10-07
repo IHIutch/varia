@@ -1,4 +1,4 @@
-import { components as recipes } from '../../../../examples/kitchen-sink/recipe-components.js'
+import { components as recipes } from '../../../../recipes/index.js'
 import { defineComponent } from '../../src/index.js'
 
 export const components = [...recipes, defineComponent('probe', {

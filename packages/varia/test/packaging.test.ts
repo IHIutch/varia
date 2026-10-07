@@ -9,7 +9,7 @@ it('loads public package exports without an engine and rejects the comparison al
   const dir = await mkdtemp(join(tmpdir(), 'varia-isolated-'))
   try {
     const packageDir = join(dir, 'node_modules/variacss')
-    const archive = process.env.VARIA_RELEASE_ARCHIVE ?? join(dir, JSON.parse(execFileSync('npm', ['pack', '--json', '--pack-destination', dir], {
+    const archive = process.env.VARIA_RELEASE_ARCHIVE ?? join(dir, JSON.parse(execFileSync('npm', ['pack', '--json', '--foreground-scripts=false', '--pack-destination', dir], {
       cwd: fileURLToPath(new URL('../', import.meta.url)),
       encoding: 'utf8',
     }))[0].filename)

@@ -7,7 +7,7 @@ pnpm install
 pnpm build
 ```
 
-The library is in `packages/varia`, definitions in `recipes`, the demo in `examples/kitchen-sink`, and the VitePress site in `apps/docs`.
+The library is in `packages/varia`, definitions in `recipes`, the demo in `examples/kitchen-sink`, and the VitePress site in `docs`.
 
 ## Development
 
@@ -16,7 +16,7 @@ pnpm example:dev
 pnpm docs:dev
 ```
 
-The demo includes `/components.html` and `/grid.html`. Build the docs with `pnpm docs:build` and inspect them with `pnpm docs:preview`. Static output is `apps/docs/.vitepress/dist`; set `DOCS_BASE=/your-path/` for subdirectory hosting.
+The demo includes `/components.html` and `/grid.html`. Build the docs with `pnpm docs:build` and inspect them with `pnpm docs:preview`. Static output is `docs/.vitepress/dist`; set `DOCS_BASE=/your-path/` for subdirectory hosting.
 
 ## Verify changes
 

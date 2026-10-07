@@ -2,8 +2,8 @@
 
 import { describe, expect, it } from 'vitest'
 import { defineComponent } from '../src/index.js'
-import { adapters } from './_adapters.js'
-import { cssRules } from './_css.js'
+import { adapters } from './helpers/adapters.js'
+import { cssRules } from './helpers/css.js'
 
 describe.each(adapters)('$name adapter', (adapter) => {
   it('prefixes component classes, descendants, and compounds', async () => {

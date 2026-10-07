@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import card from '../../../../recipes/card.config.js'
-import { generateRecipeCSS } from './_helpers.js'
+import { generateCSS as generateRecipeCSS } from '../helpers/generate.js'
 
 describe('recipe: Card', () => {
   it('emits a single base shortcut and no variant shortcuts', () => {

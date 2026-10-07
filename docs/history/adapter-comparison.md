@@ -1,6 +1,6 @@
 # Adapter comparison
 
-This is a historical record of the pre-release Tailwind/UnoCSS comparison. Its `varia/*` imports, manifests, and setup commands describe those branches. Current Varia uses `variacss`; follow [Quickstart](apps/docs/quickstart.md) for its API and setup. Comparison branch parity is not a v1 release gate.
+This is a historical record of the pre-release Tailwind/UnoCSS comparison. Its `varia/*` imports, manifests, and setup commands describe those branches. Current Varia uses `variacss`; follow [Quickstart](../quickstart.md) for its API and setup. Comparison branch parity is not a v1 release gate.
 
 Compare `tailwind-mvp` and `unocss-minimal` against `comparison-base`, their shared merge base. Each implementation has one CSS engine. The common baseline contains definitions, validation, manifests, recipes, demo markup, and engine-independent tests. It is an extraction baseline rather than a runnable styling integration.
 

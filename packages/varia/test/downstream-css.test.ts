@@ -2,8 +2,8 @@ import { cp, mkdir, mkdtemp, realpath, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { expect, it } from 'vitest'
-import { cssRules } from './_css.js'
-import { adapter } from './_engine.js'
+import { cssRules } from './helpers/css.js'
+import { adapter } from './helpers/engine.js'
 
 it('preserves downstream authored CSS and compiles native @apply in a real Vite build', async () => {
   const fixture = await realpath(await mkdtemp(join(tmpdir(), 'varia-css-consumer-')))

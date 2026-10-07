@@ -1,7 +1,7 @@
 import { playwright } from '@vitest/browser-playwright'
 import { defineConfig } from 'vitest/config'
-import { adapter } from './test/_engine.js'
 import { classes, components } from './test/browser/fixtures.js'
+import { adapter } from './test/helpers/engine.js'
 
 const moduleId = '\0varia-browser-css'
 

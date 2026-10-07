@@ -1,13 +1,13 @@
-import type { Adapter, Registration } from './_adapters.js'
+import type { Adapter, Registration } from './adapters.js'
 import { readdir, readFile, writeFile } from 'node:fs/promises'
 import { createRequire } from 'node:module'
 import { join } from 'node:path'
 import { pathToFileURL } from 'node:url'
 import { compile as compileNode } from '@tailwindcss/node'
 import { compile } from 'tailwindcss'
-import { enginePlugin } from '../../../examples/kitchen-sink/engine.js'
-import { tailwindVaria } from '../src/tailwind.js'
-import { flatten, layers, theme } from './_tailwind.js'
+import { enginePlugin } from '../../../../examples/kitchen-sink/engine.js'
+import { tailwindVaria } from '../../src/tailwind.js'
+import { flatten, layers, theme } from './tailwind.js'
 
 function tailwindCss(plugins: number, extra = ''): string {
   return `${layers}\n${theme}\n${extra}\n${Array.from({ length: plugins }, (_, index) => `@plugin "${index}";`).join('\n')}\n@layer utilities { @tailwind utilities; }`
@@ -22,9 +22,9 @@ async function tailwindCompile(registrations: Registration[], extra = '', css = 
 export const adapter: Adapter = {
   name: 'tailwind',
   async scan(fixture, prefix, authoredCss = '') {
-    const require = createRequire(new URL('../../../examples/kitchen-sink/package.json', import.meta.url))
+    const require = createRequire(new URL('../../../../examples/kitchen-sink/package.json', import.meta.url))
     const { build } = await import(pathToFileURL(require.resolve('vite')).href)
-    const recipes = new URL('../../../recipes/', import.meta.url).pathname
+    const recipes = new URL('../../../../recipes/', import.meta.url).pathname
     await writeFile(join(fixture, 'package.json'), '{"type":"module"}')
     await writeFile(join(fixture, 'index.html'), '<script type="module" src="/consumer.ts"></script>')
     await writeFile(join(fixture, 'engine.config.ts'), `import { tailwindVaria } from 'variacss/tailwind';
@@ -43,7 +43,7 @@ ${authoredCss}`)
   },
   async packaged() {
     const sources: string[] = []
-    const base = new URL('./fixtures/', import.meta.url).pathname
+    const base = new URL('../fixtures/', import.meta.url).pathname
     const compiler = await compileNode('@import "variacss/tailwind.css"; @import "tailwindcss"; @plugin "./engine.config.ts";', { base, onDependency: path => sources.push(path) })
     return { css: flatten(compiler.build(['fixture', 'fixture-active'])), sources }
   },

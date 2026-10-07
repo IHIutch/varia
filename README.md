@@ -29,10 +29,10 @@ In a Tailwind CSS v4 project:
 npm install variacss tailwindcss
 ```
 
-Register definitions with `tailwindVaria` from `variacss/tailwind` and import `variacss/tailwind.css` before Tailwind. Follow [Quickstart](https://github.com/IHIutch/varia/blob/main/apps/docs/quickstart.md) for the configuration.
+Register definitions with `tailwindVaria` from `variacss/tailwind` and import `variacss/tailwind.css` before Tailwind. Follow [Quickstart](https://github.com/IHIutch/varia/blob/main/docs/quickstart.md) for the configuration.
 
 Varia supports slots for child elements and compounds for combinations of variants. Your application supplies markup, interaction, and accessibility.
 
-- [Guides](https://github.com/IHIutch/varia/tree/main/apps/docs/guides)
+- [Guides](https://github.com/IHIutch/varia/tree/main/docs/guides)
 - [Recipes](https://github.com/IHIutch/varia/tree/main/recipes)
 - [Contributing](https://github.com/IHIutch/varia/blob/main/CONTRIBUTING.md)

@@ -1,6 +1,6 @@
-import type { DefinedComponent } from '../src/index.js'
-import { cssRules } from './_css.js'
-import { adapter } from './_engine.js'
+import type { DefinedComponent } from '../../src/index.js'
+import { cssRules } from './css.js'
+import { adapter } from './engine.js'
 
 /** Merge equivalent rule contexts for the legacy recipe assertions. */
 export async function generateCSS(components: DefinedComponent[], classes: string): Promise<string> {

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import iconButton from '../../../../recipes/icon-button.config.js'
-import { generateRecipeCSS } from './_helpers.js'
+import { generateCSS as generateRecipeCSS } from '../helpers/generate.js'
 
 describe('recipe: IconButton', () => {
   it('emits shortcuts for base + size + square', () => {

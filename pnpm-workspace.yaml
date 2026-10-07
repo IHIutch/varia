@@ -8,7 +8,7 @@ shellEmulator: true
 packages:
   - 'packages/*'
   - 'examples/*'
-  - 'apps/*'
+  - docs
 
 # GHSA-238p-pmpm-9mq7: the Markdown linter still requests vulnerable KaTeX.
 overrides:
