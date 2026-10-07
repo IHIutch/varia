@@ -12,5 +12,6 @@ First stable release of the Tailwind implementation.
 - Let Tailwind validate utility syntax in active expansions.
 - Use native Vite configuration reload for statically imported recipes and shared sources.
 - Provide installation, troubleshooting, compatibility, and archive-based release instructions.
+- Restore the VitePress documentation site with v2 and live recipe previews.
 
 The pre-release `varia/adapter` alias, `variacss/types` export, and `manifest` option are removed. Migrate to `variacss/tailwind` and native Tailwind editor suggestions. Generated definition structures are private implementation details. See [API.md](API.md) for the v1 contract and supported toolchain.

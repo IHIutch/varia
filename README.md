@@ -40,7 +40,7 @@ Varia is a tool for authoring component styles. The [recipes](https://github.com
 
 ## Install with Tailwind and Vite
 
-Use Node.js 26 or newer. This example uses Tailwind 4.3.3 and Vite 8.0.16. The npm package name is `variacss`. Version 1.0.0 is prepared in this repository and has not been published yet.
+Use Node.js 26 or newer. This example uses Tailwind 4.3.3 and Vite 8.3.2. The npm package name is `variacss`. Version 1.0.0 is prepared in this repository and has not been published yet.
 
 ```sh
 mkdir varia-app
@@ -48,10 +48,14 @@ cd varia-app
 npm init -y
 npm pkg set type=module scripts.dev=vite scripts.build="vite build"
 npm install variacss@1.0.0 tailwindcss@4.3.3
-npm install -D vite@8.0.16 @tailwindcss/vite@4.3.3
+npm install -D vite@8.3.2 @tailwindcss/vite@4.3.3
 ```
 
-Before publication, replace `variacss@1.0.0` with the absolute path to `.release/variacss-1.0.0.tgz`, produced by `pnpm release:prepare` in this checkout.
+Before publication, replace `variacss@1.0.0` with the absolute path to `.release/variacss-1.0.0.tgz`, produced by The documentation site restored from project history lives in `apps/docs` and uses VitePress `2.0.0-alpha.20`. Run `pnpm docs:dev`, `pnpm docs:build`, or `pnpm docs:preview`. API content comes directly from the root `API.md`; recipe pages include live previews. Static output is `apps/docs/.vitepress/dist`. Set `DOCS_BASE=/your-path/` when building for a subdirectory.
+
+Dependency resolution keeps a 24-hour minimum release age and rejects provenance downgrades. Updates use the latest eligible stable versions; VitePress v2 is explicitly pinned to its current alpha release.
+
+`pnpm release:prepare` in this checkout.
 
 Create `recipes.ts` using only public exports:
 
@@ -132,7 +136,7 @@ See [API.md](API.md) for variants, compounds, prefixes, source scanning, monorep
 
 ## Work on this repository
 
-Use Node.js 26 and pnpm 10.25.0. Typechecking uses TypeScript 7.
+Use Node.js 26 and pnpm 12.9.1. Typechecking uses TypeScript 7.
 
 ```sh
 pnpm install

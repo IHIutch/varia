@@ -17,3 +17,7 @@ examples/**/.screenshot-*.png
 /packages/varia/API.md
 /packages/varia/LICENSE
 /packages/varia/CHANGELOG.md
+
+# VitePress generated files
+**/.vitepress/cache/
+**/.vitepress/.temp/
