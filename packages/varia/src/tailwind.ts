@@ -1,6 +1,5 @@
 import type { PluginAPI } from 'tailwindcss/plugin'
 import type { DefinedComponent } from './internal/types.js'
-import { validateComponents } from './internal/validate-components.js'
 
 export interface TailwindVariaOptions {
   /** Outputs of defineComponent. Generated structures are not extension points. */
@@ -12,10 +11,28 @@ export interface TailwindVariaOptions {
 interface Css { [key: string]: string | Css | Css[] }
 const registrations = new WeakMap<object, DefinedComponent[]>()
 
+/** Check component and class collisions before Tailwind registers rules. */
+function validateComponents(components: DefinedComponent[]): void {
+  const names = new Set<string>()
+  const classes = new Map<string, string>()
+  for (const component of components) {
+    if (names.has(component.name)) {
+      throw new Error(`Duplicate component name "${component.name}" in tailwindVaria. Component names must be unique within an integration.`)
+    }
+    names.add(component.name)
+    for (const className of component.classNames) {
+      const owner = classes.get(className)
+      if (owner !== undefined)
+        throw new Error(`Duplicate class "${className}" emitted by both component "${owner}" and component "${component.name}". Each class name must be unique within an integration.`)
+      classes.set(className, component.name)
+    }
+  }
+}
+
 /** Register Varia classes with Tailwind v4's public JavaScript plugin interface. */
 export function tailwindVaria(options: TailwindVariaOptions): { handler: (api: PluginAPI) => void, config?: { prefix: string } } {
   const { components, prefix } = options
-  validateComponents(components, 'tailwindVaria')
+  validateComponents(components)
   if (prefix !== undefined && !/^[a-z]+$/.test(prefix))
     throw new Error('tailwindVaria prefix must contain lowercase ASCII letters only.')
 
@@ -45,24 +62,14 @@ export function tailwindVaria(options: TailwindVariaOptions): { handler: (api: P
         registered = []
         registrations.set(config, registered)
       }
-      validateComponents([...registered, ...components], 'tailwindVaria')
+      validateComponents([...registered, ...components])
       registered.push(...components)
 
       const utilities: Record<string, Css[]> = {}
-      const append = (name: string, layer: 'base' | 'variants' | 'compounds', css: Css): void => {
-        (utilities[`.${name}`] ??= []).push({ [`@layer varia.${layer}`]: css })
-      }
       for (const component of components) {
-        for (const [name, expansion] of component.shortcuts) {
-          const base = name === component.name || name.startsWith(`${component.name}__`)
-          append(name, base ? 'base' : 'variants', apply(expansion))
-        }
-        for (const style of component.styles ?? []) {
-          for (const rule of style.rules) {
-            append(style.trigger, style.kind === 'compound' ? 'compounds' : 'variants', {
-              [selector(rule.selector)]: apply(rule.utilities),
-            })
-          }
+        for (const rule of component.rules) {
+          const css = rule.selector === '&' ? apply(rule.utilities) : { [selector(rule.selector)]: apply(rule.utilities) }
+          ;(utilities[`.${rule.className}`] ??= []).push({ [`@layer varia.${rule.layer}`]: css })
         }
       }
       api.addUtilities(utilities)

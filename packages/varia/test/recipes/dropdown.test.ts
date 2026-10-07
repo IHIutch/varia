@@ -1,26 +1,9 @@
 import { describe, expect, it } from 'vitest'
 import dropdown from '../../../../recipes/dropdown.config.js'
-import { generateCSS as generateRecipeCSS } from '../helpers/generate.js'
+import { generateCSS as generateRecipeCSS } from '../helpers/tailwind.js'
 
 describe('recipe: Dropdown', () => {
-  it('exports one component with five slots and two alignment variants', () => {
-    expect(dropdown.name).toBe('dropdown')
-    expect(dropdown.classNames).toEqual([
-      'dropdown',
-      'dropdown__trigger',
-      'dropdown__menu',
-      'dropdown__item',
-      'dropdown__divider',
-      'dropdown-align-start',
-      'dropdown-align-end',
-    ])
-  })
-
-  it('emits the expected slot shortcuts', () => {
-    expect(dropdown.shortcuts).toMatchSnapshot()
-  })
-
-  it('renders slots and alignment through the selected engine', async () => {
+  it('renders slots and alignment through Tailwind', async () => {
     const css = await generateRecipeCSS(
       [dropdown],
       'dropdown dropdown__trigger dropdown__menu dropdown__item dropdown__divider dropdown-align-end',

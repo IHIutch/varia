@@ -80,13 +80,13 @@ export interface ComponentConfig {
   compoundVariants?: CompoundVariantRule[]
 }
 
-export type Shortcut = [className: string, expansion: string]
-
-/** Utility strings and selectors relative to an activation class. */
-export interface ComponentStyle {
-  trigger: string
-  kind: 'slot' | 'compound'
-  rules: { selector: string, utilities: string }[]
+/** Utilities applied when `className` is present, at `selector` relative to it. */
+export interface ComponentRule {
+  className: string
+  layer: 'base' | 'variants' | 'compounds'
+  /** `&` targets the class itself; slot rules descend, compound rules chain. */
+  selector: string
+  utilities: string
 }
 
 /**
@@ -103,12 +103,7 @@ export interface DefinedComponent {
   /** @internal */
   name: string
   /** @internal */
-  shortcuts: Shortcut[]
-  /** @internal */
   classNames: string[]
-  /**
-   * Slot and compound styles, resolved by Tailwind on demand.
-   * @internal
-   */
-  styles?: ComponentStyle[]
+  /** @internal */
+  rules: ComponentRule[]
 }

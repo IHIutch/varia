@@ -1,17 +1,9 @@
 import { describe, expect, it } from 'vitest'
 import formInput from '../../../../recipes/form-input.config.js'
-import { generateCSS as generateRecipeCSS } from '../helpers/generate.js'
+import { generateCSS as generateRecipeCSS } from '../helpers/tailwind.js'
 
 describe('recipe: Form input', () => {
-  it('emits the expected shortcut tuples', () => {
-    expect(formInput.shortcuts).toMatchSnapshot()
-  })
-
-  it('records every expected class name', () => {
-    expect(formInput.classNames).toMatchSnapshot()
-  })
-
-  it('focus/disabled/invalid/placeholder pseudo-classes survive through the selected engine', async () => {
+  it('focus/disabled/invalid/placeholder pseudo-classes survive through Tailwind', async () => {
     const css = await generateRecipeCSS(
       [formInput],
       'form-input form-input-state-error form-input-s-md form-input-readonly',

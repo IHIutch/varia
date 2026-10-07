@@ -12,7 +12,7 @@
         <h1 class="text-2xl font-semibold text-gray-900">Components</h1>
         <p class="text-sm text-gray-500 mt-1">
           More widgets exercising varia. See <a class="text-blue-600 hover:underline" href="/">/</a>
-          for the settings panel and <a class="text-blue-600 hover:underline" href="/nav-comparison.html">/nav-comparison.html</a> for the nav.
+          for the settings panel.
         </p>
       </header>
 
@@ -304,6 +304,39 @@
               </div>
             </div>
           </div>
+        </div>
+      </section>
+
+      <!-- NAV -->
+      <section>
+        <h2 class="text-lg font-semibold text-gray-900 mb-3">Nav</h2>
+        <p class="text-xs text-gray-500 mb-3">
+          One component with tabs and pills styles. The active and disabled states are
+          slot classes on the link.
+        </p>
+        <div class="card p-5 space-y-6">
+          <ul class="nav nav-style-tabs" id="nav-tabs" role="tablist">
+            <li class="nav__item" role="presentation">
+              <a class="nav__link nav__link-active" href="#" role="tab">Overview</a>
+            </li>
+            <li class="nav__item" role="presentation">
+              <a class="nav__link" href="#" role="tab">Reviews</a>
+            </li>
+            <li class="nav__item" role="presentation">
+              <a class="nav__link" href="#" role="tab">Specs</a>
+            </li>
+            <li class="nav__item" role="presentation">
+              <a class="nav__link nav__link-disabled" href="#" role="tab" aria-disabled="true">Archived</a>
+            </li>
+          </ul>
+          <ul class="nav nav-style-pills" id="nav-pills">
+            <li class="nav__item"><a class="nav__link nav__link-active" href="#">Day</a></li>
+            <li class="nav__item"><a class="nav__link" href="#">Week</a></li>
+            <li class="nav__item"><a class="nav__link" href="#">Month</a></li>
+            <li class="nav__item">
+              <a class="nav__link nav__link-disabled" href="#" aria-disabled="true">Year</a>
+            </li>
+          </ul>
         </div>
       </section>
 

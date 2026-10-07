@@ -16,8 +16,6 @@
     "lint:fix": "eslint . --fix",
     "example:dev": "pnpm --filter @varia/example dev",
     "example:build": "pnpm --filter @varia/example build",
-    "comparison:check": "node scripts/check-comparison.mjs",
-    "comparison:reload": "pnpm build && node scripts/check-reload.mjs",
     "test:visual": "pnpm --filter variacss test:visual",
     "test:reload": "pnpm --filter variacss test:reload",
     "release:prepare": "node scripts/prepare-release.mjs",
@@ -28,8 +26,7 @@
   "devDependencies": {
     "@antfu/eslint-config": "^9.5.1",
     "@types/node": "^26.6.4",
-    "@typescript/native": "npm:typescript@^7.0.2",
     "eslint": "^10.12.0",
-    "typescript": "npm:@typescript/typescript6@^6.0.2"
+    "typescript": "^6.0.3"
   }
 }

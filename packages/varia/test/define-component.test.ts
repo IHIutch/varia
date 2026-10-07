@@ -1,131 +1,69 @@
 import { describe, expect, it } from 'vitest'
 import { defineComponent } from '../src/index.js'
 
-describe('defineComponent', () => {
-  it('emits the base class as a shortcut', () => {
-    const result = defineComponent('btn', { base: 'inline-block font-medium rounded' })
-
-    expect(result.shortcuts).toEqual([['btn', 'inline-block font-medium rounded']])
-  })
-
-  it('emits multi-value variant classes with name-key-value naming', () => {
-    const result = defineComponent('btn', {
-      base: 'inline-block',
+describe('class naming', () => {
+  it('names slots with BEM and variants with name-key-value', () => {
+    const card = defineComponent('card', {
+      slots: { root: 'block', header: 'p-4', title: 'font-semibold' },
       variants: {
-        c: {
-          primary: 'bg-blue-600 text-white',
-          danger: 'bg-red-600 text-white',
-        },
-        s: {
-          sm: 'px-2 py-1 text-sm',
-          lg: 'px-6 py-3 text-lg',
-        },
-      },
-    })
-
-    expect(result.shortcuts).toMatchSnapshot()
-  })
-
-  it('returns the expected DefinedComponent shape', () => {
-    const result = defineComponent('btn', { base: 'inline-block' })
-
-    expect(result).toMatchObject({
-      name: 'btn',
-      shortcuts: expect.any(Array),
-      classNames: expect.any(Array),
-    })
-  })
-
-  it('omits base shortcut when base is undefined', () => {
-    const result = defineComponent('btn', {
-      variants: {
-        c: { primary: 'bg-blue-600' },
-      },
-    })
-
-    expect(result.shortcuts).toEqual([['btn-c-primary', 'bg-blue-600']])
-  })
-})
-
-describe('boolean variants', () => {
-  it('emits a single name-key class when the variant value is a bare string', () => {
-    const result = defineComponent('btn', {
-      variants: {
-        outline: 'bg-transparent border-2',
-      },
-    })
-
-    expect(result.shortcuts).toEqual([['btn-outline', 'bg-transparent border-2']])
-    expect(result.classNames).toEqual(['btn-outline'])
-  })
-
-  it('coexists with multi-value variants on the same component', () => {
-    const result = defineComponent('btn', {
-      base: 'inline-block',
-      variants: {
-        c: { primary: 'bg-blue-600' },
+        c: { primary: 'bg-blue-600', danger: 'bg-red-600' },
         outline: 'border-2',
       },
     })
 
-    expect(result.shortcuts).toMatchSnapshot()
+    expect(card.classNames).toEqual(['card', 'card__header', 'card__title', 'card-c-primary', 'card-c-danger', 'card-outline'])
   })
 
   it('an object value (even with a single key) is multi-value, not boolean', () => {
-    const result = defineComponent('btn', {
+    const btn = defineComponent('btn', { variants: { mode: { active: 'border-2' } } })
+    expect(btn.classNames).toEqual(['btn-mode-active'])
+  })
+
+  it('accepts numeric and kebab-friendly variant values', () => {
+    const btn = defineComponent('btn', {
+      variants: { s: { '1': 'p-1', '2xl': 'p-12' } as Record<string, string> },
+    })
+    expect(btn.classNames).toEqual(['btn-s-1', 'btn-s-2xl'])
+  })
+
+  it('treats class arrays as their space-joined strings', () => {
+    const config = (classes: (value: string) => string | string[]) => ({
+      slots: { root: classes('block p-4'), title: classes('font-semibold text-lg') },
       variants: {
-        mode: { active: 'border-2' },
+        outline: classes('bg-transparent border-2'),
+        s: { sm: classes('p-2 text-sm') },
+        accent: { root: classes('ring-2 ring-blue-500'), title: classes('text-blue-900 underline') },
       },
+      compoundVariants: [{ when: { s: 'sm', outline: true } as const, class: classes('border-blue-700 text-blue-700') }],
     })
 
-    expect(result.shortcuts).toEqual([['btn-mode-active', 'border-2']])
+    expect(defineComponent('card', config(value => value.split(' '))).rules)
+      .toEqual(defineComponent('card', config(value => value)).rules)
   })
 })
 
 describe('validation', () => {
   it('throws on uppercase component name with the offending name in the message', () => {
-    expect(() => defineComponent('Btn', { base: 'inline-block' })).toThrow(
-      /Invalid component name "Btn"/,
-    )
+    expect(() => defineComponent('Btn', { base: 'inline-block' })).toThrow(/Invalid component name "Btn"/)
   })
 
   it('throws on component name starting with a digit', () => {
-    expect(() => defineComponent('1btn', { base: 'inline-block' })).toThrow(
-      /must match \/\^\[a-z\]/,
-    )
+    expect(() => defineComponent('1btn', { base: 'inline-block' })).toThrow(/must match \/\^\[a-z\]/)
   })
 
-  it('accepts numeric variant values and produces correct assembled classes', () => {
-    const result = defineComponent('btn', {
-      variants: { s: { 1: 'p-1', 2: 'p-2' } as Record<string, string> },
-    })
-    expect(result.shortcuts).toEqual([
-      ['btn-s-1', 'p-1'],
-      ['btn-s-2', 'p-2'],
-    ])
-  })
-
-  it('accepts arbitrary kebab-friendly variant values like 2xl', () => {
-    const result = defineComponent('btn', {
-      variants: { s: { '2xl': 'p-12 text-2xl' } },
-    })
-    expect(result.shortcuts).toEqual([['btn-s-2xl', 'p-12 text-2xl']])
+  it('throws on uppercase variant value (assembled class fails regex)', () => {
+    expect(() => defineComponent('btn', { variants: { c: { Primary: 'bg-blue-600' } } }))
+      .toThrow(/Invalid class identifier "btn-c-Primary"/)
   })
 
   it('throws on whitespace-only expansion with offending class name in the message', () => {
-    expect(() =>
-      defineComponent('btn', {
-        variants: { c: { primary: '   ' } },
-      }),
-    ).toThrow(/Empty expansion for "btn-c-primary"/)
+    expect(() => defineComponent('btn', { variants: { c: { primary: '   ' } } }))
+      .toThrow(/Empty expansion for "btn-c-primary"/)
   })
 
-  it('throws on empty-string expansion', () => {
-    expect(() =>
-      defineComponent('btn', {
-        base: '',
-      }),
-    ).toThrow(/Empty expansion for "btn"/)
+  it('throws on empty-string and empty-array expansions', () => {
+    expect(() => defineComponent('btn', { base: '' })).toThrow(/Empty expansion for "btn"/)
+    expect(() => defineComponent('btn', { base: [] })).toThrow(/Empty expansion for "btn"/)
   })
 
   it('throws when component has no base and no variants', () => {
@@ -133,99 +71,74 @@ describe('validation', () => {
   })
 
   it('throws when both `base` and `slots` are set', () => {
-    expect(() =>
-      defineComponent('btn', {
-        base: 'inline-block',
-        slots: { root: 'inline-block' },
-      } as never),
-    ).toThrow(/sets both `base` and `slots`/)
-  })
-
-  it('throws on uppercase variant value (assembled class fails regex)', () => {
-    expect(() =>
-      defineComponent('btn', {
-        variants: { c: { Primary: 'bg-blue-600' } },
-      }),
-    ).toThrow(/Invalid class identifier "btn-c-Primary"/)
+    expect(() => defineComponent('btn', {
+      base: 'inline-block',
+      slots: { root: 'inline-block' },
+    } as never)).toThrow(/sets both `base` and `slots`/)
   })
 
   it('throws on empty variant (no values)', () => {
-    expect(() =>
-      defineComponent('btn', {
-        base: 'inline-block',
-        variants: { c: {} },
-      }),
-    ).toThrow(/Variant "c" on component "btn" has no values/)
+    expect(() => defineComponent('btn', { base: 'inline-block', variants: { c: {} } }))
+      .toThrow(/Variant "c" on component "btn" has no values/)
   })
 })
 
-describe('array class inputs', () => {
-  it('joins a base array with spaces, equivalent to the joined string', () => {
-    const asArray = defineComponent('btn', {
-      base: ['inline-block', 'font-medium', 'rounded'],
-    })
-    const asString = defineComponent('btn', {
-      base: 'inline-block font-medium rounded',
-    })
-
-    expect(asArray.shortcuts).toEqual(asString.shortcuts)
+describe('slot validation', () => {
+  it('throws if no slots are declared', () => {
+    expect(() => defineComponent('card', { slots: {} })).toThrow(/has no slots/)
   })
 
-  it('joins a boolean variant array', () => {
-    const result = defineComponent('btn', {
-      variants: {
-        outline: ['bg-transparent', 'border-2'],
-      },
-    })
-
-    expect(result.shortcuts).toEqual([['btn-outline', 'bg-transparent border-2']])
+  it('throws on invalid slot name', () => {
+    expect(() => defineComponent('card', { slots: { Header: 'p-4' } })).toThrow(/Invalid slot name "Header"/)
   })
 
-  it('joins multi-value variant value arrays', () => {
-    const asArray = defineComponent('btn', {
-      variants: {
-        style: {
-          solid: [
-            'bg-[var(--btn-bg)] text-white border-[var(--btn-bg)]',
-            'hover:bg-[var(--btn-bg-hover)] hover:border-[var(--btn-bg-hover)]',
-          ],
-        },
-      },
-    })
-    const asString = defineComponent('btn', {
-      variants: {
-        style: {
-          solid:
-            'bg-[var(--btn-bg)] text-white border-[var(--btn-bg)] hover:bg-[var(--btn-bg-hover)] hover:border-[var(--btn-bg-hover)]',
-        },
-      },
-    })
-
-    expect(asArray.shortcuts).toEqual(asString.shortcuts)
+  it('throws on empty slot expansion', () => {
+    expect(() => defineComponent('card', { slots: { root: 'block', header: '   ' } })).toThrow(/Empty expansion/)
   })
 
-  it('treats an empty array as an empty expansion', () => {
-    expect(() => defineComponent('btn', { base: [] })).toThrow(
-      /Empty expansion for "btn"/,
-    )
+  it('throws if slot-keyed value references a non-existent slot', () => {
+    expect(() => defineComponent('card', {
+      slots: { root: 'block', body: 'p-4' },
+      variants: { variant: { solid: { root: 'bg-blue-600', footer: 'p-2' } } },
+    })).toThrow(/references slot "footer"/)
+  })
+})
+
+describe('compound validation', () => {
+  const variants = { s: { sm: 'p-2', md: 'p-4' }, square: 'aspect-square' }
+
+  it('throws if when references an undeclared axis', () => {
+    expect(() => defineComponent('btn', {
+      variants: { s: { sm: 'p-2' } },
+      compoundVariants: [{ when: { square: true }, class: 'p-1' }],
+    })).toThrow(/references variant axis "square"/)
   })
 
-  it('joins compound-variant class arrays', () => {
-    const asArray = defineComponent('btn', {
-      base: 'inline-block',
-      variants: {
-        c: { primary: 'bg-blue-600', danger: 'bg-red-600' },
-        outline: 'border-2',
-      },
-      compoundVariants: [
-        {
-          when: { c: 'primary', outline: true },
-          class: ['border-blue-700', 'text-blue-700'],
-        },
-      ],
-    })
+  it('throws if when references a multi-value axis with an unknown value', () => {
+    expect(() => defineComponent('btn', {
+      variants,
+      compoundVariants: [{ when: { s: 'xl' }, class: 'p-6' }],
+    })).toThrow(/"s" to "xl"/)
+  })
 
-    expect(asArray.styles).toBeDefined()
-    expect(asArray.styles).toHaveLength(1)
+  it('throws if when references a boolean axis with a non-true value', () => {
+    expect(() => defineComponent('btn', {
+      variants,
+      compoundVariants: [{ when: { square: 'false', s: 'sm' }, class: 'p-1' } as never],
+    })).toThrow(/boolean variant/)
+  })
+
+  it('throws on empty when clause', () => {
+    expect(() => defineComponent('btn', {
+      variants,
+      compoundVariants: [{ when: {}, class: 'p-1' }],
+    })).toThrow(/empty "when" clause/)
+  })
+
+  it('throws on empty class', () => {
+    expect(() => defineComponent('btn', {
+      variants,
+      compoundVariants: [{ when: { s: 'sm' }, class: '' }],
+    })).toThrow(/empty "class"/)
   })
 })

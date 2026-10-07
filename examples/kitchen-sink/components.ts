@@ -49,3 +49,17 @@ if (pagination) {
     })
   })
 }
+
+// Wire up nav tabs and pills — click any non-disabled link to make it active.
+for (const id of ['nav-tabs', 'nav-pills']) {
+  const nav = document.getElementById(id)
+  nav?.querySelectorAll<HTMLAnchorElement>('.nav__link').forEach((link) => {
+    link.addEventListener('click', (e) => {
+      e.preventDefault()
+      if (link.classList.contains('nav__link-disabled'))
+        return
+      nav.querySelectorAll('.nav__link').forEach(l => l.classList.remove('nav__link-active'))
+      link.classList.add('nav__link-active')
+    })
+  })
+}

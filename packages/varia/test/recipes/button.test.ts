@@ -1,25 +1,8 @@
 import { describe, expect, it } from 'vitest'
 import button from '../../../../recipes/button.config.js'
-import { generateCSS as generateRecipeCSS } from '../helpers/generate.js'
+import { generateCSS as generateRecipeCSS } from '../helpers/tailwind.js'
 
 describe('recipe: Button', () => {
-  it('emits the expected shortcut tuples', () => {
-    expect(button.shortcuts).toMatchSnapshot()
-  })
-
-  it('records every expected class name', () => {
-    expect(button.classNames).toMatchSnapshot()
-  })
-
-  it('has three orthogonal axes (c, style, s) — no per-cell color×shape variants', () => {
-    const axes = new Set(
-      button.shortcuts
-        .map(([name]) => name.replace(/^btn-?/, '').split('-')[0])
-        .filter(s => s !== ''),
-    )
-    expect([...axes].sort()).toEqual(['c', 's', 'style'])
-  })
-
   it('color and style compounds emit resolved colors and their palette variables', async () => {
     const css = await generateRecipeCSS(
       [button],
@@ -39,7 +22,7 @@ describe('recipe: Button', () => {
     expect(css).toMatch(/\.btn-c-primary\.btn-style-ghost\{[^}]*var\(--colors?-blue-700\)/)
   })
 
-  it('state pseudo-class utilities (hover, focus-visible, disabled) survive through the selected engine', async () => {
+  it('state pseudo-class utilities (hover, focus-visible, disabled) survive through Tailwind', async () => {
     const css = await generateRecipeCSS(
       [button],
       'btn btn-c-primary btn-style-solid btn-s-md',
@@ -50,7 +33,7 @@ describe('recipe: Button', () => {
     expect(css).toContain('transition')
   })
 
-  it('omits shortcuts and compounds for unused colors', async () => {
+  it('omits variant and compound rules for unused colors', async () => {
     const css = await generateRecipeCSS(
       [button],
       'btn btn-c-primary btn-style-solid',

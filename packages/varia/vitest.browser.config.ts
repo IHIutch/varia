@@ -1,7 +1,7 @@
 import { playwright } from '@vitest/browser-playwright'
 import { defineConfig } from 'vitest/config'
 import { classes, components } from './test/browser/fixtures.js'
-import { adapter } from './test/helpers/engine.js'
+import { generate } from './test/helpers/tailwind.js'
 
 const moduleId = '\0varia-browser-css'
 
@@ -11,7 +11,7 @@ export default defineConfig({
     resolveId: id => id === 'virtual:varia-browser-css' ? moduleId : undefined,
     async load(id) {
       if (id === moduleId)
-        return `export default ${JSON.stringify(await adapter.generate(components, classes))}`
+        return `export default ${JSON.stringify(await generate(components, classes))}`
     },
   }],
   test: {

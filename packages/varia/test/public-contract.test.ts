@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { defineComponent } from '../src/index.js'
 import { cssRules } from './helpers/css.js'
-import { adapter } from './helpers/engine.js'
+import { generate } from './helpers/tailwind.js'
 
 describe('v1 compound condition contract', () => {
   it.each([undefined, 'tw'])('modifies only the first condition with prefix %s', async (prefix) => {
@@ -11,7 +11,7 @@ describe('v1 compound condition contract', () => {
     })
     const cls = (name: string) => prefix ? `${prefix}:${name}` : name
     const responsive = (name: string) => prefix ? `${prefix}:md:${name}` : `md:${name}`
-    const rules = cssRules(await adapter.generate([definition], [responsive('contract-active'), responsive('contract-accent')], { prefix }))
+    const rules = cssRules(await generate([definition], [responsive('contract-active'), responsive('contract-accent')], { prefix }))
     const compounds = rules.filter(rule => rule.layer === 'varia.compounds')
     expect(compounds).toContainEqual(expect.objectContaining({
       selector: `.${responsive('contract-active').replaceAll(':', '\\:')}${prefix ? `[class~="${cls('contract-accent')}"]` : '.contract-accent'}`,
@@ -26,9 +26,9 @@ describe('v1 compound condition contract', () => {
       variants: { active: 'opacity-50', accent: 'block' },
       compoundVariants: [{ when: { accent: true, active: true }, class: 'opacity-75' }],
     })
-    const onlyLaterCondition = cssRules(await adapter.generate([definition], ['md:reversed-active']))
+    const onlyLaterCondition = cssRules(await generate([definition], ['md:reversed-active']))
     expect(onlyLaterCondition.some(rule => rule.layer === 'varia.compounds')).toBe(false)
-    const rules = cssRules(await adapter.generate([definition], ['md:reversed-accent', 'reversed-active']))
+    const rules = cssRules(await generate([definition], ['md:reversed-accent', 'reversed-active']))
     expect(rules).toContainEqual(expect.objectContaining({
       layer: 'varia.compounds',
       selector: '.md\\:reversed-accent.reversed-active',

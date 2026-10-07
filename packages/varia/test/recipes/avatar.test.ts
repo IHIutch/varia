@@ -1,13 +1,9 @@
 import { describe, expect, it } from 'vitest'
 import avatar from '../../../../recipes/avatar.config.js'
-import { generateCSS as generateRecipeCSS } from '../helpers/generate.js'
+import { generateCSS as generateRecipeCSS } from '../helpers/tailwind.js'
 
 describe('recipe: Avatar', () => {
-  it('emits the expected shortcut tuples', () => {
-    expect(avatar.shortcuts).toMatchSnapshot()
-  })
-
-  it('cSS custom properties with theme() fallbacks survive through the selected engine', async () => {
+  it('custom properties with theme() fallbacks survive through Tailwind', async () => {
     const css = await generateRecipeCSS([avatar], 'avatar avatar-s-md avatar-ring')
 
     expect(css).toContain('--avatar-bg')

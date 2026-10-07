@@ -10,7 +10,6 @@ export default antfu({
     '**/node_modules/**',
     '**/__snapshots__/**',
     '**/.vitest/**',
-    '**/.vitest-attachments/**',
     '**/.vitepress/cache/**',
     '**/.vitepress/.temp/**',
     '.release/**',

@@ -11,6 +11,6 @@ pnpm docs:dev
 
 - `packages/varia/` contains the published library and its tests. Shared test utilities live in `test/helpers/`.
 - `recipes/` contains component definitions. `recipes/index.ts` registers the shared collection used by the docs, demo, and tests.
-- `docs/` contains the VitePress site. `docs/research/` and `docs/history/` hold internal notes excluded from the site build.
+- `docs/` contains the VitePress site.
 - `examples/kitchen-sink/` contains the Vite demo.
 - `scripts/` contains release and verification commands.

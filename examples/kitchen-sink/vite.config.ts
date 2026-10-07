@@ -1,8 +1,8 @@
 import { utimesSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import tailwindcss from '@tailwindcss/vite'
 import { defineConfig } from 'vite'
-import { enginePlugin } from './engine.js'
 import './tailwind.config.js'
 
 const here = dirname(fileURLToPath(import.meta.url))
@@ -15,7 +15,7 @@ export default defineConfig(({ command }) => {
   }
   return {
     root: here,
-    plugins: [enginePlugin()],
+    plugins: [tailwindcss()],
     server: {
       warmup: { clientFiles: ['./styles.css'] },
     },
@@ -27,8 +27,6 @@ export default defineConfig(({ command }) => {
           index: resolve(here, 'index.html'),
           grid: resolve(here, 'grid.html'),
           components: resolve(here, 'components.html'),
-          navVaria: resolve(here, 'nav-comparison.html'),
-          navBootstrap: resolve(here, 'nav-bootstrap.html'),
         },
       },
     },

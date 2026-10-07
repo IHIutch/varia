@@ -11,10 +11,8 @@ export interface CssRule {
   decls: Record<string, string>
 }
 
-// Tailwind nests Varia inside `utilities`; UnoCSS names its utility layer `default`.
+// Tailwind nests Varia inside `utilities`.
 function normalizeLayer(path: string): string {
-  if (path === 'default')
-    return 'utilities'
   return path.replace(/^utilities\.(?=varia)/, '')
 }
 
@@ -31,7 +29,7 @@ function layerPath(atRules: AtRule[]): string[] {
   return atRules.filter(rule => rule.name === 'layer').flatMap(rule => rule.params.split('.'))
 }
 
-/** Normalize engine output so contract tests compare behavior, not formatting. */
+/** Normalize Tailwind output so tests compare behavior, not formatting. */
 export function cssRules(css: string): CssRule[] {
   const out: CssRule[] = []
   postcss.parse(css).walkRules((rule) => {
@@ -44,9 +42,7 @@ export function cssRules(css: string): CssRule[] {
     rule.each((node) => {
       if (node.type !== 'decl')
         return
-      // Tailwind writes opacity as a number, UnoCSS as a percentage.
-      const value = node.prop === 'opacity' && node.value.endsWith('%') ? String(Number.parseFloat(node.value) / 100) : node.value
-      decls[node.prop] = `${value.replace(/^0\./, '.')}${node.important ? ' !important' : ''}`
+      decls[node.prop] = `${node.value.replace(/^0\./, '.')}${node.important ? ' !important' : ''}`
     })
     for (const selector of rule.selectors)
       out.push({ layer: normalizeLayer(layerPath(atRules).join('.')), media, supports, selector: selector.replace(/\s*([>+~])\s*/g, '$1'), decls })

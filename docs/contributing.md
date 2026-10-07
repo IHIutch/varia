@@ -30,9 +30,9 @@ pnpm example:build
 pnpm docs:build
 ```
 
-CI uses Node 26.9.0, Tailwind 4.3.3, Vite 8.3.2, and TypeScript 7.0.2 on Ubuntu 24.04.
+CI uses Node 26.9.0, Tailwind 4.3.3, Vite 8.3.2, and TypeScript 6.0.3 on Ubuntu 24.04.
 
-For browser or reload behavior, also run `pnpm test:visual` or `pnpm test:reload`. Visual references use Chromium on macOS. These checks are separate from the minimal release gate; historical adapter comparisons are not a v1 gate.
+For browser or reload behavior, also run `pnpm test:visual` or `pnpm test:reload`. Visual references use Chromium on macOS. These checks are separate from the release gate.
 
 For changed setup instructions, test a clean consumer and check its rendered styles as well as build success. The docs build checks page links; verify section anchors too.
 
