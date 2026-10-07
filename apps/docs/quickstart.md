@@ -1,34 +1,39 @@
 # Quickstart
 
-Define a button once, use regular component classes in markup, and let Tailwind generate its CSS on demand.
+## Install
 
-## 1. Install
+::: code-group
 
-```bash
-pnpm add -D variacss tailwindcss @tailwindcss/vite
+```sh [npm]
+npm install variacss tailwindcss
 ```
 
-For Vite, add `tailwindcss()` from `@tailwindcss/vite` to your Vite plugins. Other build tools can use their [Tailwind integration](https://tailwindcss.com/docs/installation). The adapter requires Tailwind v4.3.3 or newer.
+```sh [pnpm]
+pnpm add variacss tailwindcss
+```
 
-Version 1.0.0 is prepared but has not been published. Until publication, replace `variacss` in the install command with the absolute path to `.release/variacss-1.0.0.tgz`, produced by `pnpm release:prepare` in this repository. Use Node.js 26 or newer.
+```sh [Yarn]
+yarn add variacss tailwindcss
+```
 
-## 2. Define and register a component
+```sh [Bun]
+bun add variacss tailwindcss
+```
 
-```ts
-// styles/varia.config.ts
+:::
+
+## Define and register a component
+
+Create `varia.config.ts` beside your CSS entrypoint:
+
+```ts [varia.config.ts]
 import { defineComponent } from 'variacss'
 import { tailwindVaria } from 'variacss/tailwind'
 
-const button = defineComponent('btn', {
-  base: 'inline-flex items-center rounded-md font-medium transition-colors disabled:opacity-50',
+const button = defineComponent('demo-btn', {
+  base: 'inline-flex rounded bg-blue-600 px-4 py-2 font-medium text-white',
   variants: {
-    c: {
-      primary: 'bg-blue-600 text-white hover:bg-blue-700',
-      danger: 'bg-red-600 text-white hover:bg-red-700',
-    },
-    s: {
-      sm: 'px-2.5 py-1 text-sm',
-      md: 'px-4 py-2 text-base',
+    size: {
       lg: 'px-6 py-3 text-lg',
     },
   },
@@ -37,60 +42,69 @@ const button = defineComponent('btn', {
 export default tailwindVaria({ components: [button] })
 ```
 
-Import the same registration module in `vite.config.ts` so Vite tracks recipe edits and their local imports:
+## Load the plugin
 
-```ts
-import tailwindcss from '@tailwindcss/vite'
-import { defineConfig } from 'vite'
-import './styles/varia.config.js'
+Update your CSS entrypoint, keeping the imports in this order:
 
-export default defineConfig({
-  plugins: [tailwindcss()],
-  server: { warmup: { clientFiles: ['./styles/app.css'] } },
-})
-```
-
-`base` defines shared styles. The color and size axes define independent variants. State and responsive utility prefixes resolve through Tailwind.
-
-## 3. Load the stylesheet
-
-```css
-/* styles/app.css */
+```css{1-2} [styles.css]
 @import "variacss/tailwind.css";
 @import "tailwindcss";
 @source not "./**/*.config.ts";
 @plugin "./varia.config.ts";
 ```
 
-Import `styles/app.css` through your build. Keep the Varia import first to establish layer order before generated rules. Exclude component definition files from scanning so their literal utility strings do not generate unused atomic CSS. Add exclusions for definitions stored elsewhere, or use explicit sources as described in the [Tailwind guide](/tailwind).
+The first import sets component layer order. `@source not` requires Tailwind 4.1+ and prevents definition files from generating standalone utilities. Paths are relative to this stylesheet; adjust the exclusion if you store definitions elsewhere.
 
-## 4. Use the classes
-
-```html
-<button class="btn btn-c-primary btn-s-lg">Save</button>
-<button class="btn btn-c-danger btn-s-sm">Delete</button>
-```
-
-Tailwind generates the component classes found in your templates. You can write responsive component classes, such as `md:btn-s-lg`.
-
-Ordinary utilities override Varia styles without important modifiers:
+## Use the classes
 
 ```html
-<button class="btn btn-c-primary btn-s-lg rounded-none">Save</button>
+<button type="button" class="demo-btn demo-btn-size-lg">Save</button>
 ```
 
-Layers enforce base, variant, and compound precedence. Ordinary utilities outrank all three, including descendant slot rules.
+Run your existing development command. The button should be blue with larger padding and text. Remove `demo-btn-size-lg` to return to the base size.
 
-## Next
+See [troubleshooting](/troubleshooting) if styles are missing.
 
-- [Recipes](/recipes/button) covers state styles, slots, and compound variants.
-- [Tailwind options](/tailwind) covers prefixes, source detection, and the demo.
-- [Editor support](/recipes/type-safety) covers native Tailwind suggestions.
+## Editor support
 
-## Compatibility
+Install [Tailwind CSS IntelliSense](https://github.com/tailwindlabs/tailwindcss-intellisense#installation) for VS Code. It loads the plugin from your CSS entrypoint to suggest Varia classes and show their CSS on hover.
 
-V1 minor and patch releases preserve the documented authoring shapes, class spelling, activation rules, and normal layer precedence. Breaking contract changes require a major release. Supported exports can be deprecated in a minor release with a documented replacement and retained behavior until the next major release. Implementation structures, generated formatting, and exact error text are not compatibility promises. Invalid authoring structures fail during definition or registration. Unknown utilities and unsupported syntax in active expansions fail during Tailwind compilation; unused expansions need not be resolved.
+## Development reload
 
-The package is ESM and declares Node.js 26 or newer. Repository type checks use TypeScript 7.0.2. CI runs the minimal release gate on Ubuntu 24.04 with Node 26.9.0. Node 26.0.0 was also checked locally. The verified Tailwind/Vite versions are 4.3.3 and 8.3.2 respectively; the optional Tailwind peer range remains `^4.3.3`. Wider version/OS compatibility is not implied by these checks.
+With `@tailwindcss/vite` and Vite's default bundled config loader, import your registration module in `vite.config.ts`. Vite will restart when that module or its imported definitions change:
 
-The maintained release checks focus on Varia's behavior and package contents: unit tests, typechecking, lint, the production example build, and one clean install of the actual archive that checks public ESM exports, declaration files, and the layer stylesheet. Tailwind owns editor autocomplete; its behavior does not require a separate ongoing test harness here.
+```ts{3} [vite.config.ts]
+import tailwindcss from '@tailwindcss/vite'
+import { defineConfig } from 'vite'
+import './src/varia.config.js'
+
+export default defineConfig({
+  plugins: [tailwindcss()],
+})
+```
+
+Adjust the import path to your project and keep the stylesheet's `@plugin` directive.
+
+## Source detection
+
+Tailwind detects Varia classes just like utilities. Use complete class names when choosing variants dynamically:
+
+```ts
+const sizes = { base: 'demo-btn', lg: 'demo-btn demo-btn-size-lg' }
+```
+
+For custom scan paths and safelisting, see Tailwind's [source detection documentation](https://tailwindcss.com/docs/detecting-classes-in-source-files).
+
+## Options
+
+`tailwindVaria` accepts a `components` array of unchanged `defineComponent` outputs and an optional `prefix`:
+
+```ts
+export default tailwindVaria({ components: [button], prefix: 'tw' })
+```
+
+```html
+<button class="tw:demo-btn tw:md:demo-btn-size-lg">Save</button>
+```
+
+Keep definition utilities unprefixed. Prefixes contain lowercase ASCII letters only. If your stylesheet uses `@import "tailwindcss" prefix(tw)`, also pass the matching `prefix: 'tw'`; the plugin cannot read CSS-declared prefixes. JavaScript-configured prefixes are detected automatically.

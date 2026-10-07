@@ -1,94 +1,14 @@
-# Grid (row + col)
+# Grid
 
-A twelve-column flex grid. `row` wraps columns, and `col-span-N` sets each column's width. Use Tailwind prefixes such as `md:` and `lg:` for responsive layouts.
+A twelve-column flex grid. Register both the [row definition](https://github.com/IHIutch/varia/blob/main/recipes/row.config.ts) and [column definition](https://github.com/IHIutch/varia/blob/main/recipes/col.config.ts).
 
-## Authoring
+## Gutters and widths
 
-```ts
-// recipes/row.config.ts
-import { defineComponent } from 'variacss'
+`row` wraps columns; bare `col` gives equal-width siblings. `col-span-N` sets an explicit width and disables flex growth.
 
-export default defineComponent('row', {
-  // The horizontal gutter is the `--row-gx` custom property. The row's
-  // negative margin pulls col paddings outside its content box; cols
-  // inherit `--row-gx` via the cascade and apply the matching internal
-  // padding. `gap-y-*` is safe because vertical gap doesn't interact with
-  // horizontal sibling widths.
-  base: 'flex flex-wrap mx-[calc(var(--row-gx,0)/-2)]',
-  variants: {
-    gx: {
-      0: '[--row-gx:0]',
-      1: '[--row-gx:0.25rem]',
-      2: '[--row-gx:0.5rem]',
-      3: '[--row-gx:1rem]',
-      4: '[--row-gx:1.5rem]',
-      5: '[--row-gx:3rem]',
-    },
-    gy: {
-      0: 'gap-y-0', 1: 'gap-y-1', 2: 'gap-y-2',
-      3: 'gap-y-4', 4: 'gap-y-6', 5: 'gap-y-12',
-    },
-    // Shorthand: sets both axes.
-    g: {
-      0: '[--row-gx:0] gap-y-0',
-      3: '[--row-gx:1rem] gap-y-4',
-      // ... 1, 2, 4, 5 follow the same shape
-    },
-  },
-})
-```
+Horizontal gutters use `--row-gx`, negative row margins, and column padding. Tailwind's border-box sizing keeps the padding inside explicit widths, so two half-width columns fit. Adding horizontal `gap` would make widths totaling 100% overflow. Vertical gutters use `gap-y-*`.
 
-```ts
-// recipes/col.config.ts
-import { defineComponent } from 'variacss'
-
-export default defineComponent('col', {
-  // `flex-1` = Bootstrap's bare `.col` (equal-width flex sibling).
-  // `px-[calc(...)]` reads the gutter from the parent row.
-  base: 'flex-1 px-[calc(var(--row-gx,0)/2)]',
-  variants: {
-    span: {
-      auto: 'flex-none w-auto',
-      1: 'flex-none w-1/12',
-      2: 'flex-none w-2/12',
-      // ...
-      12: 'flex-none w-full',
-    },
-    offset: {
-      0: 'ml-0', 1: 'ml-[calc(100%*1/12)]', /* ... up to 11 */
-    },
-    order: {
-      first: 'order-first', last: 'order-last',
-      0: 'order-0', 1: 'order-1', /* ... up to 5 */
-    },
-  },
-})
-```
-
-The row and column styles share the gutter width:
-
-1. Horizontal gutters use column padding and negative row margins. Adding `gap` to columns whose widths total 100% would push the last column onto a new row. With `box-sizing: border-box`, column padding stays inside the declared width, so two `w-6/12` columns still fit.
-
-2. `row-gx-3` sets `--row-gx: 1rem` on the row. Columns inherit it and apply half that value as padding on each side.
-
-3. The base `col` uses `flex-1` for equal-width columns. A `col-span-N` variant adds `flex-none` to disable growth and sets an explicit width.
-
-## The `row > col > content` pattern
-
-The `col` element sets width and gutter padding. Put backgrounds, borders, and content padding on an inner element. Styling the column itself can override or cover the gutter:
-
-```html
-<div class="row row-g-3">
-  <div class="col col-span-6">
-    <div class="bg-blue-100 p-3 rounded">content here</div>
-  </div>
-  <div class="col col-span-6">
-    <div class="bg-blue-100 p-3 rounded">content here</div>
-  </div>
-</div>
-```
-
-The outer column controls layout; the inner element holds the content styles.
+Put backgrounds, borders, and content padding on an element inside each column so they do not cover or override gutter padding.
 
 ## Live preview
 
@@ -122,7 +42,7 @@ The outer column controls layout; the inner element holds the content styles.
 </div>
 :::
 
-## Consumption
+## Usage
 
 ```html
 <div class="row row-g-3">
@@ -138,32 +58,19 @@ The outer column controls layout; the inner element holds the content styles.
 </div>
 ```
 
-Tailwind applies `md:` and `lg:` to the shortcut utilities. For example, `md:col-span-6` generates a media query for half-width columns with `flex-none`.
+Use `md:row-g-3` for responsive gutters. Breakpoints follow Tailwind's theme; `md:col-span-6` replaces Bootstrap-style `col-md-6` names.
 
-## Generated class names
+## Classes
 
 | Class | Purpose |
-|---|---|
-| `row` | Flex container with `flex-wrap` |
-| `row-g-{0..5}` | Gutter (both axes) |
-| `row-gx-{0..5}` | Gutter (horizontal) |
-| `row-gy-{0..5}` | Gutter (vertical) |
-| `col` | Bare column (equal-width flex sibling) |
-| `col-span-{auto, 1..12}` | Explicit width |
-| `col-offset-{0..11}` | Left margin offset |
-| `col-order-{first, last, 0..5}` | Flex order |
+| --- | --- |
+| `row` | Wrapping flex container |
+| `row-g-0` through `row-g-5` | Both-axis gutter |
+| `row-gx-0` through `row-gx-5` | Horizontal gutter |
+| `row-gy-0` through `row-gy-5` | Vertical gutter |
+| `col` | Equal-width column |
+| `col-span-auto`, `col-span-1` through `col-span-12` | Explicit width |
+| `col-offset-0` through `col-offset-11` | Left-margin offset |
+| `col-order-first`, `col-order-last`, `col-order-0` through `col-order-5` | Flex order |
 
-## Comparison with Bootstrap's class shape
-
-Bootstrap includes breakpoints in names such as `col-md-6`. Varia keeps the `component-axis-value` name and uses Tailwind prefixes for breakpoints:
-
-- Use `md:col-span-6` where Bootstrap uses `col-md-6`. Tailwind generates the media query.
-- Use `col-offset-2` where Bootstrap uses `offset-2`. Varia keeps offset and order variants under the `col` component.
-
-Matching Bootstrap names exactly would require extra definitions for breakpoint, offset, and order classes. Tailwind prefixes let you reuse the same shortcuts at different breakpoints.
-
-## What's not included
-
-- Define a separate `container` component if you need a max-width wrapper with horizontal padding.
-- Use prefixes such as `md:row-g-3` for responsive gutters. They need no additional definitions.
-- The recipe does not provide `row-cols-N` to set the number of equal columns on the parent. Set `col-span-*` on each child instead.
+Add your own max-width wrapper if needed. The recipe has no `row-cols-N` parent setting.

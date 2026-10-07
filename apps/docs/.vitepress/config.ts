@@ -1,6 +1,7 @@
 import process from 'node:process'
 import tailwindcss from '@tailwindcss/vite'
 import { defineConfig, postcssIsolateStyles } from 'vitepress'
+import { groupIconMdPlugin, groupIconVitePlugin } from 'vitepress-plugin-group-icons'
 import '../tailwind.config.js'
 
 export default defineConfig({
@@ -10,8 +11,14 @@ export default defineConfig({
   lastUpdated: true,
   base: process.env.DOCS_BASE ?? '/',
 
+  markdown: {
+    config(md) {
+      md.use(groupIconMdPlugin)
+    },
+  },
+
   vite: {
-    plugins: [tailwindcss()],
+    plugins: [tailwindcss(), groupIconVitePlugin()],
     server: { warmup: { clientFiles: ['./tailwind.css'] } },
     css: {
       postcss: {
@@ -32,11 +39,8 @@ export default defineConfig({
   themeConfig: {
     nav: [
       { text: 'Quickstart', link: '/quickstart' },
-      { text: 'Concepts', link: '/concepts' },
-      { text: 'Naming', link: '/naming' },
-      { text: 'Theming', link: '/theming' },
-      { text: 'Recipes', link: '/recipes/button' },
-      { text: 'Comparison', link: '/comparison' },
+      { text: 'Guides', link: '/guides/basic-component' },
+      { text: 'Recipes', link: '/recipes/' },
     ],
 
     sidebar: {
@@ -45,17 +49,25 @@ export default defineConfig({
           text: 'Getting started',
           items: [
             { text: 'Quickstart', link: '/quickstart' },
-            { text: 'Tailwind CSS', link: '/tailwind' },
-            { text: 'Concepts', link: '/concepts' },
-            { text: 'Naming convention', link: '/naming' },
+          ],
+        },
+        {
+          text: 'Guides',
+          items: [
+            { text: 'Basic component', link: '/guides/basic-component' },
+            { text: 'Variants', link: '/guides/variants' },
+            { text: 'Slots', link: '/guides/slots' },
+            { text: 'Compound variants', link: '/guides/compound-variants' },
+            { text: 'Responsive variants', link: '/guides/responsive-variants' },
+            { text: 'Overrides', link: '/guides/overrides' },
             { text: 'Theming', link: '/theming' },
-            { text: 'Comparison', link: '/comparison' },
             { text: 'Troubleshooting', link: '/troubleshooting' },
           ],
         },
         {
           text: 'Recipes',
           items: [
+            { text: 'Overview', link: '/recipes/' },
             { text: 'Button', link: '/recipes/button' },
             { text: 'Card', link: '/recipes/card' },
             { text: 'Form input', link: '/recipes/form-input' },
@@ -64,9 +76,12 @@ export default defineConfig({
             { text: 'Dropdown', link: '/recipes/dropdown' },
             { text: 'Modal', link: '/recipes/modal' },
             { text: 'Icon button', link: '/recipes/icon-button' },
-            { text: 'Grid (row + col)', link: '/recipes/grid' },
-            { text: 'Editor support', link: '/recipes/type-safety' },
+            { text: 'Grid', link: '/recipes/grid' },
           ],
+        },
+        {
+          text: 'Contributing',
+          items: [{ text: 'Contributing', link: '/contributing' }],
         },
       ],
     },

@@ -1,8 +1,6 @@
 # Avatar
 
-An avatar with CSS custom properties for background, text, and ring colors. Each property has a `theme()` fallback, so consumers can override individual colors in CSS.
-
-Use the [Button recipe](/recipes/button) for explicit color and style variants. See [Theming](/theming) for inherited theme tokens and automatic dark mode.
+Size variants and an optional ring, with CSS variables for color overrides. [Full definition](https://github.com/IHIutch/varia/blob/main/recipes/avatar.config.ts).
 
 ## Authoring
 
@@ -22,16 +20,6 @@ export default defineComponent('avatar', {
     ring: 'ring-2 ring-[var(--avatar-ring,theme(colors.white))] ring-offset-2 ring-offset-[var(--avatar-ring-offset,theme(colors.gray.100))]',
   },
 })
-```
-
-The background utility uses a CSS variable with a palette fallback:
-
-```text
-bg-[var(--avatar-bg,theme(colors.gray.200))]
-   └── arbitrary-value utility
-       └── var() with fallback
-           ├── --avatar-bg (consumer's override hook)
-           └── theme(colors.gray.200) (your design-system default)
 ```
 
 ## Live preview
@@ -54,42 +42,12 @@ bg-[var(--avatar-bg,theme(colors.gray.200))]
 </div>
 :::
 
-## Consumption (defaults)
+## Usage
 
 ```html
 <span class="avatar avatar-s-md">JB</span>
-<span class="avatar avatar-s-lg avatar-ring">VA</span>
+<span class="avatar avatar-s-lg avatar-ring"
+      style="--avatar-bg: rebeccapurple; --avatar-fg: white">VA</span>
 ```
 
-## Re-theming without forking
-
-Set the variables globally or on an ancestor of the avatar:
-
-```css
-/* App-wide brand override */
-:root {
-  --avatar-bg: oklch(0.7 0.15 60);   /* warm peach */
-  --avatar-fg: oklch(0.2 0.05 60);   /* deep brown */
-  --avatar-ring: oklch(0.95 0.02 60);
-}
-
-/* Or scoped to a component */
-.team-card {
-  --avatar-bg: oklch(0.55 0.2 250);
-  --avatar-fg: white;
-}
-```
-
-The browser applies these overrides without changing the Varia definition or regenerating its shortcuts.
-
-## Generated class names
-
-| Class | Purpose |
-|---|---|
-| `avatar` | Base styling, theming hooks |
-| `avatar-s-sm` / `-md` / `-lg` / `-xl` | Size scale |
-| `avatar-ring` | Adds offset ring around the image (also themable) |
-
-## When to use this pattern
-
-Use `var(--token, theme(...))` when consumers need CSS overrides and a default value. Document the variable name and its fallback.
+Set `--avatar-bg`, `--avatar-fg`, `--avatar-ring`, and `--avatar-ring-offset` on the element or an ancestor. Each has a palette fallback in the definition; overrides need no rebuild.

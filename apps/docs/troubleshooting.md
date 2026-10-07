@@ -1,66 +1,70 @@
 # Troubleshooting
 
-## Unexpected variant precedence
+## My component has no styles
 
-Import `variacss/tailwind.css` before Tailwind. Layer order must exist before any generated component rule:
+Check these in order:
+
+1. The definition is in `tailwindVaria({ components: [...] })`.
+2. Your CSS entrypoint loads that registration through `@plugin`, and your app loads the stylesheet.
+3. The complete class name, such as `btn-size-lg`, appears in a template Tailwind scans. Building it from pieces like `btn-size-${size}` prevents Tailwind from finding it.
+
+If you use `prefix(tw)` in CSS, also set `prefix: 'tw'` in `tailwindVaria`. Use `tw:btn` and `tw:md:btn-size-lg` in markup; keep utilities inside definitions unprefixed.
+
+## Definition edits don't appear
+
+With Vite, import the registration module in `vite.config.ts`, as shown in [Quickstart](/quickstart#development-reload). If Vite failed to start, fix the reported error and restart it.
+
+If editor suggestions don't update after you edit an imported definition, save the CSS entrypoint to refresh them. For missing suggestions, check `Tailwind CSS: Show Output` for plugin-loading errors. Tailwind's [extension documentation](https://github.com/tailwindlabs/tailwindcss-intellisense#troubleshooting) covers project detection and settings.
+
+## A utility doesn't override my component
+
+Keep these imports in this order:
 
 ```css
 @import "variacss/tailwind.css";
 @import "tailwindcss";
-@plugin "./varia.config.ts";
 ```
 
-Variants override bases, compounds override variants, and ordinary utilities override all Varia styles. Explicit important declarations reverse CSS layer precedence.
+A utility such as `px-8` then overrides normal component padding. Reordering classes in the HTML has no effect. Check for `!important` if the component still wins.
 
-## Unused atomic CSS
+## CSS contains utilities used only in definitions
 
-Exclude definition files from Tailwind's source scan. Otherwise their literal utility strings generate atomic classes independently of the Varia classes used by your templates:
+On Tailwind 4.1+, exclude definition files from Tailwind's scan:
 
 ```css
 @source not "./**/*.config.ts";
 ```
 
-The path is relative to the stylesheet. Add exclusions for definitions stored elsewhere, or use `source(none)` and explicit template sources.
+Adjust the path to where you keep definitions. It is relative to the stylesheet. Varia still reads the definitions through your registration module.
 
-## Identifier conflicts {#identifier-conflicts}
+## Slot styles affect the wrong elements
 
-`tailwindVaria` throws if definitions produce duplicate component or class names. A generated variant can collide with another component's name:
+A selector such as `.panel-accent .panel__title` needs `panel-accent` on an ancestor and `panel__title` on the child. Putting both classes on the same element, or using only `md:panel__title`, won't match it.
 
-```ts
-const button = defineComponent('btn', {
-  variants: { c: { primary: 'bg-blue-600' } },
-})
-const other = defineComponent('btn-c-primary', { base: 'rounded-md' })
+The selector also reaches titles inside nested panels. Give the nested component a different name when it needs independent styles.
 
-tailwindVaria({ components: [button, other] }) // duplicate btn-c-primary
+## A responsive compound doesn't apply
+
+For `when: { size: 'lg', busy: true }`, use:
+
+```html
+<div class="notice md:notice-size-lg notice-busy">Saving</div>
 ```
 
-Rename the conflicting definition. Avoid names such as `flex`, `grid`, and `hidden`, which overlap Tailwind's built-in utilities and can produce both sets of declarations.
+Only the first condition accepts the modifier. Adding `md:` to `notice-busy` prevents this compound from matching. Put `busy` first in `when` if that is the condition you want to modify.
 
-## Prefix mismatch
+## The build reports an error
 
-If your Tailwind import uses `prefix(tw)`, also pass `prefix: 'tw'` to `tailwindVaria`. The plugin interface cannot read prefixes declared in CSS. See [options](/tailwind#options).
+### Invalid names
 
-## Editor suggestions
+Use lowercase letters, numbers, and hyphens. Component and slot names must start with a letter. Variant values such as `1` and `2xl` are allowed because they form part of a longer class name.
 
-Use native Tailwind CSS IntelliSense. Check its output panel and stylesheet-to-app mapping when suggestions are missing. See [editor support](/recipes/type-safety) for imported-recipe refresh and the extension's linting boundary.
+### Duplicate names {#identifier-conflicts}
 
-## Invalid utility syntax
+Register each component once. Generated classes must also be unique: a `btn` component with `tone.primary` produces `btn-tone-primary`, which conflicts with a component of that name. Rename one of them.
 
-Tailwind validates utilities when compiling active expansions. Unsupported variant groups such as `hover:(bg-blue-600 text-white)` must be written as `hover:bg-blue-600 hover:text-white`. Unused expansions are not resolved.
+Avoid naming components after Tailwind utilities such as `flex`, `grid`, or `hidden`; both can contribute CSS to the same class.
 
-## Configuration errors
+### Unknown utilities
 
-| Failure | Cause and correction |
-| --- | --- |
-| Invalid component or class identifier | Use lowercase names starting with a letter, with digits/hyphens afterward. `defineComponent('Card', ...)` must become `defineComponent('card', ...)`. Generated variant identifiers follow the same rule. |
-| Duplicate component/shortcut/class | Rename the conflicting definition or register it once. The error identifies the conflicting names/owners, including across plugin registrations. |
-| Empty expansion, ambiguous variant map, or unknown slot/compound condition | Supply a nonempty utility string; separate declared slot keys from value keys; reference existing slots and variant values. The authoring error identifies the component/variant or condition. See the definition shapes above. |
-| Tailwind rejects a variant group in an active expansion | Replace `hover:(bg-blue-600 text-white)` with `hover:bg-blue-600 hover:text-white`. |
-| Required layer stylesheet missing | Import `variacss/tailwind.css` before `tailwindcss` in the CSS entry. The plugin's check detects a missing marker; it cannot reliably detect reversed imports. Keep the documented order. |
-| Invalid prefix or missing prefixed CSS | `prefix` must contain lowercase ASCII letters only. Match CSS `prefix(tw)` with `tailwindVaria({ prefix: 'tw', ... })` and use `tw:card` / `tw:md:card-size-lg` in markup. |
-| Tailwind cannot apply an unknown utility | Fix the spelling, define it with native `@utility`, or restore the required theme token. Only active expansions are resolved; unused invalid utilities may remain undetected. Tailwind reports utility-resolution errors directly. |
-| CSS/class missing with no build error | Register the definition, include literal class names in scanned sources, and check `@source` paths. Dynamic concatenation is not scanned. Registration alone does not emit CSS. |
-| Invalid recipe during development | Fix the error in Vite's terminal. An existing running session recovers through config restart; initial startup errors require starting Vite after the fix. |
-
-These checks reuse the authoring validators and Tailwind utility resolution. Error wording and generated formatting are not compatibility promises. Interaction and accessibility behavior remain the application's responsibility.
+Check the utility's spelling and any theme token or custom utility it needs. Expand grouped syntax such as `hover:(bg-blue-600 text-white)` into `hover:bg-blue-600 hover:text-white`.
