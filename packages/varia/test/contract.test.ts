@@ -1,9 +1,6 @@
 // The MVP contract every engine adapter must meet. Each branch runs the same cases
 // against its selected engine, comparing normalized rules rather than raw output.
 
-import { mkdtemp, readFile, rm } from 'node:fs/promises'
-import { tmpdir } from 'node:os'
-import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import { components as recipes } from '../../../examples/kitchen-sink/recipe-components.js'
 import { defineComponent } from '../src/index.js'
@@ -70,6 +67,17 @@ describe.each(adapters)('$name adapter', (adapter) => {
       compoundVariants: kind === 'compound' ? [{ when: { active: true }, class: 'varia-unknown-utility' }] : undefined,
     })
     await expect(adapter.generate([component], ['broken', 'broken-active'])).rejects.toThrow(/varia-unknown-utility/)
+  })
+
+  it.each(['base', 'slot', 'compound'])('delegates unsupported syntax in an active %s expansion to Tailwind', async (kind) => {
+    const grouped = 'hover:(opacity-50 opacity-75)'
+    const component = defineComponent('grouped', {
+      slots: { root: kind === 'base' ? grouped : 'block', title: 'block' },
+      variants: { active: kind === 'slot' ? { title: grouped } : 'opacity-50' },
+      compoundVariants: kind === 'compound' ? [{ when: { active: true }, class: grouped }] : undefined,
+    })
+    await expect(adapter.generate([component], [])).resolves.toBeTypeOf('string')
+    await expect(adapter.generate([component], ['grouped', 'grouped-active'])).rejects.toThrow(/unknown utility/)
   })
 
   it('activates compounds through their first condition and keeps their states', async () => {
@@ -150,7 +158,7 @@ describe.each(adapters)('$name adapter', (adapter) => {
   })
 
   it('compiles every class in the kitchen-sink recipes without unresolved utilities', async () => {
-    const css = await adapter.generate(recipes, recipes.flatMap(component => component.manifest.classNames))
+    const css = await adapter.generate(recipes, recipes.flatMap(component => component.classNames))
     const selectors = cssRules(css).map(entry => entry.selector)
     expect(selectors).toContain('.btn')
     expect(selectors).toContain('.dropdown-align-end .dropdown__menu')
@@ -171,21 +179,5 @@ describe.each(adapters)('$name adapter', (adapter) => {
   it('fails when the precedence setup is missing', async () => {
     const btn = defineComponent('btn', { base: 'block' })
     await expect(adapter.registerWithoutLayers([btn])).rejects.toThrow(/variacss\/tailwind\.css|outputToCssLayers/)
-  })
-
-  it('aggregates manifests per build and replaces stale classes on reload', async () => {
-    const dir = await mkdtemp(join(tmpdir(), `varia-${adapter.name}-`))
-    try {
-      const path = join(dir, 'manifest.d.ts')
-      const btn = defineComponent('btn', { base: 'block' })
-      const card = defineComponent('card', { base: 'block' })
-      await adapter.register([{ components: [btn], manifest: { path } }, { components: [card], manifest: { path } }])
-      expect(await readFile(path, 'utf8')).toMatch(/'btn'[\s\S]*'card'/)
-      await adapter.register([{ components: [btn], manifest: { path } }])
-      expect(await readFile(path, 'utf8')).not.toContain('\'card\'')
-    }
-    finally {
-      await rm(dir, { recursive: true, force: true })
-    }
   })
 })

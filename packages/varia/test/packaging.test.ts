@@ -20,6 +20,8 @@ it('loads public package exports without an engine and rejects the comparison al
       for (const path of typeof entry === 'string' ? [entry] : Object.values(entry))
         expect((await readFile(join(packageDir, path), 'utf8')).length).toBeGreaterThan(0)
     }
+    expect(metadata.exports).not.toHaveProperty('./types')
+    await expect(readFile(join(packageDir, 'dist/types.d.mts'), 'utf8')).rejects.toMatchObject({ code: 'ENOENT' })
     expect(await readFile(join(packageDir, 'LICENSE'), 'utf8')).toContain('MIT License')
     for (const document of ['README.md', 'API.md', 'CHANGELOG.md'])
       expect((await readFile(join(packageDir, document), 'utf8')).length).toBeGreaterThan(0)
@@ -39,7 +41,7 @@ it('loads public package exports without an engine and rejects the comparison al
         variants: { active: { body: 'opacity-50' } },
         compoundVariants: [{ when: { active: true }, class: 'opacity-75' }],
       });
-      const adapter = tailwindVaria({ components: [component], manifest: false });
+      const adapter = tailwindVaria({ components: [component] });
       console.log(component.styles.length, typeof adapter);
     `
     expect(execFileSync(process.execPath, ['--input-type=module', '-e', script], { cwd: dir, encoding: 'utf8' }).trim()).toBe('2 object')

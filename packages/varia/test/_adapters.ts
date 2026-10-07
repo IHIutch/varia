@@ -3,9 +3,7 @@ import { adapter } from './_engine.js'
 
 export interface Registration {
   components: DefinedComponent[]
-  manifest?: false | { path?: string }
   prefix?: string
-  breakpoints?: Record<string, string>
 }
 
 export interface GenerateOptions {

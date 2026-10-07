@@ -192,7 +192,7 @@ export function defineComponent(name: string, config: ComponentConfig): DefinedC
   return {
     name,
     shortcuts,
-    manifest: { classNames },
+    classNames,
     styles: styles.length > 0 ? styles : undefined,
   } as DefinedComponent
 }

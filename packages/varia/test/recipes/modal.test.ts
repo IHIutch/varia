@@ -4,7 +4,7 @@ import { generateRecipeCSS } from './_helpers.js'
 
 describe('recipe: Modal', () => {
   it('emits a shortcut for every slot (root → bare name, others → BEM)', () => {
-    const names = modal.manifest.classNames
+    const names = modal.classNames
     expect(names).toContain('modal')
     expect(names).toContain('modal__container')
     expect(names).toContain('modal__header')
@@ -15,8 +15,8 @@ describe('recipe: Modal', () => {
     expect(names).toContain('modal__close')
   })
 
-  it('manifest includes size variant class names', () => {
-    const names = modal.manifest.classNames
+  it('class names include size variant class names', () => {
+    const names = modal.classNames
     expect(names).toContain('modal-size-sm')
     expect(names).toContain('modal-size-md')
     expect(names).toContain('modal-size-lg')

@@ -8,12 +8,11 @@ This is the contract for the Tailwind implementation of Varia. It takes preceden
 | --- | --- |
 | `variacss` | `defineComponent` and the authoring types listed below |
 | `variacss/tailwind` | `tailwindVaria` and `TailwindVariaOptions` |
-| `variacss/types` | Type-only `VariaClasses`; `VariaClassRegistry` is reserved for generated augmentation |
 | `variacss/tailwind.css` | Stylesheet establishing cascade order |
 
-The root authoring types are `ClassInput`, `ComponentConfig`, `CompoundVariantRule`, `CompoundVariantWhen`, `DefinedComponent`, `SlotKeyedValue`, `VariantDefinition`, and `VariantValue`. `DefinedComponent` is factory output for registration. Pass it unchanged to `tailwindVaria`; do not construct, mutate, serialize, or extend its generated structure. Its `shortcuts`, `styles`, and `manifest` members are implementation details. Their layout and generated CSS formatting can change without a major release. The type requires factory output; `Shortcut`, `ComponentStyle`, and `ComponentManifest` are private types.
+The root authoring types are `ClassInput`, `ComponentConfig`, `CompoundVariantRule`, `CompoundVariantWhen`, `DefinedComponent`, `SlotKeyedValue`, `VariantDefinition`, and `VariantValue`. `DefinedComponent` is factory output for registration. Pass it unchanged to `tailwindVaria`; do not construct, mutate, serialize, or extend its generated structure. Its `shortcuts`, `styles`, and `classNames` members are implementation details. Their layout and generated CSS formatting can change without a major release. The type requires factory output; `Shortcut` and `ComponentStyle` are private types.
 
-`varia/adapter` and its `createAdapter` alias belonged to the pre-release comparison and are removed before v1. Use the named Tailwind integration. Source files, `dist` paths, manifest-writing functions, and test helpers are not public imports. There is no styling runtime or JavaScript value export from `variacss/types`.
+`varia/adapter` and its `createAdapter` alias belonged to the pre-release comparison and are removed before v1. Use the named Tailwind integration. Source files, `dist` paths, and test helpers are not public imports. There is no styling runtime. The pre-release `variacss/types` export and `manifest` option are removed; use native Tailwind CSS IntelliSense for class suggestions.
 
 ## Define and register styles
 
@@ -56,7 +55,7 @@ Load that configuration with Tailwind's native plugin loader. Import the layer s
 </article>
 ```
 
-`ClassInput` accepts a nonempty utility string or an array of strings joined with spaces. Varia delegates expansion to Tailwind's native `@apply`. Theme variables, custom utilities, arbitrary values/selectors, and individual modifiers such as `hover:` and `md:` retain Tailwind behavior. Variant groups such as `hover:(bg-blue-600 text-white)` are rejected. Write `hover:bg-blue-600 hover:text-white`. Literal punctuation inside arbitrary-value brackets is allowed.
+`ClassInput` accepts a nonempty utility string or an array of strings joined with spaces. Varia delegates expansion to Tailwind's native `@apply`. Theme variables, custom utilities, arbitrary values/selectors, and individual modifiers such as `hover:` and `md:` retain Tailwind behavior. Tailwind rejects variant groups such as `hover:(bg-blue-600 text-white)` when compiling an active expansion. Varia does not parse utility syntax; unused utilities are not resolved. Write `hover:bg-blue-600 hover:text-white`. Literal punctuation inside arbitrary-value brackets is allowed.
 
 At least one base/slot or variant is required. `base` is shorthand for `slots: { root: base }`; setting both is an error. Explicit `slots: {}` is an error. Variants without a base, and slots without a `root`, are supported. Those definitions do not register a bare component class unless a root/base is declared. Empty expansions, empty maps for a variant axis, and empty slot maps within values are errors.
 
@@ -123,11 +122,11 @@ Utility string order does not override Tailwind's native ordering. For example, 
 
 `tailwindVaria` accepts `prefix` containing lowercase ASCII letters. It sets the Tailwind plugin config prefix and expands unprefixed recipe utilities with that prefix. Markup uses `tw:card`, `tw:card__title`, and `tw:md:card-size-lg`. For a CSS-configured prefix, repeat the same value in `tailwindVaria({ prefix: 'tw', components })`; the public plugin interface does not expose the CSS prefix. A JavaScript Tailwind config prefix can be read by the plugin. Mismatched prefix settings are unsupported. Slot and compound conditions use the same effective prefix.
 
-Native user CSS can `@apply` registered component classes; reference stylesheets also work through Tailwind's loader. Such application uses Tailwind's CSS semantics and does not expand the strict type grammar.
+Native user CSS can `@apply` registered component classes; reference stylesheets also work through Tailwind's loader. Such application uses Tailwind's CSS semantics.
 
 ## Editor support
 
-Install [Tailwind CSS IntelliSense](https://marketplace.visualstudio.com/items?itemName=bradlc.vscode-tailwindcss). It reads the Tailwind CSS entrypoint and its `@plugin` registration. Varia classes autocomplete directly in `class`/`className` attributes, with CSS hover previews and native responsive/prefix syntax. No typed joiner or generated declaration setup is needed; `manifest: false` works.
+Install [Tailwind CSS IntelliSense](https://marketplace.visualstudio.com/items?itemName=bradlc.vscode-tailwindcss). It reads the Tailwind CSS entrypoint and its `@plugin` registration. Varia classes autocomplete directly in `class`/`className` attributes, with CSS hover previews and native responsive/prefix syntax. No typed joiner or generated declaration setup is needed.
 
 Enable suggestions inside strings and existing class helpers in VS Code settings:
 
@@ -179,36 +178,6 @@ Native lint rules cover conflicts, invalid `@apply`, and other Tailwind diagnost
 
 A one-time integration check against Tailwind CSS IntelliSense/language server 0.16.0 verified Varia completions, hover, imported-definition refresh, HTML, JSX, and `clsx` with Tailwind 4.3.3 and Vite 8.0.11 on macOS. The language-server harness is not a maintained test suite: autocomplete belongs to Tailwind. After changing editor configuration, manually check a registered Varia class, edit its recipe with Vite running, and confirm its hover/suggestions refresh.
 
-## Strict class types
-
-`variacss/types` remains optional tooling for consumers who want TypeScript to validate a bounded Varia vocabulary. It is independent of native editor autocomplete:
-
-```ts
-import type { VariaClasses } from 'variacss/types'
-
-const classes = ['card', 'md:card-size-lg'] satisfies VariaClasses[]
-```
-
-`VariaClasses` contains registered base, slot, and activation names, plus exactly one responsive modifier from Tailwind's resolved breakpoint names. With a prefix it includes `tw:card` and `tw:md:card-size-lg`. It excludes native utilities, states, important modifiers, arbitrary variants, stacked modifiers, space-separated class strings, unknown breakpoints, and unknown/removed names. This bounded union is narrower than Tailwind's CSS grammar. It does not merge classes or check whether compounds match in the DOM.
-
-Install `typescript@7.0.2` as a development dependency for this optional check. Change the installation example to `tailwindVaria({ components })` to enable manifest generation, put the typed values above in `src/classes.ts`, and include the declaration in the consuming project:
-
-```json
-{
-  "compilerOptions": { "module": "NodeNext", "target": "ES2022", "strict": true, "noEmit": true },
-  "files": ["node_modules/.varia/manifest.d.ts"],
-  "include": ["src/**/*.ts"]
-}
-```
-
-Run `npm run build` before `npx tsc`, or use a script containing `vite build && tsc`. The installation example has `card-accent`, not `card-size-lg`; use `['card', 'md:card-accent']` for its typed values. No joiner is required.
-
-The generated file augments `variacss/types`, so normal pnpm symlink resolution needs no hoisting or `preserveSymlinks`. Without augmentation `VariaClasses` is `never`. A missing file in `files` also produces a TypeScript missing-file error. Generate and include it before typechecking these values.
-
-`manifest: false` disables writing. `manifest: { path }` changes the destination; relative paths resolve against process cwd, not the config directory. Default output is `node_modules/.varia/manifest.d.ts` under process cwd. Include custom destinations explicitly in `files`. Registrations targeting the same destination within one resolved configuration aggregate classes. A newly resolved configuration replaces stale declarations there.
-
-Include one aggregate manifest per TypeScript project. Independent configurations must have separate destinations and TypeScript projects; concurrent writers to one file are unsupported. Development reload uses the Vite configuration below. Generated declarations remain optional tooling; editor autocomplete does not depend on them.
-
 ## Vite development reload
 
 Use `@tailwindcss/vite` and import the same recipe registration configuration used by CSS in `vite.config.ts`:
@@ -228,11 +197,11 @@ export default defineConfig({
 
 Keep the stylesheet's `@plugin` directive. The additional config import makes recipes and their transitive local imports dependencies of Vite's configuration. In a running development session, Vite restarts when those dependencies change and recovers after invalid edits are fixed. This avoids a Tailwind 4.3.3 recovery failure observed with CSS HMR alone. No Varia watcher or Vite plugin is required.
 
-[Vite's CSS warmup](https://vite.dev/config/server-options#server-warmup) generates the class declarations on startup and after a configuration restart, before a browser requests CSS. Warmup paths resolve from Vite's root. Manifest destinations still follow the cwd rules above; use an absolute `manifest.path` when launching from another directory. Invalid recipes report the original error, and declarations can remain stale until compilation succeeds. An invalid recipe at initial startup prevents Vite from starting; fix it and run Vite again.
+[Vite's CSS warmup](https://vite.dev/config/server-options#server-warmup) compiles the stylesheet on startup and after a configuration restart, before a browser requests CSS. Warmup paths resolve from Vite's root. Invalid recipes report the original error. An invalid recipe at initial startup prevents Vite from starting; fix it and run Vite again.
 
 The supported boundary is static local imports reachable from the configuration, including shared monorepo sources outside the app root. Add/remove definitions in `tailwindVaria({ components })` as well as on disk. Directory discovery, runtime-computed imports, and editing installed packages under `node_modules` are outside this guarantee. Use Vite's default bundled configuration loader and keep file watching enabled.
 
-`pnpm test:reload` remains an optional integration check for imported helper edits, added/removed classes, invalid-definition recovery, computed CSS, and generated typings. It uses a packed Varia archive and installed development dependencies. It is separate from the minimal release gate.
+`pnpm test:reload` remains an optional integration check for imported helper edits, added/removed classes, invalid-definition recovery, and computed CSS. It uses a packed Varia archive and installed development dependencies. It is separate from the minimal release gate.
 
 ## Monorepo setup
 
@@ -240,7 +209,7 @@ Install Varia, Tailwind, and the Vite plugin in the consuming app. Import shared
 
 With `source(none)`, add `@source` paths for every app/shared directory containing markup or class strings. Paths are relative to the stylesheet, for example `@source "../../../packages/ui/src";` from `apps/web/src/styles.css`. Registering recipe definitions does not tell Tailwind where their consumers live. Keep source scanning and recipe imports configured separately.
 
-For optional types, give each app a separate absolute `manifest.path`, include it in that app's TypeScript project, and build CSS before typechecking. Relative manifest paths resolve from process cwd. Do not let independent apps write to one declaration file. See [editor support](#editor-support) for explicit stylesheet-to-app mappings.
+See [editor support](#editor-support) for explicit stylesheet-to-app mappings.
 
 ## Troubleshooting
 
@@ -249,22 +218,20 @@ For optional types, give each app a separate absolute `manifest.path`, include i
 | Invalid component or class identifier | Use lowercase names starting with a letter, with digits/hyphens afterward. `defineComponent('Card', ...)` must become `defineComponent('card', ...)`. Generated variant identifiers follow the same rule. |
 | Duplicate component/shortcut/class | Rename the conflicting definition or register it once. The error identifies the conflicting names/owners, including across plugin registrations. |
 | Empty expansion, ambiguous variant map, or unknown slot/compound condition | Supply a nonempty utility string; separate declared slot keys from value keys; reference existing slots and variant values. The authoring error identifies the component/variant or condition. See the definition shapes above. |
-| Variant group rejected | Replace `hover:(bg-blue-600 text-white)` with `hover:bg-blue-600 hover:text-white`. |
+| Tailwind rejects a variant group in an active expansion | Replace `hover:(bg-blue-600 text-white)` with `hover:bg-blue-600 hover:text-white`. |
 | Required layer stylesheet missing | Import `variacss/tailwind.css` before `tailwindcss` in the CSS entry. The plugin's check detects a missing marker; it cannot reliably detect reversed imports. Keep the documented order. |
 | Invalid prefix or missing prefixed CSS | `prefix` must contain lowercase ASCII letters only. Match CSS `prefix(tw)` with `tailwindVaria({ prefix: 'tw', ... })` and use `tw:card` / `tw:md:card-size-lg` in markup. |
 | Tailwind cannot apply an unknown utility | Fix the spelling, define it with native `@utility`, or restore the required theme token. Only active expansions are resolved; unused invalid utilities may remain undetected. Tailwind reports utility-resolution errors directly. |
-| CSS/class missing with no build error | Register the definition, include literal class names in scanned sources, and check `@source` paths. Dynamic concatenation is not scanned. Types/registration alone do not emit CSS. |
-| Declaration write fails with `EACCES`, `ENOTDIR`, or another filesystem error | Check the path shown in the native error and its permissions. Choose a writable `manifest.path`, or disable optional output with `manifest: false`. Existing declarations can be stale after failure. |
-| Optional types are `never`, missing, or stale | Enable manifest generation, build CSS, and include the generated file in `tsconfig.json` before typechecking. Use one manifest per project. |
+| CSS/class missing with no build error | Register the definition, include literal class names in scanned sources, and check `@source` paths. Dynamic concatenation is not scanned. Registration alone does not emit CSS. |
 | Invalid recipe during development | Fix the error in Vite's terminal. An existing running session recovers through config restart; initial startup errors require starting Vite after the fix. |
 
-These checks reuse the authoring validators, native filesystem errors, and Tailwind utility resolution. Error wording and generated formatting are not compatibility promises. Interaction and accessibility behavior remain the application's responsibility.
+These checks reuse the authoring validators and Tailwind utility resolution. Error wording and generated formatting are not compatibility promises. Interaction and accessibility behavior remain the application's responsibility.
 
 ## Compatibility and versioning
 
-V1 minor and patch releases preserve the documented authoring shapes, class spelling, activation rules, bounded type grammar, and normal layer precedence. Breaking contract changes require a major release. Supported exports can be deprecated in a minor release with a documented replacement and retained behavior until the next major release. Implementation structures, generated formatting, and exact error text are not compatibility promises. Invalid definitions and unknown utilities in active expansions must continue to fail; unused expansions need not be resolved by Tailwind.
+V1 minor and patch releases preserve the documented authoring shapes, class spelling, activation rules, and normal layer precedence. Breaking contract changes require a major release. Supported exports can be deprecated in a minor release with a documented replacement and retained behavior until the next major release. Implementation structures, generated formatting, and exact error text are not compatibility promises. Invalid authoring structures fail during definition or registration. Unknown utilities and unsupported syntax in active expansions fail during Tailwind compilation; unused expansions need not be resolved.
 
-The package is ESM and declares Node.js 26 or newer. Repository and downstream type checks use TypeScript 7.0.2. CI runs the minimal release gate on Ubuntu 24.04 with Node 26.9.0. Node 26.0.0 was also checked locally. The verified Tailwind/Vite versions are 4.3.3 and 8.0.16 respectively; the optional Tailwind peer range remains `^4.3.3`. Wider version/OS compatibility is not implied by these checks.
+The package is ESM and declares Node.js 26 or newer. Repository type checks use TypeScript 7.0.2. CI runs the minimal release gate on Ubuntu 24.04 with Node 26.9.0. Node 26.0.0 was also checked locally. The verified Tailwind/Vite versions are 4.3.3 and 8.0.16 respectively; the optional Tailwind peer range remains `^4.3.3`. Wider version/OS compatibility is not implied by these checks.
 
 The maintained release checks focus on Varia's behavior and package contents: unit tests, typechecking, lint, the production example build, and one clean install of the actual archive that checks public ESM exports, declaration files, and the layer stylesheet. Tailwind owns editor autocomplete; its behavior does not require a separate ongoing test harness here.
 
@@ -280,7 +247,7 @@ To repeat the production check, run `pnpm example:build`, then `pnpm --filter @v
 
 ## Release preparation
 
-Repository `tsc` and downstream typing checks use TypeScript 7.0.2. The `@typescript/native` dependency is an alias for that stable compiler. ESLint and declaration generation still use the JavaScript compiler API, so `typescript` aliases `@typescript/typescript6` as recommended in [Microsoft's migration guidance](https://devblogs.microsoft.com/typescript/announcing-typescript-7-0/#running-side-by-side-with-typescript-6-0). That compatibility package provides `tsc6`; it does not replace TypeScript 7's `tsc`.
+Repository `tsc` checks use TypeScript 7.0.2. The `@typescript/native` dependency is an alias for that stable compiler. ESLint and declaration generation still use the JavaScript compiler API, so `typescript` aliases `@typescript/typescript6` as recommended in [Microsoft's migration guidance](https://devblogs.microsoft.com/typescript/announcing-typescript-7-0/#running-side-by-side-with-typescript-6-0). That compatibility package provides `tsc6`; it does not replace TypeScript 7's `tsc`.
 
 Run `pnpm install --frozen-lockfile`, then `pnpm release:prepare`. It builds and packs the package, runs the unit suite against that archive (including a clean npm-install smoke test), typechecks, lints, and builds the production example. CI runs the same command and retains the verified archive as an artifact.
 

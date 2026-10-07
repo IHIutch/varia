@@ -5,7 +5,7 @@ import { generateRecipeCSS } from './_helpers.js'
 describe('recipe: Dropdown', () => {
   it('exports one component with five slots and two alignment variants', () => {
     expect(dropdown.name).toBe('dropdown')
-    expect(dropdown.manifest.classNames).toEqual([
+    expect(dropdown.classNames).toEqual([
       'dropdown',
       'dropdown__trigger',
       'dropdown__menu',
