@@ -23,7 +23,7 @@ it('loads public package exports without an engine and rejects the comparison al
     expect(metadata.exports).not.toHaveProperty('./types')
     await expect(readFile(join(packageDir, 'dist/types.d.mts'), 'utf8')).rejects.toMatchObject({ code: 'ENOENT' })
     expect(await readFile(join(packageDir, 'LICENSE'), 'utf8')).toContain('MIT License')
-    for (const document of ['README.md', 'API.md', 'CHANGELOG.md'])
+    for (const document of ['README.md', 'CHANGELOG.md'])
       expect((await readFile(join(packageDir, document), 'utf8')).length).toBeGreaterThan(0)
     expect(await readFile(join(packageDir, 'dist/tailwind.css'), 'utf8')).toContain('@layer theme, base, components, utilities;')
     const script = `

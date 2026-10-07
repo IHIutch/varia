@@ -1,13 +1,13 @@
 {
-  "name": "@varia/example",
+  "name": "@varia/docs",
   "type": "module",
   "version": "0.0.0",
   "private": true,
-  "description": "Kitchen-sink demo app for varia",
+  "description": "VitePress site for varia",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview",
+    "dev": "vitepress dev .",
+    "build": "vitepress build .",
+    "preview": "vitepress preview .",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
@@ -16,6 +16,7 @@
   "devDependencies": {
     "@tailwindcss/vite": "^4.3.3",
     "tailwindcss": "^4.3.3",
-    "vite": "8.3.2"
+    "vite": "8.3.2",
+    "vitepress": "2.0.0-alpha.20"
   }
 }
