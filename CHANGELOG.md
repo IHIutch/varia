@@ -2,17 +2,13 @@
 
 ## 1.0.0 (2026-10-07)
 
-First stable release of the Tailwind implementation.
+Varia turns Tailwind utilities into reusable component classes. CSS is generated only for the classes you use.
 
-- Define base styles, slots, boolean and multi-value variants, and compound conditions with `defineComponent`.
-- Register on-demand component CSS with `tailwindVaria` and Tailwind 4's native utility expansion.
-- Establish normal cascade precedence with `variacss/tailwind.css`, with native utilities overriding component layers.
-- Support responsive classes and prefixes within the documented compound and nested-slot boundaries.
-- Use native Tailwind CSS IntelliSense with ordinary class strings.
-- Let Tailwind validate utility syntax in active expansions.
-- Use native Vite configuration reload for statically imported recipes and shared sources.
-- Support Tailwind CSS 4.1 and later, with definition files excluded from source scanning during setup.
-- Provide a concise Quickstart, component guides, recipes, troubleshooting, and archive-based release instructions.
-- Restore the VitePress documentation site with v2 and live recipe previews.
+- Define base styles, variants, slots, and compound variants with `defineComponent`.
+- Register components with `tailwindVaria`, with support for responsive classes and prefixes.
+- Override component styles with Tailwind utilities.
+- Get class suggestions and CSS previews with Tailwind CSS IntelliSense.
 
-The pre-release `varia/adapter` alias, `variacss/types` export, and `manifest` option are removed. Migrate to `variacss/tailwind` and native Tailwind editor suggestions. Generated definition structures are private implementation details. See [documentation](https://github.com/IHIutch/varia/tree/main/docs) for the v1 contract and supported toolchain.
+Install with `npm install variacss tailwindcss`. Requires Tailwind CSS 4.1 or newer.
+
+See the [Quickstart](https://varia-docs.pages.dev/quickstart) for setup.
