@@ -239,7 +239,15 @@ The package is ESM and declares Node.js 26 or newer. Repository and downstream t
 
 The maintained release checks focus on Varia's behavior and package contents: unit tests, typechecking, lint, the production example build, and one clean install of the actual archive that checks public ESM exports, declaration files, and the layer stylesheet. Tailwind owns editor autocomplete; its behavior does not require a separate ongoing test harness here.
 
-Existing visual and reload checks remain available separately. The visual references use Playwright 1.61.1's bundled Chromium on macOS. They do not establish complete browser support or production theme/reset coverage; issue [#5](https://github.com/IHIutch/varia/issues/5) covers that work.
+Existing visual and reload checks remain available separately. The visual references use Playwright 1.61.1's bundled Chromium on macOS. They do not establish complete browser support.
+
+### Advanced recipes and themes
+
+The production kitchen-sink example imports Tailwind's full reset and theme. A one-time check in Chromium 152.0.7977.130 on macOS verified inherited and nested palette overrides on button compounds, with an unchanged sibling outside the scope; tooltip hover reveal and always-visible bubbles; progress widths of 25%, 65%, 90%, and 100%, color variants and stripes; and native details/summary panels with open-state caret rotation and suppressed markers. This is a Chromium validation, not a Firefox/WebKit support claim.
+
+Maintained unit tests check that Varia preserves the tooltip attribute/ancestor selectors, progress custom-property width and root-to-slot variant selectors, and accordion marker/open-state selectors. Existing contract tests cover custom themes, nested slots, responsive compounds, and utility precedence. Browser state, CSS variable inheritance, and Tailwind's own utility semantics remain platform behavior; no additional browser harness is required for these recipes.
+
+To repeat the production check, run `pnpm example:build`, then `pnpm --filter @varia/example exec vite preview` and open `/components.html`. Hover the tooltip trigger and move away; the hover bubble should appear and disappear while the always-visible bubble remains. Progress bars should match their labels. Toggle the accordion summaries; panels and carets should follow the native open state. To check scoped themes, put `--color-blue-600` on an ancestor of a `btn btn-c-primary btn-style-solid` element, override it on a nested ancestor, and confirm a sibling outside both scopes retains its default color. The tooltip recipe requires an explicit `group` class on its root and supports hover/always reveal only; accessible focus handling belongs to the consuming application.
 
 ## Release preparation
 
