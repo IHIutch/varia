@@ -55,6 +55,7 @@ pnpm test
 pnpm typecheck
 pnpm lint
 pnpm test:visual
+pnpm test:reload
 ```
 
 The library lives in `packages/varia`, example style definitions in `recipes`, and the demo in `examples/kitchen-sink`.
@@ -68,3 +69,9 @@ Generate the manifest through Tailwind before typechecking and add `node_modules
 ## Native Tailwind expansion
 
 Recipes may use Tailwind's themes, custom utilities, arbitrary values, and individual modifiers. Tailwind's Vite integration processes authored CSS and native `@apply` directly. The downstream test verifies authored CSS and component application in a real consumer build. See [the contract](API.md#cascade-and-prefixes) for ordering and prefix behavior.
+
+## Development reload
+
+With `@tailwindcss/vite`, import your recipe registration config in `vite.config.ts` and set `server.warmup.clientFiles` to your CSS entry. Vite watches imported recipes and shared helpers, restarts after edits, and recovers when invalid edits in a running session are fixed. Warmup regenerates types before a browser opens.
+
+See [Vite development reload](API.md#vite-development-reload) for the full configuration and supported paths.

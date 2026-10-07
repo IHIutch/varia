@@ -152,7 +152,32 @@ The generated file augments `varia/types`, so normal pnpm symlink resolution nee
 
 `manifest: false` disables writing. `manifest: { path }` changes the destination; relative paths resolve against process cwd, not the config directory. Default output is `node_modules/.varia/manifest.d.ts` under process cwd. Include custom destinations explicitly in `files`. Registrations targeting the same destination within one resolved configuration aggregate classes. A newly resolved configuration replaces stale declarations there.
 
-Include one aggregate manifest per TypeScript project. Independent configurations must have separate destinations and TypeScript projects; concurrent writers to one file are unsupported. Packaged development reload and a complete generation lifecycle are tracked separately in issues [#2](https://github.com/IHIutch/varia/issues/2) and [#3](https://github.com/IHIutch/varia/issues/3). The example's restart hook is not a public integration export.
+Include one aggregate manifest per TypeScript project. Independent configurations must have separate destinations and TypeScript projects; concurrent writers to one file are unsupported. Development reload uses the Vite configuration below. A complete generation lifecycle is tracked separately in issue [#3](https://github.com/IHIutch/varia/issues/3).
+
+## Vite development reload
+
+Use `@tailwindcss/vite` and import the same recipe registration configuration used by CSS in `vite.config.ts`:
+
+```ts
+import tailwindcss from '@tailwindcss/vite'
+import { defineConfig } from 'vite'
+import './tailwind.config.js'
+
+export default defineConfig({
+  plugins: [tailwindcss()],
+  server: {
+    warmup: { clientFiles: ['./src/styles.css'] },
+  },
+})
+```
+
+Keep the stylesheet's `@plugin` directive. The additional config import makes recipes and their transitive local imports dependencies of Vite's configuration. In a running development session, Vite restarts when those dependencies change and recovers after invalid edits are fixed. This avoids a Tailwind 4.3.3 recovery failure observed with CSS HMR alone. No Varia watcher or Vite plugin is required.
+
+[Vite's CSS warmup](https://vite.dev/config/server-options#server-warmup) generates the class declarations on startup and after a configuration restart, before a browser requests CSS. Warmup paths resolve from Vite's root. Manifest destinations still follow the cwd rules above; use an absolute `manifest.path` when launching from another directory. Invalid recipes report the original error, and declarations can remain stale until compilation succeeds. An invalid recipe at initial startup prevents Vite from starting; fix it and run Vite again.
+
+The supported boundary is static local imports reachable from the configuration, including shared monorepo sources outside the app root. Add/remove definitions in `tailwindVaria({ components })` as well as on disk. Directory discovery, runtime-computed imports, and editing installed packages under `node_modules` are outside this guarantee. Use Vite's default bundled configuration loader and keep file watching enabled.
+
+`pnpm test:reload` packs Varia into standalone and monorepo consumers and checks imported helper edits, added/removed classes, invalid-definition recovery, computed CSS, and generated typings. Verified versions are Vite 8.0.11 and Tailwind/@tailwindcss/vite 4.3.3. Broader compatibility belongs to issue #4.
 
 ## Compatibility and versioning
 
@@ -160,4 +185,4 @@ V1 minor and patch releases preserve the documented authoring shapes, class spel
 
 The current package is ESM, declares Node.js 22 or newer, and has a Tailwind 4 peer range starting at 4.3.3. These are configuration bounds, not evidence that every combination has passed. Minimum TypeScript and integration versions, the release compatibility matrix, and cross-browser claims must follow issue [#4](https://github.com/IHIutch/varia/issues/4). Current browser checks use Chromium on macOS with a fixture reset. They do not establish complete browser support or production theme/reset coverage; issue [#5](https://github.com/IHIutch/varia/issues/5) covers that work.
 
-Run `pnpm test`, `pnpm typecheck`, `pnpm lint`, `pnpm example:build`, `pnpm test:visual`, and `pnpm comparison:reload`. The last command currently verifies the example restart hook. Comparison-only branch parity checks are historical and are not a v1 release gate.
+Run `pnpm test`, `pnpm typecheck`, `pnpm lint`, `pnpm example:build`, `pnpm test:visual`, `pnpm test:reload`, and `pnpm comparison:reload`. The last command verifies native Vite recipe reload in the example. Comparison-only branch parity checks are historical and are not a v1 release gate.
