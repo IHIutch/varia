@@ -1,6 +1,6 @@
 # Card
 
-A base-only component.
+The `card` class styles the outer container. Use utilities for its contents.
 
 ## Recipe
 

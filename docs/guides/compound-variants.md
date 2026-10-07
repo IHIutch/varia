@@ -32,7 +32,9 @@ export default defineComponent('btn', {
 })
 ```
 
-`size` controls normal button padding and text size. `square` sets the aspect ratio. The compounds replace the padding when both conditions match. In `when`, use declared variant values or `true` for a boolean variant; `class` accepts a utility string or string array.
+`size` controls button padding and text size. `square` sets the aspect ratio. The compounds replace the padding when both conditions match.
+
+In `when`, use declared variant values or `true` for a boolean variant. Supply `class` as a utility string or an array of strings.
 
 ## Use the existing variant classes
 
@@ -46,6 +48,6 @@ export default defineComponent('btn', {
 
 The labeled button keeps `px-6 py-3`. The icon-only button gets `p-3`. The compound matches `.btn-size-lg.btn-square`; it adds no class of its own. Both condition classes belong on the same element.
 
-The first `when` entry, in JavaScript property order, activates generation. Scanning `btn-size-lg` emits the combined rule even if `btn-square` was not scanned. Scanning only `btn-square` does not.
+Varia registers each compound under the class for the first condition in `when`, using JavaScript property order. Tailwind emits the combined rule when it detects that class. Here, detecting `btn-size-lg` emits the rule even if Tailwind has not detected `btn-square`. Detecting only `btn-square` does not emit it.
 
-Modifiers apply to that first class. Remaining conditions require bare classes on the same element, including any configured prefix.
+Apply modifiers such as `md:` to the first condition's class. The other condition classes must be on the same element without modifiers. Include your configured prefix on every class.

@@ -12,7 +12,9 @@ A Tailwind utility overrides normal component declarations:
 varia.base < varia.variants < varia.compounds < native utilities
 ```
 
-This also lets utilities on a slot override ancestor slot rules. Explicit `!important` declarations reverse layer priority. Within a layer, Tailwind's utility ordering and CSS precedence determine conflicts; Varia does not select a winner. Class attribute order has no effect.
+A utility on a slot also overrides component rules that target it through an ancestor.
+
+`!important` declarations reverse CSS layer priority. Within a layer, Tailwind's utility ordering and the CSS cascade decide which declaration wins. Class attribute order has no effect.
 
 ## Reuse a component in CSS
 

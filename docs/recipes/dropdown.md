@@ -1,10 +1,10 @@
 # Dropdown
 
-Slots for the trigger, menu, items, and divider.
+Use slots to style the dropdown trigger, menu, items, and divider.
 
 ## Recipe
 
-Put `dropdown-align-start` or `dropdown-align-end` on the root to position its menu through a slot variant. Menu visibility is local to the menu slot:
+Put `dropdown-align-start` or `dropdown-align-end` on the root to position its menu through a slot variant. The menu's `data-state` attribute controls its visibility:
 
 <<< ../../recipes/dropdown.config.ts
 
@@ -14,7 +14,7 @@ Items use `data-[variant=danger]:` utilities for destructive actions.
 
 :::raw
 <div class="my-6 p-6 border border-gray-200 rounded-md bg-gray-50">
-  <p class="mb-3 text-sm text-gray-700">A dropdown rendered statically with <code>data-state="open"</code> so you can see all the slots at once:</p>
+  <p class="mb-3 text-sm text-gray-700">This static preview uses <code>data-state="open"</code> to show the menu:</p>
   <div class="dropdown dropdown-align-start" style="position: static;">
     <button class="dropdown__trigger" type="button">
       Options

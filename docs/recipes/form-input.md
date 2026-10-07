@@ -1,6 +1,6 @@
 # Form input
 
-State and size variants, with native focus, disabled, placeholder, and read-only styles.
+Use state and size variants to style inputs. The definition also styles focus, disabled inputs, and placeholder text.
 
 ## Recipe
 
@@ -29,4 +29,4 @@ State and size variants, with native focus, disabled, placeholder, and read-only
        readonly value="cannot edit" />
 ```
 
-The `state` variant controls appearance; your application handles validation. The `readonly` variant enables styles gated by the input's `readonly` attribute.
+The `state` variant controls appearance. Your application handles validation. Use both `form-input-readonly` and the `readonly` attribute to apply the read-only background and cursor styles.

@@ -38,7 +38,7 @@ Color has moved from the base into `tone`. The base keeps shared layout and focu
 
 Names follow `component-axis-value`. The first button is blue and large; the second is gray and small. Change a tone class to switch colors. Omit the size class to use the base padding.
 
-Varia applies no default variants. Choose one value per axis and keep complete class names in scanned templates.
+Varia applies no default variants. Choose one value for each variant, such as `tone` or `size`, and keep complete class names in scanned templates.
 
 ## Boolean variants
 

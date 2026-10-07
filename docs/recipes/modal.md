@@ -1,10 +1,10 @@
 # Modal
 
-Slots for a backdrop, container, header, body, footer, and close button.
+Use slots to style the backdrop and the elements inside the modal.
 
 ## Recipe
 
-Size targets the descendant container:
+Put the size variant on the root to set the container's maximum width:
 
 <<< ../../recipes/modal.config.ts
 
@@ -65,4 +65,6 @@ Size targets the descendant container:
 </div>
 ```
 
-Your application supplies open/close behavior, focus management, and scroll locking. Adapt these styles to your dialog implementation; the fixed, flex-displayed root is a backdrop wrapper, not a drop-in native `<dialog>` stylesheet.
+Your application controls opening, closing, focus, and scroll locking. The root styles create a fixed backdrop with a flex layout. Adapt them to your dialog implementation before using them on a native `<dialog>` element.
+
+The footer uses the [button recipe](/recipes/button). Register that definition too if you use the markup above.

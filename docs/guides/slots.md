@@ -20,7 +20,9 @@ export default defineComponent('panel', {
 })
 ```
 
-Add this definition to your plugin's `components` array. The `root` slot uses the component name and is equivalent to `base`; other slots use `component__slot`. `base` and `slots` cannot appear together.
+Add this definition to your plugin's `components` array. The `root` slot uses the component name as its class. Other slots use `component__slot`.
+
+`base` is shorthand for `slots: { root: ... }`. Use either `base` or `slots` in a definition.
 
 ```html
 <article class="panel panel-accent">
@@ -31,14 +33,16 @@ Add this definition to your plugin's `components` array. The `root` slot uses th
 
 `panel-accent` turns the title blue through `.panel-accent .panel__title`. Replace it with `panel-tone-info` to change both the root border and title color.
 
-At the top level of a variant definition, declared slot names identify a boolean slot variant. Do not mix those keys with value names.
+A variant object whose keys are all declared slot names defines a boolean variant, as `accent` does here. An object whose keys are all variant values defines a choice, as `tone` does. Do not mix slot names and value names at that level.
 
 ## Matching slots
 
-A slot variant emits its targeted rules when its activation class is scanned. It does not include slot bases automatically. Root overrides match the activation element without requiring the base class.
+When Tailwind detects `panel-accent`, it emits the rule for the title override. It emits the base title styles separately when it detects `panel__title`.
 
-Other slots must be descendants with their bare slot class. A title on the activation element itself, or with only `md:panel__title`, does not match `.panel-accent .panel__title`.
+A variant targeting `root` styles the element carrying the variant class. It does not require the base `panel` class to match.
+
+Other slots must be descendants of the element carrying the variant class. Use their slot classes without modifiers. Putting `panel__title` on the same element as `panel-accent`, or using only `md:panel__title` on a child, does not match `.panel-accent .panel__title`.
 
 Outer variants also reach titles inside nested panels. Use distinct component names or explicit CSS when nested instances need independent styling.
 
-States inside an expansion act on the slot; modifiers on the variant class act on its ancestor. For example, `hover:panel-accent` with a title expansion of `focus:opacity-75` requires hover on the ancestor and focus on the title.
+A modifier inside a slot's utilities applies to that slot. A modifier on the variant class applies to the ancestor carrying it. For example, `hover:panel-accent` with title utilities of `focus:opacity-75` requires hover on the ancestor and focus on the title.

@@ -1,6 +1,6 @@
 # Icon button
 
-Size and square variants. Compounds replace labeled-button padding with equal padding for icon-only buttons.
+Use size variants for labeled buttons. Add the square variant for icon-only buttons. Compound rules give those buttons equal padding on all sides.
 
 ## Recipe
 
@@ -41,4 +41,4 @@ Size and square variants. Compounds replace labeled-button padding with equal pa
 </button>
 ```
 
-The size class emits a compound such as `.icon-btn-s-md.icon-btn-square`. Both classes must be on the button. Keeping square separate lets consumers specify size once.
+The size class emits a compound such as `.icon-btn-s-md.icon-btn-square`. Both classes must be on the button. The same size class works for both labeled and icon-only buttons.

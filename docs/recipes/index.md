@@ -2,7 +2,7 @@
 
 Copy a definition into your project, change its import to `variacss`, and register it in your plugin's `components` array.
 
-Recipes provide styles and example markup. Your application supplies behavior and accessibility, including dialog focus handling and menu keyboard navigation.
+Recipes provide styles and example markup. Your application handles interactions and accessibility. For example, it must manage dialog focus and menu keyboard navigation.
 
 | Pattern | Recipes |
 | --- | --- |

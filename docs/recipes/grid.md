@@ -14,9 +14,9 @@ A twelve-column flex grid. Register both the row and column definitions.
 
 ## Gutters and widths
 
-`row` wraps columns; bare `col` gives equal-width siblings. `col-span-N` sets an explicit width and disables flex growth.
+`row` is a flex container that wraps its columns. Use `col` without a span class for equal-width columns. `col-span-N` sets an explicit width and disables flex growth.
 
-Horizontal gutters use `--row-gx`, negative row margins, and column padding. Tailwind's border-box sizing keeps the padding inside explicit widths, so two half-width columns fit. Adding horizontal `gap` would make widths totaling 100% overflow. Vertical gutters use `gap-y-*`.
+The `--row-gx` variable sets horizontal gutters through negative row margins and column padding. Tailwind's border-box sizing keeps that padding inside explicit widths, so two half-width columns fit in one row. Adding horizontal `gap` would make columns whose widths total 100% overflow. Vertical gutters use `gap-y-*`.
 
 Put backgrounds, borders, and content padding on an element inside each column so they do not cover or override gutter padding.
 
@@ -75,7 +75,7 @@ Use `md:row-g-3` for responsive gutters. Breakpoints follow Tailwind's theme; `m
 | Class | Purpose |
 | --- | --- |
 | `row` | Wrapping flex container |
-| `row-g-0` through `row-g-5` | Both-axis gutter |
+| `row-g-0` through `row-g-5` | Horizontal and vertical gutters |
 | `row-gx-0` through `row-gx-5` | Horizontal gutter |
 | `row-gy-0` through `row-gy-5` | Vertical gutter |
 | `col` | Equal-width column |

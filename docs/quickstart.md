@@ -53,7 +53,7 @@ Update your CSS entrypoint, keeping the imports in this order:
 @plugin "./varia.config.ts";
 ```
 
-The first import sets component layer order. `@source not` requires Tailwind 4.1+ and prevents definition files from generating standalone utilities. Paths are relative to this stylesheet; adjust the exclusion if you store definitions elsewhere.
+The first import sets the order of Varia's CSS layers. `@source not` requires Tailwind 4.1+ and excludes definition files from source detection. This prevents Tailwind from also generating standalone utilities for strings in those files. Paths are relative to this stylesheet. Adjust the exclusion if you store definitions elsewhere.
 
 ## Use the classes
 
@@ -97,7 +97,7 @@ For custom scan paths and safelisting, see Tailwind's [source detection document
 
 ## Options
 
-`tailwindVaria` accepts a `components` array of unchanged `defineComponent` outputs and an optional `prefix`:
+`tailwindVaria` accepts a `components` array and an optional `prefix`. Pass the objects returned by `defineComponent` without modifying them:
 
 ```ts
 export default tailwindVaria({ components: [button], prefix: 'tw' })
@@ -107,4 +107,6 @@ export default tailwindVaria({ components: [button], prefix: 'tw' })
 <button class="tw:demo-btn tw:md:demo-btn-size-lg">Save</button>
 ```
 
-Keep definition utilities unprefixed. Prefixes contain lowercase ASCII letters only. If your stylesheet uses `@import "tailwindcss" prefix(tw)`, also pass the matching `prefix: 'tw'`; the plugin cannot read CSS-declared prefixes. JavaScript-configured prefixes are detected automatically.
+Keep utilities inside definitions unprefixed. A prefix must contain only lowercase ASCII letters.
+
+If your stylesheet uses `@import "tailwindcss" prefix(tw)`, also pass `prefix: 'tw'`. The plugin cannot read a prefix declared in CSS. It detects prefixes set through Tailwind's JavaScript configuration.

@@ -6,7 +6,7 @@ import '../tailwind.config.js'
 
 export default defineConfig({
   title: 'Varia',
-  description: 'On-demand CSS with the ergonomics of regular CSS classes',
+  description: 'Reusable component classes defined with Tailwind utilities',
   cleanUrls: true,
   lastUpdated: true,
   base: process.env.DOCS_BASE ?? '/',

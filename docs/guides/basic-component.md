@@ -18,7 +18,7 @@ export default defineComponent('btn', {
 })
 ```
 
-The name `btn` becomes the base class. Utility values are nonempty strings or arrays of strings. A definition needs at least one base style, slot, or variant.
+The name `btn` becomes the base class. Supply utilities as a string or an array of strings. Each expansion must contain at least one utility. A definition must include `base`, at least one slot, or at least one variant.
 
 ## Register and use it
 

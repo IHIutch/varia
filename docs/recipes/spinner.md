@@ -1,6 +1,6 @@
 # Spinner
 
-Size and color variants around Tailwind's `animate-spin`.
+Use size and color variants to style a loading indicator. Tailwind's `animate-spin` utility rotates it.
 
 ## Recipe
 

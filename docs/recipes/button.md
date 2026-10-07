@@ -1,14 +1,14 @@
 # Button
 
-Color (`c`), style, and size (`s`) variants.
+Use color, style, and size variants to select the button's appearance. The class names abbreviate color to `c` and size to `s`.
 
 ## Recipe
 
-The base defines shared layout, focus, and disabled styles. Color sets the focus ring; style sets shared appearance. Compounds set properties that depend on both:
+The base defines layout, focus, and disabled styles. The `c` variant sets the focus-ring color. The `style` variant sets text, background, or border properties shared across colors. Compounds set the properties that depend on both color and style:
 
 <<< ../../recipes/button.config.ts
 
-Color is first in `when`. Using `btn-c-primary` emits all four primary style compounds; their selectors check the style class. Consider this grouped output before expanding the matrix.
+Color is first in each `when` object. When Tailwind detects `btn-c-primary`, it emits all four primary-color compound rules. Each rule matches only when its style class is also present. Adding more styles increases the CSS emitted for each detected color.
 
 ## Live preview
 

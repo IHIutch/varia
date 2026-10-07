@@ -17,7 +17,7 @@ Size variants and an optional ring, with CSS variables for color overrides.
 </div>
 
 <div class="my-6 p-6 border border-gray-200 rounded-md" style="--avatar-bg: oklch(0.7 0.15 60); --avatar-fg: oklch(0.2 0.05 60); --avatar-ring: oklch(0.95 0.02 60); background: oklch(0.97 0.01 60);">
-  <p class="mb-3 text-sm text-gray-700">Re-themed via CSS custom properties (warm peach):</p>
+  <p class="mb-3 text-sm text-gray-700">Peach colors set with CSS variables:</p>
   <div class="flex flex-wrap items-end gap-4">
     <span class="avatar avatar-s-md">JB</span>
     <span class="avatar avatar-s-lg avatar-ring">VA</span>
@@ -34,4 +34,4 @@ Size variants and an optional ring, with CSS variables for color overrides.
       style="--avatar-bg: rebeccapurple; --avatar-fg: white">VA</span>
 ```
 
-Set `--avatar-bg`, `--avatar-fg`, `--avatar-ring`, and `--avatar-ring-offset` on the element or an ancestor. Each has a palette fallback in the definition; overrides need no rebuild.
+Set `--avatar-bg`, `--avatar-fg`, `--avatar-ring`, and `--avatar-ring-offset` on the element or an ancestor. The definition supplies a fallback color for each variable. Changing these variables does not require a rebuild.
