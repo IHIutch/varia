@@ -1,17 +1,12 @@
 # Card
 
-A base-only component. [Full definition](https://github.com/IHIutch/varia/blob/main/recipes/card.config.ts).
+A base-only component.
 
-## Authoring
+## Recipe
 
-```ts
-// recipes/card.config.ts
-import { defineComponent } from 'variacss'
+Copy this definition and change its import to `variacss`.
 
-export default defineComponent('card', {
-  base: 'block rounded-lg border border-gray-200 bg-white shadow-sm',
-})
-```
+<<< ../../recipes/card.config.ts
 
 ## Live preview
 

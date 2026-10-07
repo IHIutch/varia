@@ -1,6 +1,18 @@
 # Grid
 
-A twelve-column flex grid. Register both the [row definition](https://github.com/IHIutch/varia/blob/main/recipes/row.config.ts) and [column definition](https://github.com/IHIutch/varia/blob/main/recipes/col.config.ts).
+A twelve-column flex grid. Register both the row and column definitions.
+
+## Recipes
+
+Copy these definitions and change their imports to `variacss`.
+
+::: code-group
+
+<<< ../../recipes/row.config.ts
+
+<<< ../../recipes/col.config.ts
+
+:::
 
 ## Gutters and widths
 

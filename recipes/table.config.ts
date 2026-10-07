@@ -1,13 +1,6 @@
 import { defineComponent } from '../packages/varia/src/index.js'
 
-// Table styling via HTML tag-based descendant arbitrary variants. No declared
-// slots for thead/tbody/tr/td/th — consumer writes standard table markup and
-// the styling targets the elements directly. Keeps recipe and call site
-// terse.
-//
-// Both variants (striped, hover) are flat strings — emitted as JIT shortcuts
-// (.table-striped, .table-hover), so unused combinations are tree-shaken.
-
+// Apply table to a <table> with standard thead, tbody, th, and td markup.
 export default defineComponent('table', {
   base: [
     'w-full text-sm text-left border-collapse',

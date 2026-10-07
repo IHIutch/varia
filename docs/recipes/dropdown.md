@@ -1,15 +1,14 @@
 # Dropdown
 
-Slots for the trigger, menu, items, and divider. [Full definition](https://github.com/IHIutch/varia/blob/main/recipes/dropdown.config.ts).
+Slots for the trigger, menu, items, and divider.
 
-## Authoring
+## Recipe
+
+Copy this definition and change its import to `variacss`.
 
 Put `dropdown-align-start` or `dropdown-align-end` on the root to position its menu through a slot variant. Menu visibility is local to the menu slot:
 
-```ts
-// Utilities in the menu slot.
-'hidden data-[state=open]:block'
-```
+<<< ../../recipes/dropdown.config.ts
 
 Items use `data-[variant=danger]:` utilities for destructive actions.
 

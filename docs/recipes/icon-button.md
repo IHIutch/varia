@@ -1,39 +1,12 @@
 # Icon button
 
-Size and square variants. Compounds replace labeled-button padding with equal padding for icon-only buttons. [Full definition](https://github.com/IHIutch/varia/blob/main/recipes/icon-button.config.ts).
+Size and square variants. Compounds replace labeled-button padding with equal padding for icon-only buttons.
 
-## Authoring
+## Recipe
 
-```ts
-// recipes/icon-button.config.ts
-import { defineComponent } from 'variacss'
+Copy this definition and change its import to `variacss`.
 
-export default defineComponent('icon-btn', {
-  base: [
-    'inline-flex items-center justify-center gap-1.5 rounded-md font-medium border',
-    'bg-white border-gray-300 text-gray-700',
-    'hover:bg-gray-50',
-    'transition-colors',
-    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:ring-blue-500',
-    'disabled:opacity-50 disabled:cursor-not-allowed',
-  ],
-  variants: {
-    s: {
-      xs: 'px-2 py-1 text-xs',
-      sm: 'px-2.5 py-1.5 text-sm',
-      md: 'px-3.5 py-2 text-sm',
-      lg: 'px-4 py-2.5 text-base',
-    },
-    square: 'aspect-square',
-  },
-  compoundVariants: [
-    { when: { s: 'xs', square: true }, class: 'p-1' },
-    { when: { s: 'sm', square: true }, class: 'p-1.5' },
-    { when: { s: 'md', square: true }, class: 'p-2' },
-    { when: { s: 'lg', square: true }, class: 'p-2.5' },
-  ],
-})
-```
+<<< ../../recipes/icon-button.config.ts
 
 ## Live preview
 

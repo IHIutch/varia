@@ -1,7 +1,5 @@
 import { defineComponent } from '../packages/varia/src/index.js'
 
-// One explicit compound per color and style combination keeps the palette
-// and interaction styles visible together. Tailwind resolves the utilities and emits the theme variables they reference.
 export default defineComponent('btn', {
   base: [
     'inline-flex items-center justify-center rounded-md font-medium border',
@@ -30,31 +28,26 @@ export default defineComponent('btn', {
     },
   },
   compoundVariants: [
-    // primary (blue)
     { when: { c: 'primary', style: 'solid' }, class: 'bg-blue-600 border-blue-600 hover:bg-blue-700' },
     { when: { c: 'primary', style: 'outline' }, class: 'text-blue-700 border-blue-300 hover:bg-blue-50' },
     { when: { c: 'primary', style: 'subtle' }, class: 'bg-blue-50 text-blue-700 hover:bg-blue-100' },
     { when: { c: 'primary', style: 'ghost' }, class: 'text-blue-700 hover:bg-blue-50' },
 
-    // success (emerald)
     { when: { c: 'success', style: 'solid' }, class: 'bg-emerald-600 border-emerald-600 hover:bg-emerald-700' },
     { when: { c: 'success', style: 'outline' }, class: 'text-emerald-700 border-emerald-300 hover:bg-emerald-50' },
     { when: { c: 'success', style: 'subtle' }, class: 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100' },
     { when: { c: 'success', style: 'ghost' }, class: 'text-emerald-700 hover:bg-emerald-50' },
 
-    // danger (red)
     { when: { c: 'danger', style: 'solid' }, class: 'bg-red-600 border-red-600 hover:bg-red-700' },
     { when: { c: 'danger', style: 'outline' }, class: 'text-red-700 border-red-300 hover:bg-red-50' },
     { when: { c: 'danger', style: 'subtle' }, class: 'bg-red-50 text-red-700 hover:bg-red-100' },
     { when: { c: 'danger', style: 'ghost' }, class: 'text-red-700 hover:bg-red-50' },
 
-    // warning (amber)
     { when: { c: 'warning', style: 'solid' }, class: 'bg-amber-600 border-amber-600 hover:bg-amber-700' },
     { when: { c: 'warning', style: 'outline' }, class: 'text-amber-700 border-amber-300 hover:bg-amber-50' },
     { when: { c: 'warning', style: 'subtle' }, class: 'bg-amber-50 text-amber-700 hover:bg-amber-100' },
     { when: { c: 'warning', style: 'ghost' }, class: 'text-amber-700 hover:bg-amber-50' },
 
-    // neutral (gray)
     { when: { c: 'neutral', style: 'solid' }, class: 'bg-gray-600 border-gray-600 hover:bg-gray-700' },
     { when: { c: 'neutral', style: 'outline' }, class: 'text-gray-700 border-gray-300 hover:bg-gray-50' },
     { when: { c: 'neutral', style: 'subtle' }, class: 'bg-gray-50 text-gray-700 hover:bg-gray-100' },

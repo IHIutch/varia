@@ -1,12 +1,6 @@
 import { defineComponent } from '../packages/varia/src/index.js'
 
-// Bootstrap-equivalent Navbar, as a single varia component. Composes with
-// existing recipes (form-input, dropdown, btn) without varia needing to know
-// about them — slot styling just targets descendants by tag.
-//
-// State for the active link uses the data-state pattern; no slot-keyed
-// variants for state.
-
+// Set data-state="active" on the current nav-link.
 export default defineComponent('navbar', {
   slots: {
     'root': [

@@ -10,7 +10,6 @@ export default defineComponent('badge', {
       warning: 'bg-amber-100 text-amber-800',
       neutral: 'bg-gray-100 text-gray-800',
     },
-    // Boolean: rounded sides instead of rounded corners
     pill: 'rounded-full px-2.5',
   },
 })

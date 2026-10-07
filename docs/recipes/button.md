@@ -1,18 +1,14 @@
 # Button
 
-Color (`c`), style, and size (`s`) variants. [Full definition](https://github.com/IHIutch/varia/blob/main/recipes/button.config.ts).
+Color (`c`), style, and size (`s`) variants.
 
-## Authoring
+## Recipe
+
+Copy this definition and change its import to `variacss`.
 
 The base defines shared layout, focus, and disabled styles. Color sets the focus ring; style sets shared appearance. Compounds set properties that depend on both:
 
-```ts
-// Two entries from the definition's compoundVariants array.
-[
-  { when: { c: 'primary', style: 'solid' }, class: 'bg-blue-600 border-blue-600 hover:bg-blue-700' },
-  { when: { c: 'primary', style: 'outline' }, class: 'text-blue-700 border-blue-300 hover:bg-blue-50' },
-]
-```
+<<< ../../recipes/button.config.ts
 
 Color is first in `when`. Using `btn-c-primary` emits all four primary style compounds; their selectors check the style class. Consider this grouped output before expanding the matrix.
 

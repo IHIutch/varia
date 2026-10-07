@@ -1,20 +1,14 @@
 # Modal
 
-Slots for a backdrop, container, header, body, footer, and close button. [Full definition](https://github.com/IHIutch/varia/blob/main/recipes/modal.config.ts).
+Slots for a backdrop, container, header, body, footer, and close button.
 
-## Authoring
+## Recipe
+
+Copy this definition and change its import to `variacss`.
 
 Size targets the descendant container:
 
-```ts
-// The definition's size variant.
-size: {
-  sm: { container: 'max-w-sm' },
-  md: { container: 'max-w-md' },
-  lg: { container: 'max-w-lg' },
-  xl: { container: 'max-w-2xl' },
-}
-```
+<<< ../../recipes/modal.config.ts
 
 `modal-size-md` on the root generates `.modal-size-md .modal__container`. Choose a size explicitly; Varia applies no default variants.
 

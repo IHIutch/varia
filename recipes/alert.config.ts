@@ -32,8 +32,7 @@ export default defineComponent('alert', {
         icon: 'text-amber-600',
       },
     },
-    // Boolean variant targeting the root slot: reserve right-side padding for
-    // the close button so its absolute positioning doesn't overlap the body.
+    // Reserve space so the absolute close button does not overlap the body.
     dismissible: { root: 'pr-12' },
   },
 })

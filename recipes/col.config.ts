@@ -1,22 +1,6 @@
 import { defineComponent } from '../packages/varia/src/index.js'
 
-// `col` pairs with `row`: the row sets `--row-gx` via its variant, the col
-// inherits that custom property through the cascade and uses it as symmetric
-// horizontal padding. The matching negative margin on the row (see row.config)
-// pulls the outer paddings outside the row's content box, so columns visually
-// align flush with the container while still having internal space between
-// siblings.
-//
-// With Tailwind's default `box-sizing: border-box`, the explicit widths below
-// include this padding, so two `col-span-6` siblings sum to exactly 100% of
-// the row and don't wrap.
-//
-// Bare `col` (no span) gets `flex-1` — Bootstrap's equal-width flex sibling
-// behavior. Setting `col-span-N` carries `flex-none` to cancel the base's
-// flex-grow and `w-N/12` for the explicit width.
-//
-// Responsive: write `md:col-span-6` on the consumer side. Tailwind resolves the
-// `md:` variant prefix against the shortcut's underlying utilities.
+// Pair with row to inherit its horizontal gutter through --row-gx.
 export default defineComponent('col', {
   base: 'flex-1 px-[calc(var(--row-gx,0)/2)]',
   variants: {
@@ -35,7 +19,6 @@ export default defineComponent('col', {
       11: 'flex-none w-11/12',
       12: 'flex-none w-full',
     },
-    // Arbitrary percentage expressions work in Tailwind.
     offset: {
       0: 'ml-0',
       1: 'ml-[calc(100%*1/12)]',

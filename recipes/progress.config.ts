@@ -1,13 +1,6 @@
 import { defineComponent } from '../packages/varia/src/index.js'
 
-// Bootstrap-equivalent Progress. The value is a percentage that can't be
-// enumerated as a variant — consumer drives it with a CSS custom property:
-//   <div class="progress" style="--progress: 65%">
-//     <div class="progress__bar"></div>
-//   </div>
-// The bar's width reads from the custom property via Tailwind arbitrary-value
-// syntax (`w-[var(--progress)]`). Colour can still be a variant axis.
-
+// Set --progress on the root to a percentage, such as style="--progress: 65%".
 export default defineComponent('progress', {
   slots: {
     root: 'block w-full h-2 overflow-hidden rounded-full bg-gray-200',
