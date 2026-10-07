@@ -100,9 +100,7 @@
             </span>
           </div>
 
-          <!-- Sanity check: same utility, but referenced directly in HTML so
-               UnoCSS's content scanner processes it instead of varia's
-               resolveUtilities. -->
+          <!-- Compare the component tooltip with a direct Tailwind utility. -->
           <div class="group inline-block mt-6 pt-6 border-t border-gray-200 w-full">
             <span class="cursor-help underline decoration-dotted underline-offset-4">
               Sanity (raw HTML, no varia path)
@@ -114,10 +112,8 @@
           </div>
 
           <p class="text-xs text-amber-900 bg-amber-50 border border-amber-200 rounded p-2 mt-4">
-            <strong>Pressure test:</strong> if the <em>reveal=hover</em> tooltip is visible right now
-            (without hovering), <code>STATE_SUFFIX_RE</code> in
-            <code>src/internal/resolve-utilities.ts</code> failed to peel <code>group-hover:</code> off
-            the UnoCSS selector and emitted the rule unconditionally.
+            The hover tooltip and the comparison below it should appear only while
+            hovering their triggers. The always-shown tooltip should remain visible.
           </p>
         </div>
       </section>
@@ -244,7 +240,7 @@
               <span class="accordion__caret" aria-hidden="true">▾</span>
             </summary>
             <div class="accordion__panel">
-              A build-time variant system on top of UnoCSS. Trades raw utility classes
+              A build-time variant system on top of Tailwind. Trades raw utility classes
               for compressed component classes via shortcuts.
             </div>
           </details>
@@ -255,7 +251,7 @@
             </summary>
             <div class="accordion__panel">
               CVA is framework-side and generates class names at runtime. varia compiles
-              recipes into UnoCSS shortcuts at build time — emits real CSS, no runtime
+              recipes into Tailwind component classes at build time — emits real CSS, no runtime
               function calls.
             </div>
           </details>

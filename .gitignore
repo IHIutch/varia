@@ -5,8 +5,8 @@ node_modules
 # OS
 .DS_Store
 
-**/.vitepress/cache
-**/.vitepress/dist
-
 # Local screenshots from the kitchen-sink example
 examples/**/.screenshot-*.png
+# Vitest visual comparison artifacts
+**/.vitest/
+**/.vitest-attachments/

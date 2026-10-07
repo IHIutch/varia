@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Varia responsive grid</title>
+  <link rel="stylesheet" href="./styles.css">
+  <style>
+    body { margin: 2rem; font-family: system-ui, sans-serif; }
+    main { max-width: 60rem; margin-inline: auto; }
+    h1 { font-size: 1.5rem; margin-bottom: 1rem; }
+    p { margin-bottom: 2rem; }
+    .grid-content { padding: 1rem; background: #eef2ff; border: 1px solid #c7d2fe; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Responsive grid</h1>
+    <p>Columns fill the row, become halves at 768px, and thirds at 1024px. Gutters change at the same breakpoints.</p>
+    <div id="responsive-grid"></div>
+  </main>
+  <script type="module" src="./grid.ts"></script>
+</body>
+</html>

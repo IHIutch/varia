@@ -2,7 +2,7 @@
   "name": "varia-workspace",
   "type": "module",
   "private": true,
-  "description": "Workspace root for varia (library, docs, example)",
+  "description": "Workspace root for varia (library, example)",
   "engines": {
     "node": ">=22"
   },
@@ -10,22 +10,19 @@
     "build": "pnpm --filter varia build",
     "test": "pnpm --filter varia test",
     "test:watch": "pnpm --filter varia test:watch",
-    "typecheck": "pnpm -r typecheck",
+    "typecheck": "pnpm build && pnpm example:build && pnpm -r typecheck",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "docs:dev": "pnpm --filter @varia/docs dev",
-    "docs:build": "pnpm --filter @varia/docs build",
-    "docs:preview": "pnpm --filter @varia/docs preview",
-    "docs:deploy": "pnpm --filter @varia/docs deploy-pages",
     "example:dev": "pnpm --filter @varia/example dev",
-    "example:build": "pnpm --filter @varia/example build"
+    "example:build": "pnpm --filter @varia/example build",
+    "comparison:check": "node scripts/check-comparison.mjs",
+    "comparison:reload": "pnpm build && node scripts/check-reload.mjs",
+    "test:visual": "pnpm --filter varia test:visual"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^8.2.0",
     "@types/node": "^25.6.2",
-    "@unocss/core": "^66.6.8",
     "eslint": "^10.3.0",
-    "typescript": "^6.0.3",
-    "unocss": "^66.6.8"
+    "typescript": "^6.0.3"
   }
 }

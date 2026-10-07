@@ -1,5 +1,3 @@
-import type { Preflight } from '@unocss/core'
-
 /**
  * Anywhere a utility-class string is accepted, an array of strings is also
  * accepted and joined with a single space. Lets authors break long class
@@ -53,7 +51,10 @@ export type VariantDefinition
 export type CompoundVariantWhen = Record<string, string | true>
 
 export interface CompoundVariantRule {
-  /** Conditions: every key/value must be present on the same element. */
+  /**
+   * Conditions on the same element. The first key activates CSS generation and
+   * accepts usage-site modifiers; remaining conditions match bare variant classes.
+   */
   when: CompoundVariantWhen
   /** Utility class string applied when the conditions match. */
   class: ClassInput
@@ -74,7 +75,7 @@ export interface ComponentConfig {
   variants?: Record<string, VariantDefinition>
   /**
    * Cross-axis rules. Each compound emits a CSS rule with a combined-class
-   * selector built from the `when` keys. See ADR-0002 for the design.
+   * selector built from the `when` keys in insertion order. See API.md.
    */
   compoundVariants?: CompoundVariantRule[]
 }
@@ -86,15 +87,33 @@ export interface ComponentManifest {
   classNames: string[]
 }
 
+/** Utility strings and selectors relative to an activation class. */
+export interface ComponentStyle {
+  trigger: string
+  kind: 'slot' | 'compound'
+  rules: { selector: string, utilities: string }[]
+}
+
+/**
+ * Factory output for tailwindVaria. Pass through unchanged; its generated
+ * members are implementation details, not a supported authoring interface.
+ */
 export interface DefinedComponent {
+  /**
+   * Factory marker shared by source and built declarations. It has no runtime
+   * representation and must not be used for runtime validation.
+   * @internal
+   */
+  readonly __variaDefinition: 'DefinedComponent'
+  /** @internal */
   name: string
+  /** @internal */
   shortcuts: Shortcut[]
+  /** @internal */
   manifest: ComponentManifest
   /**
-   * Selector-style descriptors for slot-keyed and compound variants.
-   * presetVaria resolves descriptors from defineComponent on demand through
-   * their activation shortcuts. Ordinary user-authored preflights remain
-   * unconditional.
+   * Slot and compound styles, resolved by Tailwind on demand.
+   * @internal
    */
-  preflights?: Preflight<object>[]
+  styles?: ComponentStyle[]
 }

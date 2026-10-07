@@ -1,4 +1,4 @@
-import 'virtual:uno.css'
+import './styles.css'
 
 // Wire up every dropdown on the page. Convention: trigger has id "X-trigger",
 // menu has id "X-menu", or they share a common ancestor with class .dropdown.

@@ -7,7 +7,7 @@ describe('recipe: Spinner', () => {
     expect(spinner.shortcuts).toMatchSnapshot()
   })
 
-  it('animation utilities (animate-spin) survive through real UnoCSS', async () => {
+  it('animation utilities (animate-spin) survive through the selected engine', async () => {
     const css = await generateRecipeCSS([spinner], 'spinner spinner-s-md spinner-c-primary')
 
     expect(css).toMatch(/@keyframes\s+spin\b/)

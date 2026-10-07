@@ -24,11 +24,11 @@ describe('recipe: Modal', () => {
   })
 
   it('size variant is slot-keyed and emits descendant-selector CSS targeting container', () => {
-    // Slot-keyed variants don't appear as plain shortcuts; they live in preflights.
+    // Slot-keyed variants don't appear as plain shortcuts; they live in style descriptors.
     const shortcutNames = modal.shortcuts.map(([n]) => n)
     expect(shortcutNames).not.toContain('modal-size-sm')
-    expect(modal.preflights).toBeDefined()
-    expect(modal.preflights!.length).toBeGreaterThan(0)
+    expect(modal.styles).toBeDefined()
+    expect(modal.styles!.length).toBeGreaterThan(0)
   })
 
   it('root slot styles emit as the bare component class', async () => {

@@ -1,13 +1,13 @@
 import { defineComponent } from '../packages/varia/src/index.js'
 
 // Reveal mode driven by `data-reveal` attr on the bubble. No varia variants,
-// no slot-keyed values — utilities at the base slot run through UnoCSS
+// no slot-keyed values — utilities at the base slot run through Tailwind
 // natively, so `group-hover:` works.
 
 export default defineComponent('tooltip', {
   slots: {
-    // `group` is a marker class that UnoCSS shortcuts can't include in their
-    // expansion — consumer must add it manually: <span class="tooltip group">
+    // `group` is a marker class, so the consumer adds it to the root:
+    // <span class="tooltip group">.
     root: 'relative inline-flex items-center',
     trigger: 'cursor-help underline decoration-dotted underline-offset-4',
     bubble: [

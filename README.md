@@ -2,7 +2,7 @@
 
 On-demand CSS with the ergonomics of regular CSS classes.
 
-Varia lets you define component styles with UnoCSS utilities, then use readable classes such as `btn btn-c-primary btn-s-lg` in your markup. You get Tailwind-style just-in-time CSS generation without repeating utility lists on every element. UnoCSS generates the CSS at build time; Varia adds no styling runtime to your application.
+Varia lets you define component styles with utility classes, then use readable classes such as `btn btn-c-primary btn-s-lg` in your markup. Tailwind generates the CSS at build time; Varia adds no styling runtime to your application.
 
 ```ts
 import { defineComponent } from 'varia'
@@ -26,27 +26,18 @@ export default defineComponent('btn', {
 <button class="btn btn-c-primary btn-s-lg">Save</button>
 ```
 
-Register the definition with `presetVaria` in your UnoCSS config. UnoCSS scans your source files and emits CSS for the component and variant classes it finds. A slot-keyed variant emits its slot rules when its variant class is used. A compound emits when the class for its first `when` condition is used; the combined selector checks the remaining conditions in the browser. Unused components and activation classes produce no component CSS.
+Register definitions with `tailwindVaria` from `varia/tailwind`. Tailwind scans your source files and emits CSS for component and variant classes it finds. A slot-keyed variant emits its slot rules when its variant class is used. A compound emits when the class for its first `when` condition is used; the combined selector checks the remaining conditions in the browser. Unused components and activation classes produce no component CSS. See [the v1 public contract](API.md) for supported exports, definition shapes, responsive compounds, nested slots, types, and compatibility expectations.
 
 ## Why Varia
 
 - Define shared styles once and select variants with ordinary CSS classes.
 - Keep class names readable, searchable, and available to your own CSS selectors.
-- Generate shortcut CSS on demand rather than shipping a complete component stylesheet.
+- Generate component CSS on demand rather than shipping a complete component stylesheet.
 - Use the same classes in HTML, JSX, Rails ERB, Phoenix HEEx, Liquid, or other templates.
 - Describe multi-element components with slots and combinations of variants with compound rules.
-- Get class completion through the UnoCSS VS Code extension, with optional generated TypeScript class types.
+- Generate optional TypeScript class types for checking component class strings.
 
-Varia is a tool for authoring component styles. The [recipes](apps/docs/recipes/button.md) are examples you can adapt for your own design system. Interactive behavior, markup, and accessibility remain part of your application or component framework.
-
-## Get started
-
-Follow the [quickstart](apps/docs/quickstart.md) to install Varia, define a button, and connect it to UnoCSS. An existing UnoCSS integration is required to scan templates and load the generated stylesheet.
-
-- [Concepts](apps/docs/concepts.md): how definitions become classes and CSS.
-- [API reference](apps/docs/api.md): variants, slots, compound rules, and class types.
-- [Comparison](apps/docs/comparison.md): when to use Varia.
-- [Theming](apps/docs/theming.md): component overrides and shared CSS variables.
+Varia is a tool for authoring component styles. The [recipes](recipes) are examples you can adapt for your own design system. Interactive behavior, markup, and accessibility remain part of your application or component framework.
 
 ## Work on this repository
 
@@ -54,17 +45,26 @@ Use Node.js 22 or newer and pnpm.
 
 ```sh
 pnpm install
-pnpm docs:dev
 ```
 
-Run `pnpm example:dev` for the kitchen-sink demo.
+This checkout contains the Tailwind implementation, including the grid and strict class-type extensions. Use `pnpm build`, `pnpm test`, `pnpm example:dev`, and `pnpm example:build`. The [engine comparison](COMPARISON.md) records earlier branch experiments; [API.md](API.md) defines current behavior.
 
 ```sh
 pnpm build
 pnpm test
 pnpm typecheck
 pnpm lint
-pnpm docs:build
+pnpm test:visual
 ```
 
-The library lives in `packages/varia`, documentation in `apps/docs`, example style definitions in `recipes`, and the demo in `examples/kitchen-sink`.
+The library lives in `packages/varia`, example style definitions in `recipes`, and the demo in `examples/kitchen-sink`.
+
+## Responsive grid and typed classes
+
+The example's `/grid.html` uses row/column recipes with responsive gutters and widths, authored through a strict `cn(...classes: VariaClasses[])` joiner. The `varia/types` union contains registered recipe names and their configured responsive forms. It excludes atomic utilities and other engine variant grammar.
+
+Generate the manifest through Tailwind before typechecking and add `node_modules/.varia/manifest.d.ts` to your tsconfig's `files` array. The generated project declaration augments `varia/types`, so pnpm's normal symlink layout needs no TypeScript resolver workaround. `pnpm typecheck` performs package/example builds first for the workspace demo. See [strict class types](API.md#strict-class-types) for setup, prefixes, and scope.
+
+## Native Tailwind expansion
+
+Recipes may use Tailwind's themes, custom utilities, arbitrary values, and individual modifiers. Tailwind's Vite integration processes authored CSS and native `@apply` directly. The downstream test verifies authored CSS and component application in a real consumer build. See [the contract](API.md#cascade-and-prefixes) for ordering and prefix behavior.

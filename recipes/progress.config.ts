@@ -5,7 +5,7 @@ import { defineComponent } from '../packages/varia/src/index.js'
 //   <div class="progress" style="--progress: 65%">
 //     <div class="progress__bar"></div>
 //   </div>
-// The bar's width reads from the custom property via UnoCSS arbitrary-value
+// The bar's width reads from the custom property via Tailwind arbitrary-value
 // syntax (`w-[var(--progress)]`). Colour can still be a variant axis.
 
 export default defineComponent('progress', {

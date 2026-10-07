@@ -1,8 +1,7 @@
 import { defineComponent } from '../packages/varia/src/index.js'
 
 // One explicit compound per color and style combination keeps the palette
-// and interaction styles visible together. Varia resolves these utilities
-// before UnoCSS emits the theme variables they depend on.
+// and interaction styles visible together. Tailwind resolves the utilities and emits the theme variables they reference.
 export default defineComponent('btn', {
   base: [
     'inline-flex items-center justify-center rounded-md font-medium border',

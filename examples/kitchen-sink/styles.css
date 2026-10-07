@@ -1,0 +1,5 @@
+@import "varia/tailwind.css";
+@import "tailwindcss" source(none);
+@source "./*.html";
+@source "./grid.ts";
+@plugin "./tailwind.config.ts";

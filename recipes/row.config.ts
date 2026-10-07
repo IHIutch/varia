@@ -1,6 +1,6 @@
 import { defineComponent } from '../packages/varia/src/index.js'
 
-// Bootstrap's gutter pattern, expressed with UnoCSS arbitrary values:
+// Bootstrap's gutter pattern, expressed with Tailwind arbitrary values:
 //
 //   .row { margin: 0 calc(var(--row-gx,0) / -2) }
 //   .col { padding: 0 calc(var(--row-gx,0) / 2) }

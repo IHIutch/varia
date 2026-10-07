@@ -1,23 +1,19 @@
-import type { Preflight } from '@unocss/core'
 import type {
   ClassInput,
   ComponentConfig,
+  ComponentStyle,
   CompoundVariantRule,
-  CompoundVariantWhen,
   DefinedComponent,
   Shortcut,
   SlotKeyedValue,
   VariantDefinition,
   VariantValue,
 } from './internal/types.js'
-import type { ComponentPreflight } from './internal/usage.js'
 import {
   booleanTrueClassName,
   multiValueClassName,
   slotClassName,
 } from './internal/naming.js'
-import { emitResolvedCSS, resolveUtilities } from './internal/resolve-utilities.js'
-import { usageTrigger } from './internal/usage.js'
 import {
   toClassString,
   validateAssembledClassName,
@@ -64,7 +60,7 @@ export function defineComponent(name: string, config: ComponentConfig): DefinedC
 
   const shortcuts: Shortcut[] = []
   const classNames: string[] = []
-  const preflights: Preflight<object>[] = []
+  const styles: ComponentStyle[] = []
   const axisRegistry = new Map<string, AxisKind>()
   const slotNameSet = new Set<string>(slots ? Object.keys(slots) : [])
 
@@ -97,7 +93,7 @@ export function defineComponent(name: string, config: ComponentConfig): DefinedC
         variantDef,
         shortcuts,
         classNames,
-        preflights,
+        styles,
         axisRegistry,
       })
     }
@@ -108,7 +104,7 @@ export function defineComponent(name: string, config: ComponentConfig): DefinedC
   if (config.compoundVariants) {
     for (const compound of config.compoundVariants) {
       validateCompound(name, compound, axisRegistry)
-      preflights.push(compoundPreflight(name, compound))
+      styles.push(compoundStyle(name, compound))
     }
   }
 
@@ -116,8 +112,8 @@ export function defineComponent(name: string, config: ComponentConfig): DefinedC
     name,
     shortcuts,
     manifest: { name, classNames },
-    preflights: preflights.length > 0 ? preflights : undefined,
-  }
+    styles: styles.length > 0 ? styles : undefined,
+  } as DefinedComponent
 }
 
 // --- slot + variant internals -----------------------------------------------
@@ -158,7 +154,7 @@ function processVariant(args: {
   variantDef: VariantDefinition
   shortcuts: Shortcut[]
   classNames: string[]
-  preflights: Preflight<object>[]
+  styles: ComponentStyle[]
   axisRegistry: Map<string, AxisKind>
 }): void {
   const {
@@ -168,7 +164,7 @@ function processVariant(args: {
     variantDef,
     shortcuts,
     classNames,
-    preflights,
+    styles,
     axisRegistry,
   } = args
 
@@ -208,8 +204,8 @@ function processVariant(args: {
     validateAssembledClassName(className, { component: componentName, variantKey })
     validateSlotValue(componentName, variantKey, className, variantDef as SlotKeyedValue)
     classNames.push(className)
-    preflights.push(
-      slotKeyedVariantPreflight({
+    styles.push(
+      slotKeyedVariantStyle({
         componentName,
         variantClass: className,
         slotKeyedValue: variantDef as SlotKeyedValue,
@@ -248,8 +244,8 @@ function processVariant(args: {
       }
       validateSlotValue(componentName, variantKey, className, value, valueKey)
       classNames.push(className)
-      preflights.push(
-        slotKeyedVariantPreflight({
+      styles.push(
+        slotKeyedVariantStyle({
           componentName,
           variantClass: className,
           slotKeyedValue: value,
@@ -285,43 +281,21 @@ function validateSlotValue(
   }
 }
 
-/**
- * Build a style descriptor that resolves each slot's utilities and emits
- * descendant-selector CSS. presetVaria activates it through the variant class
- * and resolves utilities against the current generator.
- */
-function slotKeyedVariantPreflight(args: {
+/** Describe slot styles relative to their activation class. */
+function slotKeyedVariantStyle(args: {
   componentName: string
   variantClass: string
   slotKeyedValue: SlotKeyedValue
-}): ComponentPreflight {
+}): ComponentStyle {
   const { componentName, variantClass, slotKeyedValue } = args
-
   return {
-    [usageTrigger]: variantClass,
-    getCSS: async (context) => {
-      const uno = context.generator
-      const out: string[] = []
-
-      for (const [slotName, rawClasses] of Object.entries(slotKeyedValue)) {
-        const classes = toClassString(rawClasses)
-        if (!classes || classes.trim() === '')
-          continue
-
-        const resolved = await resolveUtilities(classes, uno)
-        const slotClass = slotClassName(componentName, slotName)
-        // Repeat the root variant class to beat its base shortcut without
-        // requiring the base class. Non-root slots already have two classes.
-        const selector
-          = slotName === 'root'
-            ? `.${variantClass}.${variantClass}`
-            : `.${variantClass} .${slotClass}`
-
-        out.push(emitResolvedCSS(selector, resolved))
-      }
-
-      return out.join('\n')
-    },
+    trigger: variantClass,
+    kind: 'slot',
+    rules: Object.entries(slotKeyedValue).map(([slotName, rawClasses]) => ({
+      // Root overrides match the activation class without requiring the base.
+      selector: slotName === 'root' ? '&' : `& .${slotClassName(componentName, slotName)}`,
+      utilities: toClassString(rawClasses),
+    })),
   }
 }
 
@@ -356,6 +330,7 @@ function validateCompound(
       )} has an empty "class" — provide at least one utility class.`,
     )
   }
+  validateExpansion(toClassString(classes), { className: `compound ${JSON.stringify(when)}`, component: componentName })
 
   for (const [axis, value] of Object.entries(when)) {
     const axisInfo = axisRegistry.get(axis)
@@ -391,36 +366,22 @@ function validateCompound(
   }
 }
 
-function compoundSelector(componentName: string, when: CompoundVariantWhen): string {
-  // Build a chained-class selector: `.btn-s-xs.btn-square`.
-  // Multi-value axis with value V → `.componentName-axis-V`.
-  // Boolean axis with value `true` → `.componentName-axis`.
-  const classes = Object.entries(when).map(([axis, value]) => {
-    if (value === true) {
-      return `.${booleanTrueClassName(componentName, axis)}`
-    }
-    return `.${multiValueClassName(componentName, axis, String(value))}`
-  })
-  // A one-condition compound must also outrank its ordinary variant shortcut.
-  return classes.length === 1 ? classes[0]! + classes[0]! : classes.join('')
-}
-
-function compoundPreflight(
+function compoundStyle(
   componentName: string,
   compound: CompoundVariantRule,
-): ComponentPreflight {
-  const selector = compoundSelector(componentName, compound.when)
-  const classes = toClassString(compound.class)
-  const [axis, value] = Object.entries(compound.when)[0]!
-  const trigger = value === true
-    ? booleanTrueClassName(componentName, axis)
-    : multiValueClassName(componentName, axis, value)
+): ComponentStyle {
+  const classes = Object.entries(compound.when).map(([axis, value]) =>
+    value === true
+      ? booleanTrueClassName(componentName, axis)
+      : multiValueClassName(componentName, axis, value),
+  )
+  const [trigger, ...conditions] = classes
   return {
-    [usageTrigger]: trigger,
-    getCSS: async (context) => {
-      const uno = context.generator
-      const resolved = await resolveUtilities(classes, uno)
-      return emitResolvedCSS(selector, resolved)
-    },
+    trigger: trigger!,
+    kind: 'compound',
+    rules: [{
+      selector: `&${conditions.map(name => `.${name}`).join('')}`,
+      utilities: toClassString(compound.class),
+    }],
   }
 }

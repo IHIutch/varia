@@ -1,4 +1,4 @@
-import 'virtual:uno.css'
+import './styles.css'
 
 // Bare-minimum wiring to exercise the modal + dropdown markup. The point of
 // this app is to stress varia's class-assembly DX, not to demo accessible
