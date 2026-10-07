@@ -1,7 +1,5 @@
-import { cn } from './cn.js'
-
-const column = cn('col', 'col-span-12', 'md:col-span-6', 'lg:col-span-4')
-const row = cn('row', 'row-g-1', 'md:row-g-3', 'lg:row-g-5')
+const column = 'col col-span-12 md:col-span-6 lg:col-span-4'
+const row = 'row row-g-1 md:row-g-3 lg:row-g-5'
 const grid = document.querySelector('#responsive-grid')!
 grid.className = row
 for (const label of ['First', 'Second', 'Third']) {

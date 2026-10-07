@@ -125,19 +125,71 @@ Utility string order does not override Tailwind's native ordering. For example, 
 
 Native user CSS can `@apply` registered component classes; reference stylesheets also work through Tailwind's loader. Such application uses Tailwind's CSS semantics and does not expand the strict type grammar.
 
+## Editor support
+
+Install [Tailwind CSS IntelliSense](https://marketplace.visualstudio.com/items?itemName=bradlc.vscode-tailwindcss). It reads the Tailwind CSS entrypoint and its `@plugin` registration. Varia classes autocomplete directly in `class`/`className` attributes, with CSS hover previews and native responsive/prefix syntax. No typed joiner or generated declaration setup is needed; `manifest: false` works.
+
+Enable suggestions inside strings and existing class helpers in VS Code settings:
+
+```json
+{
+  "editor.quickSuggestions": { "strings": "on" },
+  "tailwindCSS.classFunctions": ["clsx"]
+}
+```
+
+Automatic discovery works in the tested standalone and shared-source monorepo consumers. For ambiguous projects, [map the CSS entrypoint to its consumers](https://github.com/tailwindlabs/tailwindcss-intellisense#tailwindcssexperimentalconfigfile):
+
+```json
+{
+  "tailwindCSS.experimental.configFile": {
+    "apps/web/src/styles.css": "apps/web/**"
+  }
+}
+```
+
+### Refreshing imported definitions
+
+IntelliSense 0.16.0 watches the file named by `@plugin` but does not track that file's transitive JavaScript/TypeScript imports. Editing an imported recipe alone leaves suggestions stale. Until that native limitation is fixed, extend the [Vite development reload config](#vite-development-reload) to update the stylesheet timestamp on a development config reload:
+
+```ts
+import { utimesSync } from 'node:fs'
+import { fileURLToPath } from 'node:url'
+import tailwindcss from '@tailwindcss/vite'
+import { defineConfig } from 'vite'
+import './tailwind.config.js'
+
+export default defineConfig(({ command }) => {
+  if (command === 'serve') {
+    const now = new Date()
+    utimesSync(fileURLToPath(new URL('./src/styles.css', import.meta.url)), now, now)
+  }
+  return {
+    plugins: [tailwindcss()],
+    server: { warmup: { clientFiles: ['./src/styles.css'] } },
+  }
+})
+```
+
+Keep Vite running for automatic refresh. Its existing config dependency tracking covers imported recipes and local shared helpers; IntelliSense sees the stylesheet event and reloads. The stylesheet content stays unchanged and production builds do not touch it. Add/remove recipes in the registration configuration as usual. Without Vite running, save the CSS entrypoint after recipe edits to refresh IntelliSense.
+
+For missing suggestions, run **Tailwind CSS: Show Output** and check that the extension loaded the intended stylesheet and local Tailwind version. Check errors from the `@plugin` module, ignored files, and entrypoint mappings. Fix an invalid configuration and save it again. For errors inside imported definitions, also inspect Vite's terminal; fixing them restores the config restart and editor refresh. An initially invalid Vite configuration requires fixing it and starting Vite again.
+
+Native lint rules cover conflicts, invalid `@apply`, and other Tailwind diagnostics. They do not generally report unknown class strings in markup. Autocomplete and CSS hover recognition are verified here; unknown-class linting is a separate optional integration.
+
+`pnpm test:editor` packs Varia into fresh consumers and exercises the actual Tailwind language server over LSP, including completions, hover previews, configuration errors/recovery, imported-definition refresh, HTML, JSX, and `clsx`. Verified versions are Tailwind CSS IntelliSense/language server 0.16.0, Tailwind 4.3.3, and Vite 8.0.11 on macOS. No VS Code UI automation or broader platform matrix is claimed.
+
 ## Strict class types
+
+`varia/types` remains optional tooling for consumers who want TypeScript to validate a bounded Varia vocabulary. It is independent of native editor autocomplete:
 
 ```ts
 import type { VariaClasses } from 'varia/types'
 
-export function cn(...classes: VariaClasses[]): string {
-  return classes.join(' ')
-}
-
-cn('card', 'md:card-size-lg')
+const classes = ['card', 'md:card-size-lg'] satisfies VariaClasses[]
 ```
 
-`VariaClasses` contains registered base, slot, and activation names, plus exactly one responsive modifier from Tailwind's resolved breakpoint names. With a prefix it includes `tw:card` and `tw:md:card-size-lg`. It excludes native utilities, states, important modifiers, arbitrary variants, stacked modifiers, space-separated class strings, unknown breakpoints, and unknown/removed names. This bounded union is narrower than Tailwind's CSS grammar. The helper only joins strings; it does not merge classes or check whether compounds match in the DOM.
+`VariaClasses` contains registered base, slot, and activation names, plus exactly one responsive modifier from Tailwind's resolved breakpoint names. With a prefix it includes `tw:card` and `tw:md:card-size-lg`. It excludes native utilities, states, important modifiers, arbitrary variants, stacked modifiers, space-separated class strings, unknown breakpoints, and unknown/removed names. This bounded union is narrower than Tailwind's CSS grammar. It does not merge classes or check whether compounds match in the DOM.
 
 Keep manifest generation enabled, run the Tailwind build before typechecking, and include the declaration in the consuming project:
 
@@ -185,4 +237,4 @@ V1 minor and patch releases preserve the documented authoring shapes, class spel
 
 The current package is ESM, declares Node.js 22 or newer, and has a Tailwind 4 peer range starting at 4.3.3. These are configuration bounds, not evidence that every combination has passed. Minimum TypeScript and integration versions, the release compatibility matrix, and cross-browser claims must follow issue [#4](https://github.com/IHIutch/varia/issues/4). Current browser checks use Chromium on macOS with a fixture reset. They do not establish complete browser support or production theme/reset coverage; issue [#5](https://github.com/IHIutch/varia/issues/5) covers that work.
 
-Run `pnpm test`, `pnpm typecheck`, `pnpm lint`, `pnpm example:build`, `pnpm test:visual`, `pnpm test:reload`, and `pnpm comparison:reload`. The last command verifies native Vite recipe reload in the example. Comparison-only branch parity checks are historical and are not a v1 release gate.
+Run `pnpm test`, `pnpm typecheck`, `pnpm lint`, `pnpm example:build`, `pnpm test:visual`, `pnpm test:reload`, `pnpm test:editor`, and `pnpm comparison:reload`. The last command verifies native Vite recipe reload in the example. Comparison-only branch parity checks are historical and are not a v1 release gate.

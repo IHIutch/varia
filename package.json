@@ -10,7 +10,7 @@
     "build": "pnpm --filter varia build",
     "test": "pnpm --filter varia test",
     "test:watch": "pnpm --filter varia test:watch",
-    "typecheck": "pnpm build && pnpm example:build && pnpm -r typecheck",
+    "typecheck": "pnpm build && pnpm -r typecheck",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "example:dev": "pnpm --filter @varia/example dev",
@@ -18,7 +18,8 @@
     "comparison:check": "node scripts/check-comparison.mjs",
     "comparison:reload": "pnpm build && node scripts/check-reload.mjs",
     "test:visual": "pnpm --filter varia test:visual",
-    "test:reload": "pnpm --filter varia test:reload"
+    "test:reload": "pnpm --filter varia test:reload",
+    "test:editor": "pnpm --filter varia test:editor"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^8.2.0",
