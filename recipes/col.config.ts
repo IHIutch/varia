@@ -1,6 +1,5 @@
 import { defineComponent } from '../packages/varia/src/index.js'
 
-// Pair with row to inherit its horizontal gutter through --row-gx.
 export default defineComponent('col', {
   base: 'flex-1 px-[calc(var(--row-gx,0)/2)]',
   variants: {

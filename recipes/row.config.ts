@@ -1,7 +1,5 @@
 import { defineComponent } from '../packages/varia/src/index.js'
 
-// Horizontal gutters use column padding so widths totaling 100% still fit.
-// The row's negative margin cancels the outer column padding.
 export default defineComponent('row', {
   base: 'flex flex-wrap mx-[calc(var(--row-gx,0)/-2)]',
   variants: {
