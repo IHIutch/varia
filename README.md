@@ -37,7 +37,99 @@ Register definitions with `tailwindVaria` from `varia/tailwind`. Tailwind scans 
 - Describe multi-element components with slots and combinations of variants with compound rules.
 - Generate optional TypeScript class types for checking component class strings.
 
-Varia is a tool for authoring component styles. The [recipes](recipes) are examples you can adapt for your own design system. Interactive behavior, markup, and accessibility remain part of your application or component framework.
+Varia is a tool for authoring component styles. The [recipes](https://github.com/IHIutch/varia/tree/main/recipes) are examples you can adapt for your own design system. Interactive behavior, markup, and accessibility remain part of your application or component framework.
+
+## Install with Tailwind and Vite
+
+Use Node.js 26 or newer. This example uses Tailwind 4.3.3 and Vite 8.0.16.
+
+```sh
+mkdir varia-app
+cd varia-app
+npm init -y
+npm pkg set type=module scripts.dev=vite scripts.build="vite build"
+npm install varia@1.0.0 tailwindcss@4.3.3
+npm install -D vite@8.0.16 @tailwindcss/vite@4.3.3
+```
+
+For an unpublished checkout, replace `varia@1.0.0` with the absolute path to the verified `.release/varia-1.0.0.tgz` archive.
+
+Create `recipes.ts` using only public exports:
+
+```ts
+import { defineComponent } from 'varia'
+
+export const components = [
+  defineComponent('card', {
+    slots: { root: 'rounded border p-4', title: 'font-semibold' },
+    variants: { accent: { title: 'text-blue-600' } },
+  }),
+  defineComponent('row', { base: 'flex flex-wrap' }),
+  defineComponent('col', {
+    base: 'w-full',
+    variants: { span: { half: 'w-1/2' } },
+  }),
+]
+```
+
+Create `tailwind.config.ts`:
+
+```ts
+import { tailwindVaria } from 'varia/tailwind'
+import { components } from './recipes.js'
+
+export default tailwindVaria({ components, manifest: false })
+```
+
+Create `styles.css`. Import order establishes component and utility precedence; source paths resolve relative to this stylesheet:
+
+```css
+@import "varia/tailwind.css";
+@import "tailwindcss" source(none);
+@source "./index.html";
+@plugin "./tailwind.config.ts";
+```
+
+Create `vite.config.ts`. Importing the registration config lets native Vite reload recipes and their local imports; warmup compiles CSS at startup:
+
+```ts
+import tailwindcss from '@tailwindcss/vite'
+import { defineConfig } from 'vite'
+import './tailwind.config.js'
+
+export default defineConfig({
+  plugins: [tailwindcss()],
+  server: { warmup: { clientFiles: ['./styles.css'] } },
+})
+```
+
+Create `index.html`:
+
+```html
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Varia app</title>
+    <link rel="stylesheet" href="/styles.css">
+  </head>
+  <body>
+    <div class="row">
+      <article class="col md:col-span-half card card-accent">
+        <h1 class="card__title">First card</h1>
+      </article>
+      <article class="col md:col-span-half card">
+        <h2 class="card__title text-red-600">Utility override</h2>
+      </article>
+    </div>
+  </body>
+</html>
+```
+
+Run `npm run dev`, edit a recipe, and confirm the page refreshes. Run `npm run build` to produce `dist/`. Keep component classes literal so Tailwind can discover them. Slot variants target matching descendants, including nested instances. The `md:` column variant uses Tailwind's default breakpoint. Native utilities override normal component declarations; class attribute order does not determine precedence.
+
+See [API.md](API.md) for variants, compounds, prefixes, source scanning, optional types, monorepos, diagnostics, and compatibility. Native editor autocomplete needs no manifest or helper; follow [editor setup](API.md#editor-support) for automatic imported-recipe suggestion refresh.
 
 ## Work on this repository
 
@@ -47,7 +139,7 @@ Use Node.js 26 and pnpm 10.25.0. Typechecking uses TypeScript 7.
 pnpm install
 ```
 
-This checkout contains the Tailwind implementation, including the grid and strict class-type extensions. Use `pnpm build`, `pnpm test`, `pnpm example:dev`, and `pnpm example:build`. The [engine comparison](COMPARISON.md) records earlier branch experiments; [API.md](API.md) defines current behavior.
+This checkout contains the Tailwind implementation, including the grid and strict class-type extensions. Use `pnpm build`, `pnpm test`, `pnpm example:dev`, and `pnpm example:build`. The [engine comparison](https://github.com/IHIutch/varia/blob/main/COMPARISON.md) records earlier branch experiments; [API.md](API.md) defines current behavior.
 
 ```sh
 pnpm build

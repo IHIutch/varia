@@ -9,7 +9,7 @@ it('loads public package exports without an engine and rejects the comparison al
   const dir = await mkdtemp(join(tmpdir(), 'varia-isolated-'))
   try {
     const packageDir = join(dir, 'node_modules/varia')
-    const archive = process.env.VARIA_RELEASE_ARCHIVE ?? join(dir, JSON.parse(execFileSync('npm', ['pack', '--ignore-scripts', '--json', '--pack-destination', dir], {
+    const archive = process.env.VARIA_RELEASE_ARCHIVE ?? join(dir, JSON.parse(execFileSync('npm', ['pack', '--json', '--pack-destination', dir], {
       cwd: fileURLToPath(new URL('../', import.meta.url)),
       encoding: 'utf8',
     }))[0].filename)
@@ -20,6 +20,9 @@ it('loads public package exports without an engine and rejects the comparison al
       for (const path of typeof entry === 'string' ? [entry] : Object.values(entry))
         expect((await readFile(join(packageDir, path), 'utf8')).length).toBeGreaterThan(0)
     }
+    expect(await readFile(join(packageDir, 'LICENSE'), 'utf8')).toContain('MIT License')
+    for (const document of ['README.md', 'API.md', 'CHANGELOG.md'])
+      expect((await readFile(join(packageDir, document), 'utf8')).length).toBeGreaterThan(0)
     expect(await readFile(join(packageDir, 'dist/tailwind.css'), 'utf8')).toContain('@layer theme, base, components, utilities;')
     const script = `
       import { defineComponent } from 'varia';
