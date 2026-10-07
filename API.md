@@ -171,9 +171,9 @@ export default defineConfig({
 })
 ```
 
-Keep the stylesheet's `@plugin` directive. The additional config import makes recipes and their transitive local imports dependencies of Vite's configuration. Vite restarts when those dependencies change, including after invalid definitions are fixed. This avoids a Tailwind 4.3.3 recovery failure observed with CSS HMR alone. No Varia watcher or Vite plugin is required.
+Keep the stylesheet's `@plugin` directive. The additional config import makes recipes and their transitive local imports dependencies of Vite's configuration. In a running development session, Vite restarts when those dependencies change and recovers after invalid edits are fixed. This avoids a Tailwind 4.3.3 recovery failure observed with CSS HMR alone. No Varia watcher or Vite plugin is required.
 
-[Vite's CSS warmup](https://vite.dev/config/server-options#server-warmup) generates the class declarations on startup and after a configuration restart, before a browser requests CSS. Warmup paths resolve from Vite's root. Manifest destinations still follow the cwd rules above; use an absolute `manifest.path` when launching from another directory. Invalid recipes report the original error, and declarations can remain stale until compilation succeeds.
+[Vite's CSS warmup](https://vite.dev/config/server-options#server-warmup) generates the class declarations on startup and after a configuration restart, before a browser requests CSS. Warmup paths resolve from Vite's root. Manifest destinations still follow the cwd rules above; use an absolute `manifest.path` when launching from another directory. Invalid recipes report the original error, and declarations can remain stale until compilation succeeds. An invalid recipe at initial startup prevents Vite from starting; fix it and run Vite again.
 
 The supported boundary is static local imports reachable from the configuration, including shared monorepo sources outside the app root. Add/remove definitions in `tailwindVaria({ components })` as well as on disk. Directory discovery, runtime-computed imports, and editing installed packages under `node_modules` are outside this guarantee. Use Vite's default bundled configuration loader and keep file watching enabled.
 

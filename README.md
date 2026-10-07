@@ -72,6 +72,6 @@ Recipes may use Tailwind's themes, custom utilities, arbitrary values, and indiv
 
 ## Development reload
 
-With `@tailwindcss/vite`, import your recipe registration config in `vite.config.ts` and set `server.warmup.clientFiles` to your CSS entry. Vite watches imported recipes and shared helpers, restarts after edits, and recovers when invalid definitions are fixed. Warmup regenerates types before a browser opens.
+With `@tailwindcss/vite`, import your recipe registration config in `vite.config.ts` and set `server.warmup.clientFiles` to your CSS entry. Vite watches imported recipes and shared helpers, restarts after edits, and recovers when invalid edits in a running session are fixed. Warmup regenerates types before a browser opens.
 
 See [Vite development reload](API.md#vite-development-reload) for the full configuration and supported paths.
