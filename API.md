@@ -177,7 +177,7 @@ For missing suggestions, run **Tailwind CSS: Show Output** and check that the ex
 
 Native lint rules cover conflicts, invalid `@apply`, and other Tailwind diagnostics. They do not generally report unknown class strings in markup. Autocomplete and CSS hover recognition are verified here; unknown-class linting is a separate optional integration.
 
-`pnpm test:editor` packs Varia into fresh consumers and exercises the actual Tailwind language server over LSP, including completions, hover previews, configuration errors/recovery, imported-definition refresh, HTML, JSX, and `clsx`. Verified versions are Tailwind CSS IntelliSense/language server 0.16.0, Tailwind 4.3.3, and Vite 8.0.11 on macOS. No VS Code UI automation or broader platform matrix is claimed.
+A one-time integration check against Tailwind CSS IntelliSense/language server 0.16.0 verified Varia completions, hover, imported-definition refresh, HTML, JSX, and `clsx` with Tailwind 4.3.3 and Vite 8.0.11 on macOS. The language-server harness is not a maintained test suite: autocomplete belongs to Tailwind. After changing editor configuration, manually check a registered Varia class, edit its recipe with Vite running, and confirm its hover/suggestions refresh.
 
 ## Strict class types
 
@@ -204,7 +204,7 @@ The generated file augments `varia/types`, so normal pnpm symlink resolution nee
 
 `manifest: false` disables writing. `manifest: { path }` changes the destination; relative paths resolve against process cwd, not the config directory. Default output is `node_modules/.varia/manifest.d.ts` under process cwd. Include custom destinations explicitly in `files`. Registrations targeting the same destination within one resolved configuration aggregate classes. A newly resolved configuration replaces stale declarations there.
 
-Include one aggregate manifest per TypeScript project. Independent configurations must have separate destinations and TypeScript projects; concurrent writers to one file are unsupported. Development reload uses the Vite configuration below. A complete generation lifecycle is tracked separately in issue [#3](https://github.com/IHIutch/varia/issues/3).
+Include one aggregate manifest per TypeScript project. Independent configurations must have separate destinations and TypeScript projects; concurrent writers to one file are unsupported. Development reload uses the Vite configuration below. Generated declarations remain optional tooling; editor autocomplete does not depend on them.
 
 ## Vite development reload
 
@@ -229,12 +229,24 @@ Keep the stylesheet's `@plugin` directive. The additional config import makes re
 
 The supported boundary is static local imports reachable from the configuration, including shared monorepo sources outside the app root. Add/remove definitions in `tailwindVaria({ components })` as well as on disk. Directory discovery, runtime-computed imports, and editing installed packages under `node_modules` are outside this guarantee. Use Vite's default bundled configuration loader and keep file watching enabled.
 
-`pnpm test:reload` packs Varia into standalone and monorepo consumers and checks imported helper edits, added/removed classes, invalid-definition recovery, computed CSS, and generated typings. Verified versions are Vite 8.0.11 and Tailwind/@tailwindcss/vite 4.3.3. Broader compatibility belongs to issue #4.
+`pnpm test:reload` remains an optional integration check for imported helper edits, added/removed classes, invalid-definition recovery, computed CSS, and generated typings. It uses a packed Varia archive and installed development dependencies. It is separate from the minimal release gate.
 
 ## Compatibility and versioning
 
 V1 minor and patch releases preserve the documented authoring shapes, class spelling, activation rules, bounded type grammar, and normal layer precedence. Breaking contract changes require a major release. Supported exports can be deprecated in a minor release with a documented replacement and retained behavior until the next major release. Implementation structures, generated formatting, and exact error text are not compatibility promises. Invalid definitions and unknown utilities in active expansions must continue to fail; unused expansions need not be resolved by Tailwind.
 
-The current package is ESM, declares Node.js 22 or newer, and has a Tailwind 4 peer range starting at 4.3.3. These are configuration bounds, not evidence that every combination has passed. Minimum TypeScript and integration versions, the release compatibility matrix, and cross-browser claims must follow issue [#4](https://github.com/IHIutch/varia/issues/4). Current browser checks use Chromium on macOS with a fixture reset. They do not establish complete browser support or production theme/reset coverage; issue [#5](https://github.com/IHIutch/varia/issues/5) covers that work.
+The package is ESM and declares Node.js 26 or newer. Repository and downstream type checks use TypeScript 7.0.2. CI runs the minimal release gate on Ubuntu 24.04 with Node 26.9.0. Node 26.0.0 was also checked locally. The verified Tailwind/Vite versions are 4.3.3 and 8.0.11 respectively; the optional Tailwind peer range remains `^4.3.3`. Wider version/OS compatibility is not implied by these checks.
 
-Run `pnpm test`, `pnpm typecheck`, `pnpm lint`, `pnpm example:build`, `pnpm test:visual`, `pnpm test:reload`, `pnpm test:editor`, and `pnpm comparison:reload`. The last command verifies native Vite recipe reload in the example. Comparison-only branch parity checks are historical and are not a v1 release gate.
+The maintained release checks focus on Varia's behavior and package contents: unit tests, typechecking, lint, the production example build, and one clean install of the actual archive that checks public ESM exports, declaration files, and the layer stylesheet. Tailwind owns editor autocomplete; its behavior does not require a separate ongoing test harness here.
+
+Existing visual and reload checks remain available separately. The visual references use Playwright 1.61.1's bundled Chromium on macOS. They do not establish complete browser support or production theme/reset coverage; issue [#5](https://github.com/IHIutch/varia/issues/5) covers that work.
+
+## Release preparation
+
+Repository `tsc` and downstream typing checks use TypeScript 7.0.2. The `@typescript/native` dependency is an alias for that stable compiler. ESLint and declaration generation still use the JavaScript compiler API, so `typescript` aliases `@typescript/typescript6` as recommended in [Microsoft's migration guidance](https://devblogs.microsoft.com/typescript/announcing-typescript-7-0/#running-side-by-side-with-typescript-6-0). That compatibility package provides `tsc6`; it does not replace TypeScript 7's `tsc`.
+
+Run `pnpm install --frozen-lockfile`, then `pnpm release:prepare`. It builds and packs the package, runs the unit suite against that archive (including a clean npm-install smoke test), typechecks, lints, and builds the production example. CI runs the same command and retains the verified archive as an artifact.
+
+The package's `prepack` hook builds JavaScript, declarations, and the layer stylesheet before an ordinary npm/pnpm pack. Release preparation packs once, tests that archive, and copies it into `.release/` only after all checks succeed. Missing exports/output, install/build/type errors, and failed tests stop preparation. A failed run removes any previous local release artifact. Publish only the verified archive after CI passes. This command does not publish; versioning, licensing, and final release metadata belong to issue [#6](https://github.com/IHIutch/varia/issues/6).
+
+Run `pnpm test`, `pnpm typecheck`, `pnpm lint`, `pnpm example:build`, `pnpm test:visual`, `pnpm test:reload`, and `pnpm comparison:reload`. The last command verifies native Vite recipe reload in the example. Comparison-only branch parity checks are historical and are not a v1 release gate.

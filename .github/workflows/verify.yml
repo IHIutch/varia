@@ -1,0 +1,28 @@
+name: Verify release
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 26.9.0
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm release:prepare
+      - uses: actions/upload-artifact@v4
+        with:
+          name: package
+          path: .release/*.tgz
+          include-hidden-files: true
+          if-no-files-found: error

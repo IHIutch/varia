@@ -164,10 +164,10 @@ cn('${f.cls('reload-probe-old')}');
 // @ts-expect-error deleted recipe
 cn('${f.cls('reload-added')}');`)
       await writeFile(join(f.app, 'tsconfig.json'), JSON.stringify({
-        compilerOptions: { module: 'ESNext', moduleResolution: 'bundler', strict: true, noEmit: true, ignoreDeprecations: '6.0' },
+        compilerOptions: { module: 'ESNext', moduleResolution: 'bundler', strict: true, noEmit: true },
         files: [relative(f.app, f.manifest), 'consumer.ts'],
       }))
-      execFileSync(process.execPath, [require.resolve('typescript/bin/tsc'), '--noEmit', '-p', f.app], { stdio: 'pipe' })
+      execFileSync(process.execPath, [join(dirname(require.resolve('@typescript/native/package.json')), 'bin/tsc'), '--noEmit', '-p', f.app], { stdio: 'pipe' })
 
       const restarts = () => f.logs.filter(message => message.includes('server restarted.')).length
       const idleCount = restarts()

@@ -2,9 +2,10 @@
   "name": "varia-workspace",
   "type": "module",
   "private": true,
+  "packageManager": "pnpm@10.25.0",
   "description": "Workspace root for varia (library, example)",
   "engines": {
-    "node": ">=22"
+    "node": ">=26.0.0"
   },
   "scripts": {
     "build": "pnpm --filter varia build",
@@ -19,12 +20,13 @@
     "comparison:reload": "pnpm build && node scripts/check-reload.mjs",
     "test:visual": "pnpm --filter varia test:visual",
     "test:reload": "pnpm --filter varia test:reload",
-    "test:editor": "pnpm --filter varia test:editor"
+    "release:prepare": "node scripts/prepare-release.mjs"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^8.2.0",
-    "@types/node": "^25.6.2",
+    "@types/node": "^26.6.4",
+    "@typescript/native": "npm:typescript@^7.0.2",
     "eslint": "^10.3.0",
-    "typescript": "^6.0.3"
+    "typescript": "npm:@typescript/typescript6@^6.0.2"
   }
 }

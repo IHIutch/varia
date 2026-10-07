@@ -9,7 +9,7 @@ import row from '../../../recipes/row.config.js'
 import { adapter } from './_engine.js'
 
 const require = createRequire(import.meta.url)
-const tsc = require.resolve('typescript/bin/tsc')
+const tsc = join(dirname(require.resolve('@typescript/native/package.json')), 'bin/tsc')
 const fixtures: string[] = []
 afterEach(async () => {
   await Promise.all(fixtures.splice(0).map(fixture => rm(fixture, { recursive: true, force: true })))
@@ -27,7 +27,7 @@ async function downstream(prefix?: string) {
   const path = join(fixture, 'node_modules/.varia/manifest.d.ts')
   await adapter.register([{ components: [row, col], prefix, manifest: { path } }])
   await writeFile(join(fixture, 'tsconfig.json'), JSON.stringify({
-    compilerOptions: { target: 'ES2022', module: 'ESNext', moduleResolution: 'bundler', strict: true, noEmit: true, ignoreDeprecations: '6.0' },
+    compilerOptions: { target: 'ES2022', module: 'ESNext', moduleResolution: 'bundler', strict: true, noEmit: true },
     files: ['node_modules/.varia/manifest.d.ts'],
     include: ['consumer.ts'],
     exclude: ['node_modules'],
@@ -81,7 +81,7 @@ describe('strict typed cn in a downstream pnpm layout', () => {
   it('rejects every class without the project augmentation', async () => {
     const { fixture, typecheck } = await downstream()
     await writeFile(join(fixture, 'tsconfig.json'), JSON.stringify({
-      compilerOptions: { target: 'ES2022', module: 'ESNext', moduleResolution: 'bundler', strict: true, noEmit: true, ignoreDeprecations: '6.0' },
+      compilerOptions: { target: 'ES2022', module: 'ESNext', moduleResolution: 'bundler', strict: true, noEmit: true },
       files: ['consumer.ts'],
     }))
     await writeFile(join(fixture, 'consumer.ts'), `import type { VariaClasses } from 'varia/types'
