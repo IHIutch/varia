@@ -41,7 +41,7 @@ Varia is a tool for authoring component styles. The [recipes](recipes) are examp
 
 ## Work on this repository
 
-Use Node.js 22 or newer and pnpm.
+Use Node.js 26 and pnpm 10.25.0. Typechecking uses TypeScript 7.
 
 ```sh
 pnpm install
@@ -57,9 +57,12 @@ pnpm lint
 pnpm test:visual
 pnpm test:reload
 pnpm test:editor
+pnpm release:prepare
 ```
 
 The library lives in `packages/varia`, example style definitions in `recipes`, and the demo in `examples/kitchen-sink`.
+
+`pnpm release:prepare` verifies an actual packed archive in clean standalone and monorepo consumers before writing it to `.release/`. See [release preparation and compatibility](API.md#release-preparation) for the version/OS matrix and release gates.
 
 ## Editor autocomplete
 

@@ -1,7 +1,8 @@
 import { execFileSync } from 'node:child_process'
-import { cp, mkdir, mkdtemp, rm } from 'node:fs/promises'
+import { mkdir, mkdtemp, readFile, rm } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
+import { fileURLToPath } from 'node:url'
 import { expect, it } from 'vitest'
 
 it('loads public package exports without an engine and rejects the comparison alias', async () => {
@@ -9,8 +10,17 @@ it('loads public package exports without an engine and rejects the comparison al
   try {
     const packageDir = join(dir, 'node_modules/varia')
     await mkdir(packageDir, { recursive: true })
-    await cp(new URL('../dist/', import.meta.url), join(packageDir, 'dist'), { recursive: true })
-    await cp(new URL('../package.json', import.meta.url), join(packageDir, 'package.json'))
+    const archive = process.env.VARIA_RELEASE_ARCHIVE ?? join(dir, JSON.parse(execFileSync('npm', ['pack', '--ignore-scripts', '--json', '--pack-destination', dir], {
+      cwd: fileURLToPath(new URL('../', import.meta.url)),
+      encoding: 'utf8',
+    }))[0].filename)
+    execFileSync('tar', ['-xzf', archive, '-C', packageDir, '--strip-components=1'])
+    const metadata = JSON.parse(await readFile(join(packageDir, 'package.json'), 'utf8'))
+    for (const entry of Object.values(metadata.exports) as (string | Record<string, string>)[]) {
+      for (const path of typeof entry === 'string' ? [entry] : Object.values(entry))
+        expect((await readFile(join(packageDir, path), 'utf8')).length).toBeGreaterThan(0)
+    }
+    expect(await readFile(join(packageDir, 'dist/tailwind.css'), 'utf8')).toContain('@layer theme, base, components, utilities;')
     const script = `
       import { defineComponent } from 'varia';
       import { tailwindVaria } from 'varia/tailwind';

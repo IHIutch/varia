@@ -1,6 +1,7 @@
 # Node / build artifacts
 node_modules
 **/dist
+.release/
 
 # OS
 .DS_Store
