@@ -41,18 +41,16 @@ Varia is a tool for authoring component styles. The [recipes](https://github.com
 
 ## Install with Tailwind and Vite
 
-Use Node.js 26 or newer. This example uses Tailwind 4.3.3 and Vite 8.0.16.
+Use Node.js 26 or newer. This example uses Tailwind 4.3.3 and Vite 8.0.16. Build the archive with `pnpm release:prepare` in this checkout first, then replace the absolute archive path below with its actual location. The unscoped npm name `varia` belongs to another package; the public publication name for this library is pending.
 
 ```sh
 mkdir varia-app
 cd varia-app
 npm init -y
 npm pkg set type=module scripts.dev=vite scripts.build="vite build"
-npm install varia@1.0.0 tailwindcss@4.3.3
+npm install /absolute/path/to/varia/.release/varia-1.0.0.tgz tailwindcss@4.3.3
 npm install -D vite@8.0.16 @tailwindcss/vite@4.3.3
 ```
-
-For an unpublished checkout, replace `varia@1.0.0` with the absolute path to the verified `.release/varia-1.0.0.tgz` archive.
 
 Create `recipes.ts` using only public exports:
 
