@@ -119,7 +119,7 @@ Create `index.html`:
       <article class="col md:col-span-half card card-accent">
         <h1 class="card__title">First card</h1>
       </article>
-      <article class="col md:col-span-half card">
+      <article class="col md:col-span-half card card-accent">
         <h2 class="card__title text-red-600">Utility override</h2>
       </article>
     </div>
