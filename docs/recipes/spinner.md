@@ -1,12 +1,14 @@
 # Spinner
 
-Use size and color variants to style a loading indicator. Tailwind's `animate-spin` utility rotates it.
-
 ## Recipe
 
 <<< ../../recipes/spinner.config.ts
 
-## Live preview
+## Usage
+
+<RecipeTabs>
+
+<template #preview>
 
 :::raw
 <div class="my-6 p-6 border border-gray-200 rounded-md bg-gray-50 flex flex-wrap items-center gap-6">
@@ -22,7 +24,9 @@ Use size and color variants to style a loading indicator. Tailwind's `animate-sp
 </div>
 :::
 
-## Usage
+</template>
+
+<template #usage>
 
 ```html
 <div role="status" aria-label="Loading">
@@ -30,4 +34,6 @@ Use size and color variants to style a loading indicator. Tailwind's `animate-sp
 </div>
 ```
 
-The border inherits `currentColor`. Omit the color variant to inherit a parent color. Tailwind supplies the animation keyframes.
+</template>
+
+</RecipeTabs>

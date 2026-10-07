@@ -1,20 +1,17 @@
 # Modal
 
-Use slots to style the backdrop and the elements inside the modal.
-
 ## Recipe
-
-Put the size variant on the root to set the container's maximum width:
 
 <<< ../../recipes/modal.config.ts
 
-`modal-size-md` on the root generates `.modal-size-md .modal__container`. Choose a size explicitly; Varia applies no default variants.
+## Usage
 
-## Live preview
+<RecipeTabs>
+
+<template #preview>
 
 :::raw
 <div class="my-6">
-  <p class="mb-3 text-sm text-gray-700">This static preview contains the modal inside the page so you can see all its parts:</p>
   <div class="relative border border-gray-200 rounded-md overflow-hidden" style="height: 360px; background: linear-gradient(135deg, #f1f5f9, #e2e8f0);">
     <div class="modal modal-size-md" style="position: absolute;" role="dialog" aria-modal="true" aria-labelledby="demo-modal-title">
       <div class="modal__container">
@@ -40,7 +37,9 @@ Put the size variant on the root to set the container's maximum width:
 </div>
 :::
 
-## Usage
+</template>
+
+<template #usage>
 
 ```html
 <div class="modal modal-size-md" role="dialog" aria-modal="true" aria-labelledby="m-title">
@@ -65,6 +64,6 @@ Put the size variant on the root to set the container's maximum width:
 </div>
 ```
 
-Your application controls opening, closing, focus, and scroll locking. The root styles create a fixed backdrop with a flex layout. Adapt them to your dialog implementation before using them on a native `<dialog>` element.
+</template>
 
-The footer uses the [button recipe](/recipes/button). Register that definition too if you use the markup above.
+</RecipeTabs>

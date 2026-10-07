@@ -30,7 +30,7 @@ Create `varia.config.ts` beside your CSS entrypoint:
 import { defineComponent } from 'variacss'
 import { tailwindVaria } from 'variacss/tailwind'
 
-const button = defineComponent('demo-btn', {
+const button = defineComponent('btn', {
   base: 'inline-flex rounded bg-blue-600 px-4 py-2 font-medium text-white',
   variants: {
     size: {
@@ -58,10 +58,8 @@ The first import sets the order of Varia's CSS layers. `@source not` requires Ta
 ## Use the classes
 
 ```html
-<button type="button" class="demo-btn demo-btn-size-lg">Save</button>
+<button type="button" class="btn btn-size-lg">Save</button>
 ```
-
-Run your existing development command. The button should be blue with larger padding and text. Remove `demo-btn-size-lg` to return to the base size.
 
 See [troubleshooting](/troubleshooting) if styles are missing.
 
@@ -90,7 +88,7 @@ Adjust the import path to your project and keep the stylesheet's `@plugin` direc
 Tailwind detects Varia classes just like utilities. Use complete class names when choosing variants dynamically:
 
 ```ts
-const sizes = { base: 'demo-btn', lg: 'demo-btn demo-btn-size-lg' }
+const sizes = { base: 'btn', lg: 'btn btn-size-lg' }
 ```
 
 For custom scan paths and safelisting, see Tailwind's [source detection documentation](https://tailwindcss.com/docs/detecting-classes-in-source-files).
@@ -104,7 +102,7 @@ export default tailwindVaria({ components: [button], prefix: 'tw' })
 ```
 
 ```html
-<button class="tw:demo-btn tw:md:demo-btn-size-lg">Save</button>
+<button class="tw:btn tw:md:btn-size-lg">Save</button>
 ```
 
 Keep utilities inside definitions unprefixed. A prefix must contain only lowercase ASCII letters.

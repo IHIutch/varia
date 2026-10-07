@@ -1,12 +1,14 @@
 # Card
 
-The `card` class styles the outer container. Use utilities for its contents.
-
 ## Recipe
 
 <<< ../../recipes/card.config.ts
 
-## Live preview
+## Usage
+
+<RecipeTabs>
+
+<template #preview>
 
 :::raw
 <div class="my-6">
@@ -15,13 +17,15 @@ The `card` class styles the outer container. Use utilities for its contents.
       <h3 class="font-medium">Card title</h3>
     </header>
     <div class="p-4 text-gray-700">
-      <p>Card body. The <code class="px-1 bg-gray-100 rounded text-sm">.card</code> class only handles the outer container; padding inside is the consumer's choice.</p>
+      <p>Card body</p>
     </div>
   </article>
 </div>
 :::
 
-## Usage
+</template>
+
+<template #usage>
 
 ```html
 <article class="card">
@@ -35,4 +39,6 @@ The `card` class styles the outer container. Use utilities for its contents.
 </article>
 ```
 
-The header and body use utilities. Add slots if those styles repeat across cards.
+</template>
+
+</RecipeTabs>

@@ -1,12 +1,14 @@
 # Form input
 
-Use state and size variants to style inputs. The definition also styles focus, disabled inputs, and placeholder text.
-
 ## Recipe
 
 <<< ../../recipes/form-input.config.ts
 
-## Live preview
+## Usage
+
+<RecipeTabs>
+
+<template #preview>
 
 :::raw
 <div class="my-6 p-6 border border-gray-200 rounded-md bg-gray-50 grid gap-3 w-full">
@@ -20,7 +22,9 @@ Use state and size variants to style inputs. The definition also styles focus, d
 </div>
 :::
 
-## Usage
+</template>
+
+<template #usage>
 
 ```html
 <input class="form-input form-input-state-default form-input-s-md" />
@@ -29,4 +33,6 @@ Use state and size variants to style inputs. The definition also styles focus, d
        readonly value="cannot edit" />
 ```
 
-The `state` variant controls appearance. Your application handles validation. Use both `form-input-readonly` and the `readonly` attribute to apply the read-only background and cursor styles.
+</template>
+
+</RecipeTabs>

@@ -1,15 +1,16 @@
 # Icon button
 
-Use size variants for labeled buttons. Add the square variant for icon-only buttons. Compound rules give those buttons equal padding on all sides.
-
 ## Recipe
 
 <<< ../../recipes/icon-button.config.ts
 
-## Live preview
+## Usage
+
+<RecipeTabs>
+
+<template #preview>
 
 <div class="my-6 space-y-6 vp-raw">
-<p class="text-sm text-gray-700">Each row compares a labeled button with an icon-only button at the same size. The compound rule gives the icon-only button equal padding on all sides.</p>
 <div class="grid grid-cols-2 gap-x-8 gap-y-3 items-center">
 <div class="text-xs font-mono text-gray-500"><code>icon-btn icon-btn-s-xs</code></div>
 <div class="text-xs font-mono text-gray-500"><code>icon-btn icon-btn-s-xs icon-btn-square</code></div>
@@ -30,7 +31,9 @@ Use size variants for labeled buttons. Add the square variant for icon-only butt
 </div>
 </div>
 
-## Usage
+</template>
+
+<template #usage>
 
 ```html
 <button class="icon-btn icon-btn-s-md" type="button">
@@ -41,4 +44,6 @@ Use size variants for labeled buttons. Add the square variant for icon-only butt
 </button>
 ```
 
-The size class emits a compound such as `.icon-btn-s-md.icon-btn-square`. Both classes must be on the button. The same size class works for both labeled and icon-only buttons.
+</template>
+
+</RecipeTabs>
