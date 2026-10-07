@@ -7,11 +7,11 @@ hero:
   tagline: Tailwind CSS generation with the ergonomics of regular CSS. Define styles with Tailwind utilities, use readable component classes in any template, and generate CSS at build time without a styling runtime.
   actions:
     - theme: brand
-      text: Quickstart
+      text: Build your first style
       link: /quickstart
     - theme: alt
-      text: Tailwind guide
-      link: /tailwind
+      text: Browse the docs
+      link: /documentation
 
 features:
   - title: Regular CSS class ergonomics
@@ -52,4 +52,4 @@ Register this definition with `tailwindVaria` in a plugin module. Tailwind scans
 
 Varia handles component styling. The recipes show styles you can adapt; your application or component framework supplies markup, interaction behavior, and accessibility.
 
-[Get started with a working button](/quickstart) or [learn how CSS generation works](/concepts).
+[Build your first component style](/quickstart), [integrate into an existing project](/tailwind), or [browse the documentation](/documentation).

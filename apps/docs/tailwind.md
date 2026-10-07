@@ -1,4 +1,4 @@
-# Tailwind CSS
+# Integrate Varia with Tailwind
 
 The `tailwindVaria` plugin registers Varia definitions with Tailwind CSS v4.3.3 or newer. It uses Tailwind's public JavaScript plugin interface and `@apply`; no separate Varia scanner or styling runtime is required.
 
@@ -7,7 +7,7 @@ The `tailwindVaria` plugin registers Varia definitions with Tailwind CSS v4.3.3 
 ## Install
 
 ```bash
-pnpm add -D variacss tailwindcss
+npm install variacss tailwindcss@4.3.3
 ```
 
 First configure Tailwind for your build using its [installation guide](https://tailwindcss.com/docs/installation). For Vite, install `@tailwindcss/vite` and add its plugin to your Vite config.
@@ -70,6 +70,8 @@ Utility string order follows Tailwind's native ordering. Varia does not choose a
 
 ## Options
 
+For lookup, `tailwindVaria` accepts this configuration:
+
 ```ts
 interface TailwindVariaOptions {
   components: DefinedComponent[]
@@ -77,14 +79,13 @@ interface TailwindVariaOptions {
 }
 ```
 
-
 Prefixes must contain lowercase ASCII letters only. To use prefixed classes, set `prefix: 'tw'` in `tailwindVaria`. This configures Tailwind's prefix and prefixes Varia's applied utilities, descendant selectors, and compounds. Write `tw:btn tw:btn-c-primary` in markup. Responsive classes use `tw:md:btn-s-lg`.
 
 If your stylesheet already imports Tailwind with `prefix(tw)`, also pass the matching `prefix: 'tw'` to `tailwindVaria`. Tailwind's plugin interface does not expose that CSS prefix. Prefixes supplied through a JavaScript config are detected automatically.
 
 ## Try the existing recipes
 
-From this repository:
+To run the repository demo, follow [contributor setup](/contribute). From the checkout:
 
 ```bash
 pnpm build

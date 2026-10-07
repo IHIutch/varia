@@ -38,147 +38,26 @@ Register definitions with `tailwindVaria` from `variacss/tailwind`. Tailwind sca
 
 Varia is a tool for authoring component styles. The [recipes](https://github.com/IHIutch/varia/tree/main/recipes) are examples you can adapt for your own design system. Interactive behavior, markup, and accessibility remain part of your application or component framework.
 
-## Install with Tailwind and Vite
-
-Use Node.js 26 or newer. This example uses Tailwind 4.3.3 and Vite 8.3.2. The npm package name is `variacss`. Version 1.0.0 is prepared in this repository and has not been published yet.
+## Start here
 
 ```sh
-mkdir varia-app
-cd varia-app
-npm init -y
-npm pkg set type=module scripts.dev=vite scripts.build="vite build"
-npm install variacss@1.0.0 tailwindcss@4.3.3
-npm install -D vite@8.3.2 @tailwindcss/vite@4.3.3
+npm install variacss
 ```
 
-Before publication, replace `variacss@1.0.0` with the absolute path to `.release/variacss-1.0.0.tgz`, produced by `pnpm release:prepare` in this checkout.
+Use Node.js 26 or newer and a Tailwind 4 integration. The complete Vite walkthrough uses Tailwind 4.3.3 and Vite 8.3.2.
 
-Create `recipes.ts` using only public exports:
-
-```ts
-import { defineComponent } from 'variacss'
-
-export const components = [
-  defineComponent('card', {
-    slots: { root: 'rounded border p-4', title: 'font-semibold' },
-    variants: { accent: { title: 'text-blue-600' } },
-  }),
-  defineComponent('row', { base: 'flex flex-wrap' }),
-  defineComponent('col', {
-    base: 'w-full',
-    variants: { span: { half: 'w-1/2' } },
-  }),
-]
-```
-
-Create `tailwind.config.ts`:
-
-```ts
-import { tailwindVaria } from 'variacss/tailwind'
-import { components } from './recipes.js'
-
-export default tailwindVaria({ components })
-```
-
-Create `styles.css`. Import order establishes component and utility precedence; source paths resolve relative to this stylesheet:
-
-```css
-@import "variacss/tailwind.css";
-@import "tailwindcss" source(none);
-@source "./index.html";
-@plugin "./tailwind.config.ts";
-```
-
-Create `vite.config.ts`. Importing the registration config lets native Vite reload recipes and their local imports; warmup compiles CSS at startup:
-
-```ts
-import tailwindcss from '@tailwindcss/vite'
-import { defineConfig } from 'vite'
-import './tailwind.config.js'
-
-export default defineConfig({
-  plugins: [tailwindcss()],
-  server: { warmup: { clientFiles: ['./styles.css'] } },
-})
-```
-
-Create `index.html`:
-
-```html
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Varia app</title>
-    <link rel="stylesheet" href="/styles.css">
-  </head>
-  <body>
-    <div class="row">
-      <article class="col md:col-span-half card card-accent">
-        <h1 class="card__title">First card</h1>
-      </article>
-      <article class="col md:col-span-half card card-accent">
-        <h2 class="card__title text-red-600">Utility override</h2>
-      </article>
-    </div>
-  </body>
-</html>
-```
-
-Run `npm run dev`, edit a recipe, and confirm the page refreshes. Run `npm run build` to produce `dist/`. Keep component classes literal so Tailwind can discover them. Slot variants target matching descendants, including nested instances. The `md:` column variant uses Tailwind's default breakpoint. Native utilities override normal component declarations; class attribute order does not determine precedence.
-
-See [documentation](https://github.com/IHIutch/varia/tree/main/apps/docs) for variants, compounds, prefixes, source scanning, monorepos, diagnostics, and compatibility. Native editor autocomplete needs no helper; follow [editor setup](https://github.com/IHIutch/varia/blob/main/apps/docs/recipes/type-safety.md) for automatic imported-recipe suggestion refresh.
+- [Build your first component style](https://github.com/IHIutch/varia/blob/main/apps/docs/quickstart.md) with a complete standalone Vite walkthrough.
+- [Integrate with an existing Tailwind project](https://github.com/IHIutch/varia/blob/main/apps/docs/tailwind.md).
+- [Understand the styling model](https://github.com/IHIutch/varia/blob/main/apps/docs/concepts.md).
+- [Browse the documentation](https://github.com/IHIutch/varia/blob/main/apps/docs/documentation.md) for task guides, reference, and recipes with live previews.
 
 ## Work on this repository
 
-Use Node.js 26 and pnpm 12.9.1. Typechecking uses TypeScript 7.
+See [Contributing](https://github.com/IHIutch/varia/blob/main/CONTRIBUTING.md) for checkout setup, verification commands, and the VitePress documentation site.
 
 ```sh
 pnpm install
+pnpm docs:dev
 ```
 
-This checkout contains the Tailwind implementation, including the responsive grid recipes. Use `pnpm build`, `pnpm test`, `pnpm example:dev`, and `pnpm example:build`. The [engine comparison](https://github.com/IHIutch/varia/blob/main/COMPARISON.md) records earlier branch experiments; [documentation](https://github.com/IHIutch/varia/tree/main/apps/docs) defines current behavior.
-
-```sh
-pnpm build
-pnpm test
-pnpm typecheck
-pnpm lint
-pnpm test:visual
-pnpm test:reload
-pnpm release:prepare
-```
-
-The library lives in `packages/varia`, example style definitions in `recipes`, and the demo in `examples/kitchen-sink`.
-
-The documentation site restored from project history lives in `apps/docs` and uses VitePress `2.0.0-alpha.20`. Run `pnpm docs:dev`, `pnpm docs:build`, or `pnpm docs:preview`. Recipe pages include live previews. Static output is `apps/docs/.vitepress/dist`. Set `DOCS_BASE=/your-path/` when building for a subdirectory.
-
-Dependency resolution keeps a 24-hour minimum release age and rejects provenance downgrades. Updates use the latest eligible stable versions; VitePress v2 is explicitly pinned to its current alpha release.
-
-`pnpm release:prepare` runs unit tests, typecheck, lint, and the production example build, including a clean-install smoke test of the actual archive. It writes the verified archive to `.release/`. See [release preparation](#release-preparation).
-
-## Editor autocomplete
-
-Use Tailwind CSS IntelliSense for Varia classes in ordinary markup and existing helpers such as `clsx`. The example's responsive grid uses plain class strings. See [editor support](https://github.com/IHIutch/varia/blob/main/apps/docs/recipes/type-safety.md) for settings, imported-recipe refresh, and troubleshooting. Unknown-class linting in markup is not a native extension rule.
-
-
-## Native Tailwind expansion
-
-Recipes may use Tailwind's themes, custom utilities, arbitrary values, and individual modifiers. Tailwind's Vite integration processes authored CSS and native `@apply` directly. The downstream test verifies authored CSS and component application in a real consumer build. See [the Tailwind guide](https://github.com/IHIutch/varia/blob/main/apps/docs/tailwind.md#slots-and-compounds) for ordering and prefix behavior.
-
-## Development reload
-
-With `@tailwindcss/vite`, import your recipe registration config in `vite.config.ts` and set `server.warmup.clientFiles` to your CSS entry. Vite watches imported recipes and shared helpers, restarts after edits, and recovers when invalid edits in a running session are fixed. Warmup compiles CSS before a browser opens.
-
-See [Vite development reload](https://github.com/IHIutch/varia/blob/main/apps/docs/tailwind.md#development-reload) for the full configuration and supported paths.
-
-## Release preparation
-
-Repository `tsc` checks use TypeScript 7.0.2. The `@typescript/native` dependency is an alias for that stable compiler. ESLint and declaration generation still use the JavaScript compiler API, so `typescript` aliases `@typescript/typescript6` as recommended in [Microsoft's migration guidance](https://devblogs.microsoft.com/typescript/announcing-typescript-7-0/#running-side-by-side-with-typescript-6-0). That compatibility package provides `tsc6`; it does not replace TypeScript 7's `tsc`.
-
-Run `pnpm install --frozen-lockfile`, then `pnpm release:prepare`. It builds and packs the package, runs the unit suite against that archive (including a clean npm-install smoke test), typechecks, lints, and builds the production example. CI runs the same command and retains the verified archive as an artifact.
-
-The package's `prepack` hook builds JavaScript, declarations, and the layer stylesheet before an ordinary npm/pnpm pack. Release preparation packs once, tests that archive, and copies it into `.release/` only after all checks succeed. Missing exports/output, install/build/type errors, and failed tests stop preparation. A failed run removes any previous local release artifact. Publish only the verified archive after CI passes. The package metadata is prepared for 1.0.0 under the MIT license. Prepack copies the README, changelog, and license into the archive. Version 1.0.0 is prepared in this repository; merging changes does not publish it. The public package name is `variacss`; the brand remains Varia. Before publication, install the verified local archive.
-
-For a release, update the package version and changelog together, merge the reviewed change, and run release preparation from that commit with a clean checkout. Check the archive's version and contents with `tar -tzf .release/variacss-1.0.0.tgz` and `npm publish .release/variacss-1.0.0.tgz --dry-run`. After the verified commit and registry access are approved for publication, publish that exact archive with `npm publish .release/variacss-1.0.0.tgz --access public`, then create the matching `v1.0.0` git tag and GitHub release with the changelog. Adjust the versioned filename/tag for subsequent releases. Publishing an existing tarball preserves the tested contents. Release preparation itself does not publish or create tags.
+The site lives in `apps/docs`. Run `pnpm docs:build` for static output or `pnpm docs:preview` to inspect the built site. See [compatibility](https://github.com/IHIutch/varia/blob/main/apps/docs/reference/compatibility.md) for the limits of current checks.

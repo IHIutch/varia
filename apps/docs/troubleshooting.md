@@ -55,7 +55,7 @@ Tailwind validates utilities when compiling active expansions. Unsupported varia
 | --- | --- |
 | Invalid component or class identifier | Use lowercase names starting with a letter, with digits/hyphens afterward. `defineComponent('Card', ...)` must become `defineComponent('card', ...)`. Generated variant identifiers follow the same rule. |
 | Duplicate component/shortcut/class | Rename the conflicting definition or register it once. The error identifies the conflicting names/owners, including across plugin registrations. |
-| Empty expansion, ambiguous variant map, or unknown slot/compound condition | Supply a nonempty utility string; separate declared slot keys from value keys; reference existing slots and variant values. The authoring error identifies the component/variant or condition. See the definition shapes above. |
+| Empty expansion, ambiguous variant map, or unknown slot/compound condition | Supply a nonempty utility string; separate declared slot keys from value keys; reference existing slots and variant values. The authoring error identifies the component/variant or condition. See [definition shapes](/reference/definitions#authoring-definitions). |
 | Tailwind rejects a variant group in an active expansion | Replace `hover:(bg-blue-600 text-white)` with `hover:bg-blue-600 hover:text-white`. |
 | Required layer stylesheet missing | Import `variacss/tailwind.css` before `tailwindcss` in the CSS entry. The plugin's check detects a missing marker; it cannot reliably detect reversed imports. Keep the documented order. |
 | Invalid prefix or missing prefixed CSS | `prefix` must contain lowercase ASCII letters only. Match CSS `prefix(tw)` with `tailwindVaria({ prefix: 'tw', ... })` and use `tw:card` / `tw:md:card-size-lg` in markup. |
@@ -64,3 +64,13 @@ Tailwind validates utilities when compiling active expansions. Unsupported varia
 | Invalid recipe during development | Fix the error in Vite's terminal. An existing running session recovers through config restart; initial startup errors require starting Vite after the fix. |
 
 These checks reuse the authoring validators and Tailwind utility resolution. Error wording and generated formatting are not compatibility promises. Interaction and accessibility behavior remain the application's responsibility.
+
+## Slot styling is missing or reaches a nested instance
+
+Put the literal bare slot class on a descendant of the activation element. A slot on the activation element itself does not match a descendant rule. A descendant with only `md:panel__title` does not match `.panel__title`.
+
+Outer slot variants also affect nested instances with the same slot name. Use distinct component names or explicit application CSS for independent instances. Follow [the slot guide](/guides/style-child-elements).
+
+## A responsive compound does not apply
+
+Check the first entry of `when`. Its activation class can receive a modifier, while remaining condition classes must keep their bare spelling on the same element. Independently modified classes do not combine into inferred effective conditions. Follow [the responsive guide](/guides/responsive-variants).
